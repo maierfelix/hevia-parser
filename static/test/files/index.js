@@ -1,0 +1,3 @@
+var files = [
+  "./var.clam"
+];
