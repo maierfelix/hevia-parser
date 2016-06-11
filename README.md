@@ -1,1 +1,0 @@
-# Clam.js - A Swift to ES6 Compiler
