@@ -6,10 +6,10 @@
   <br/>
   <textarea id="js" style="margin: 0px; width: 509px; height: 246px;" spellcheck="false"></textarea>
   <button id="run">Run</button>
-  <script type="text/javascript" src="../dist/clam.js"></script>
+  <script type="text/javascript" src="../dist/swiftly.js"></script>
   <script type="text/javascript">
 
-    let clam = new Clam();
+    let swift = new Swiftly();
 
     let input = document.querySelector("#swift");
 
@@ -20,7 +20,7 @@
 
     let init = () => {
 
-      clam.readProject(files, (src) => {
+      swift.readProject(files, (src) => {
         input.oninput = compile;
         run.onmousedown = compile;
         input.value = src;
@@ -33,11 +33,11 @@
 
       let stream = input.value;
 
-      let compiled = clam.compile(stream);
+      let compiled = swift.compile(stream);
 
       js.value = compiled;
 
-      clam.run(compiled);
+      swift.run(compiled);
 
     };
 

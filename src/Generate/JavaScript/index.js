@@ -63,15 +63,15 @@ export default class JavaScript extends Compiler {
 
   emitStartHeader() {
     this.write("(() => {\n");
-    this.write("let clam = new Clam();");
+    this.write("let swift = new Swiftly();");
     this.write("((_global, _export, _runtime) => {\n");
   }
 
   emitEndHeader() {
     this.write("})(\n");
-    this.write("clam.runtime.global,\n");
+    this.write("swift.runtime.global,\n");
     this.write("typeof exports !== 'undefined' ? exports : this,\n");
-    this.write("clam.runtime\n");
+    this.write("swift.runtime\n");
     this.write(");\n");
     this.write("})();\n");
   }

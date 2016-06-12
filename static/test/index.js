@@ -1,9 +1,9 @@
-let clam = new Clam();
+let swift = new Swiftly();
 
-console.log(clam, files);
+console.log(swift, files);
 
 files.map((file) => {
-  clam.fetch(`./files/${file}`, (src) => {
+  swift.fetch(`./files/${file}`, (src) => {
     console.log(src);
   });
 });

@@ -1,3 +1,3 @@
 var files = [
-  "./var.clam"
+  "./var.swift"
 ];

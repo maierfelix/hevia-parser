@@ -9,10 +9,10 @@ import beautify from "js-beautify";
 (() => {
 
   /**
-   * Clam
-   * @class Clam
+   * Swiftly
+   * @class Swiftly
    */
-  class Clam {
+  class Swiftly {
 
     /** @constructor */
     constructor() {
@@ -64,6 +64,6 @@ import beautify from "js-beautify";
       this.compiler.run(compiled);
     }
 
-  }(() => window.Clam = exports.Clam = Clam)();
+  }(() => window.Swiftly = exports.Swiftly = Swiftly)();
 
 })();

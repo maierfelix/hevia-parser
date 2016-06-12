@@ -1,4 +1,4 @@
-# Clam.js - A Swift to ES6 Compiler
+# Swiftly.js - A Swift to ES6 Compiler
 
 ##Example
 
@@ -19,10 +19,10 @@ print(a1, c1);
 ###Output:
 ```JavaScript
 (() => {
-  let clam = new Clam();
+  let swift = new Swiftly();
   ((_global, _export, _runtime) => {
     var swap = (c, d) => {
-      var temp = c.value;
+      const temp = c.value;
       c.value = d.value;
       d.value = temp;
     };
@@ -37,9 +37,9 @@ print(a1, c1);
     swap(a1, c1);
     print(a1.value, c1.value);
   })(
-    clam.runtime.global,
+    swift.runtime.global,
     typeof exports !== 'undefined' ? exports : this,
-    clam.runtime
+    swift.runtime
   );
 })();
 ```

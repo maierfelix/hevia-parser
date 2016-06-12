@@ -1,15 +1,15 @@
 {
-  "name": "wasm",
+  "name": "Swiftly",
   "version": "0.0.2",
-  "description": "ClamJS",
+  "description": "Swiftly.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/maierfelix/clam.js.git"
+    "url": "git+ssh://git@github.com/maierfelix/swiftly.js.git"
   },
   "keywords": [
-    "Clam",
-    "ClamJS",
-    "Clam.js",
+    "Swiftly",
+    "SwiftlyJS",
+    "Swiftly.js",
     "Swift",
     "Compiler",
     "Transpiler",
@@ -19,14 +19,14 @@
   ],
   "author": "Felix Maier <maier.felix96@gmail.com>",
   "bugs": {
-    "url": "https://github.com/maierfelix/clam.js/issues"
+    "url": "https://github.com/maierfelix/swiftly.js/issues"
   },
-  "homepage": "https://github.com/maierfelix/clam.js#readme",
+  "homepage": "https://github.com/maierfelix/swiftly.js#readme",
   "scripts": {
-    "live": "budo --dir static/ ./src/index.js:dist/clam.js --live -- -t babelify",
+    "live": "budo --dir static/ ./src/index.js:dist/swiftly.js --live -- -t babelify",
     "dist": "npm run dist-release && npm run dist-uglify",
-    "dist-release": "browserify ./src/index.js -t babelify -s CLAM -o dist/clam.js",
-    "dist-uglify": "uglifyjs dist/clam.js --compress --mangle > dist/clam.min.js"
+    "dist-release": "browserify ./src/index.js -t babelify -s CLAM -o dist/swiftly.js",
+    "dist-uglify": "uglifyjs dist/swiftly.js --compress --mangle > dist/swiftly.min.js"
   },
   "engines": {
     "node": ">= 5.x"
