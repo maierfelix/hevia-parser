@@ -1,6 +1,7 @@
 import Lexer from "./Tokenize";
 import Parser from "./Parse";
 import Runtime from "./Runtime";
+import Semantic from "./Semantic";
 import JavaScript from "./Generate/JavaScript";
 
 import beautify from "js-beautify";
@@ -19,8 +20,21 @@ import beautify from "js-beautify";
       this.lexer = new Lexer();
       this.parser = new Parser();
       this.runtime = new Runtime();
+      this.semantic = new Semantic();
       this.compiler = new JavaScript();
 
+    }
+
+    readProject(files, resolve) {
+      let ii = 0;
+      let out = "";
+      files.map((file) => {
+        this.fetch(file, (src) => {
+          ++ii;
+          out += src;
+          if (ii >= files.length) resolve(out);
+        });
+      });
     }
 
     fetch(url, resolve) {
@@ -39,6 +53,7 @@ import beautify from "js-beautify";
 
       let tokens = this.lexer.lex(stream);
       let ast = this.parser.parse(tokens);
+      this.semantic.analyze(ast);
       let jsResult = this.compiler.compile(ast, this);
 
       return (beautify(jsResult, {indent_size: 2}));

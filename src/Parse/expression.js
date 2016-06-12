@@ -20,10 +20,10 @@ export function acceptPrecedenceState(state) {
 }
 
 /**
- * Object expr parsing
+ * Tuple expr parsing
  * @return {Node}
  */
-export function parseObjectExpressions() {
+export function parseTupleExpressions() {
 
   let args = [];
   let node = null;
@@ -45,27 +45,6 @@ export function parseObjectExpressions() {
 }
 
 /**
- * Recursive memberexpr parsing
- * @return {Node}
- */
-export function parseMemberExpression(ast) {
-
-  let tmp = null;
-  let parent = null;
-
-  for (;this.eat(TOKEN["."]);) {
-    parent = new Node.MemberExpression();
-    parent.object = ast.body;
-    tmp = this.parseMemberExpression(ast);
-    parent.property = this.parseStatement().body;
-    ast = parent;
-  };
-
-  return (ast);
-
-}
-
-/**
  * Recursive operator precedence based
  * binary expression parsing
  * @param  {Number} id
@@ -82,8 +61,12 @@ export function parseExpression(id) {
 
   ast = state === void 0 ? this.parseUnary() : this.parseExpression(id + 1);
 
-  for (;this.acceptPrecedenceState(state) === true;) {
-    parent = new Node.BinaryExpression();
+  for (;this.acceptPrecedenceState(state);) {
+    if (this.peek(TOKEN["."])) {
+      parent = new Node.MemberExpression();
+    } else {
+      parent = new Node.BinaryExpression();
+    }
     parent.operator = this.current.kind;
     parent.left = ast;
     this.next();
@@ -91,9 +74,7 @@ export function parseExpression(id) {
     if (tmp === null) return (null);
     parent.right = tmp;
     ast = parent;
-    if (this.peek(TOKEN[";"])) {
-      this.next();
-    }
+    this.eat(TOKEN[";"]);
   };
 
   return (ast);
@@ -152,33 +133,29 @@ export function parseBase() {
     ast = new Node.Identifier();
     ast.name = this.current.value;
     this.next();
-    return (ast);
   }
 
-  if (this.peek(TOKEN["number"]) === true) {
+  else if (this.peek(TOKEN["number"]) === true) {
     ast = new Node.Literal();
     ast.name = this.current.name;
     ast.value = Number(this.current.value);
     this.next();
-    return (ast);
   }
 
-  if (this.peek(TOKEN["string"]) === true) {
+  else if (this.peek(TOKEN["string"]) === true) {
     ast = new Node.Literal();
     ast.name = this.current.name;
     ast.value = this.current.value;
     this.next();
-    return (ast);
   }
 
-  if (this.peek(TOKEN["("]) === true) {
+  else if (this.peek(TOKEN["("]) === true) {
     this.next();
     ast = this.parseExpression(0);
     this.next();
-    return (ast);
   }
 
-  if (this.peek(TOKEN["&"]) === true) {
+  else if (this.peek(TOKEN["&"]) === true) {
     this.next();
     if (this.peek(TOKEN["identifier"])) {
       ast = this.parseExpression(0);
@@ -188,30 +165,27 @@ export function parseBase() {
     if (parent.kind === Types.VariableDeclaration) {
       parent.isReference = true;
     }
-    return (ast);
   }
 
-  if (this.peek(TOKEN["identifier"]) === true) {
+  else if (this.peek(TOKEN["identifier"]) === true) {
     ast = new Node.Identifier();
     ast.name = this.current.value;
     this.next();
     /** Call expression */
     if (this.peek(TOKEN["("])) {
-      return (
-        this.parseCallExpression(ast)
-      );
+      ast = this.parseCallExpression(ast);
+    } else {
+      /** Member expression */
+      if (this.peek(TOKEN[":"])) {
+        this.back();
+        return (
+          this.parseTupleExpressions()
+        );
+      }
     }
-    /** Member expression */
-    if (this.peek(TOKEN[":"])) {
-      this.back();
-      return (
-        this.parseObjectExpressions()
-      );
-    }
-    return (ast);
   }
 
-  if (this.eat(TOKEN["["])) {
+  else if (this.eat(TOKEN["["])) {
     let type = this.parseType(this.current, "*");
     if (type !== null) {
       ast = new Node.ArrayDeclaration();
@@ -221,11 +195,13 @@ export function parseBase() {
           ast.param = this.parseExpressionParameters();
         }
         this.eat(TOKEN[";"]);
-        return (ast);
       }
     }
-    return (ast); 
   }
+
+  /*if (this.peek(TOKEN["."])) {
+    ast = this.parseMemberExpression(ast);
+  }*/
 
   return (ast);
 

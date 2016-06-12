@@ -64,8 +64,8 @@ export default class Node {
       class MemberExpression {
         constructor() {
           this.kind = Types.MemberExpression;
-          this.object   = null;
-          this.property = null;
+          this.left   = null;
+          this.right = null;
         }
       }
     );
@@ -197,6 +197,7 @@ export default class Node {
           this.id = null;
           this.init = null;
           this.isReference = false;
+          this.symbol = null;
         }
       }
     );

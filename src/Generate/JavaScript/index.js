@@ -119,6 +119,11 @@ export default class JavaScript extends Compiler {
       case Types.MemberExpression:
         this.compileMemberExpression(body);
       break;
+      case Types.Literal:
+      case Types.Parameter:
+      case Types.Identifier:
+        this.write(this.compileIdentifier(body));
+      break;
       default:
         this.compileBinaryExpression(body);
       break;
@@ -126,15 +131,61 @@ export default class JavaScript extends Compiler {
 
   }
 
+  /**
+   * Compile identifier
+   * @param  {Node} ast
+   * @param  {Boolean} isMember
+   * @return {String}
+   */
+  compileIdentifier(ast, isMember) {
+
+    let parent = null;
+
+    if (ast.kind === Types.Identifier) {
+      if ((parent = this.scope.get(ast.name, this.scope))) {
+        /** Declared as pointer */
+        if (ast.isPointer) {
+          return (ast.name);
+        }
+        /** Check if parent is a inout reference */
+        if (parent.kind === Types.Parameter) {
+          /** Parent is a reference */
+          if (!ast.isPointer && parent.reference) {
+            return (`${ast.name}.value`);
+          }
+        } else {
+          if (parent.isReference) {
+            if (isMember) {
+              return (ast.name);
+            }
+            return (`${ast.name}.value`);
+          }
+        }
+      }
+    } else if (
+      ast.kind === Types.Literal ||
+      ast.kind === Types.Parameter
+    ) {
+      return (ast.value);
+    }
+
+    return (ast.name);
+
+  }
+
   compileMemberExpression(ast) {
 
-    this.compileStatement(ast.object);
+    this.compileStatement(ast.left);
     this.write(".");
 
-    if (ast.property.kind === Types.MemberExpression) {
-      this.compileMemberExpression(ast.property);
+    if (ast.right.kind === Types.MemberExpression) {
+      this.compileMemberExpression(ast.right);
     } else {
-      this.compileStatement(ast.property);
+      if (ast.right.kind === Types.Identifier) {
+        this.write(this.compileIdentifier(ast.right, true));
+      } else {
+        this.compileStatement(ast.right);
+      }
     }
 
   }
@@ -142,14 +193,13 @@ export default class JavaScript extends Compiler {
   compileCallExpression(ast) {
 
     let param = ast.arguments;
-    let callee = ast.callee.name;
 
     let ii = 0;
     let length = param.length;
 
     let name = null;
 
-    this.write(callee);
+    this.write(this.compileIdentifier(ast.callee, false));
     this.write("(");
 
     for (; ii < length; ++ii) {
@@ -316,8 +366,8 @@ export default class JavaScript extends Compiler {
 
   compileVariableDeclaration(ast) {
 
-    this.write("var ");
-
+    this.write(ast.symbol === "let" ? "const" : ast.symbol);
+    this.write(" ");
     this.write(ast.id);
 
     this.write(" = ");
@@ -333,21 +383,33 @@ export default class JavaScript extends Compiler {
           this.compileArrayConstruction(ast.init);
         } else {
           this.compileBinaryExpression(ast.init);
+          this.write(";");
         }
       }
     }
 
   }
 
+  compileMultipleVariableDeclaration(ast) {
+
+    let ii = 0;
+    let length = ast.body.length;
+
+    for (; ii < length; ++ii) {
+      this.compileVariableDeclaration(ast.body[ii]);
+    };
+
+  }
+
   compileArrayConstruction(ast) {
 
     this.write(`new ${this.runtime}.ArrayConstructor(`);
-    this.compileObjectExpression(ast.param);
+    this.compileTupleExpression(ast.param);
     this.write(")\n");
 
   }
 
-  compileObjectExpression(param) {
+  compileTupleExpression(param) {
 
     let ii = 0;
     let length = param.length;
@@ -367,17 +429,6 @@ export default class JavaScript extends Compiler {
     };
 
     this.write("}");
-
-  }
-
-  compileMultipleVariableDeclaration(ast) {
-
-    let ii = 0;
-    let length = ast.body.length;
-
-    for (; ii < length; ++ii) {
-      this.compileVariableDeclaration(ast.body[ii]);
-    };
 
   }
 

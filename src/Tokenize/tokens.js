@@ -5,7 +5,8 @@ export const precedence = [
   [26, 27],
   [23, 22, 25, 24],
   [16, 17],
-  [18, 19, 20]
+  [18, 19, 20],
+  [8]
 ];
 
 /**
@@ -63,7 +64,7 @@ export const TOKEN = {
   "for": 39,
   "func": 40,
   "let": 41,
-  "let": 42,
+  "var": 42,
   "const": 43,
   "return": 44,
   "import": 45,

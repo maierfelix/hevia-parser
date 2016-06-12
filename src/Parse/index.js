@@ -293,12 +293,20 @@ export default class Parser {
   parseVariableDeclaration() {
 
     let node = null;
+    let symbol = null;
 
-    this.expect(TOKEN["let"]);
+    if (!this.peek(TOKEN["let"]) && !this.peek(TOKEN["var"])) {
+      return (null);
+    }
+
+    symbol = this.current.value;
+
+    this.next();
 
     if (this.peek(TOKEN["identifier"])) {
       node = new Node.VariableDeclaration();
       node.id = this.current.value;
+      node.symbol = symbol;
       this.next();
       this.scope.register(node);
       if (this.peek(TOKEN["="])) {
@@ -316,6 +324,7 @@ export default class Parser {
     /** (id,) = (expr,) */
     else if (this.eat(TOKEN["("])) {
       node = new Node.MultipleVariableDeclaration();
+      node.symbol = symbol;
       node.body = this.parseExpressionParameters();
       this.expect(TOKEN[")"]);
       this.expect(TOKEN["="]);
@@ -324,6 +333,7 @@ export default class Parser {
       for (let ii = 0; ii < node.body.length; ++ii) {
         let key = new Node.VariableDeclaration();
         key.id = node.body[ii].name;
+        key.symbol = symbol;
         key.init = tmp[ii];
         key.type = new Node.Type();
         key.type.type = "auto";
@@ -405,13 +415,14 @@ export default class Parser {
       if (
         this.peek(TOKEN["func"]) ||
         this.peek(TOKEN["let"]) ||
+        this.peek(TOKEN["var"]) ||
         this.peek(TOKEN["enum"])
       ) {
         node.export = true;
       }
     }
 
-    if (this.peek(TOKEN["let"])) {
+    if (this.peek(TOKEN["let"]) || this.peek(TOKEN["var"])) {
       node.body = this.parseVariableDeclaration();
     }
     else if (this.peek(TOKEN["if"])) {
@@ -430,11 +441,6 @@ export default class Parser {
       node.body = this.parseExpression(0);
     }
 
-    if (this.peek(TOKEN["."])) {
-      node.body = this.parseMemberExpression(node);
-      console.log(node);
-    }
-
     return (node);
 
   }
@@ -450,10 +456,6 @@ export default class Parser {
     this.expect(TOKEN["("]);
 
     node.arguments = this.parseExpressionParameters();
-
-    /*if (this.scope.get(node.callee.name) === void 0) {
-      node.isGlobal = true;
-    }*/
 
     this.expect(TOKEN[")"]);
 
