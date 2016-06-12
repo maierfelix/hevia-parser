@@ -2,9 +2,13 @@ let clam = new Clam();
 
 let input = document.querySelector("#swift");
 
+let files = [
+  "./index.swift"
+];
+
 let init = () => {
 
-  clam.fetch("./index.swift", function(src) {
+  clam.readProject(files, (src) => {
     input.oninput = compile;
     run.onmousedown = compile;
     input.value = src;
