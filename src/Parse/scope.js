@@ -1,3 +1,4 @@
+import { uHash } from "../utils";
 import { Types } from "./nodes";
 
 /**
@@ -31,6 +32,12 @@ export default class Scope {
      * @type {Object}
      */
     this.table = {};
+
+    /**
+     * Extension table
+     * @type {Object}
+     */
+    this.extensions = {};
 
   }
 
@@ -77,6 +84,42 @@ export default class Scope {
       /** Mark function or variable as global */
       //if (this.scope.kind === Types.Program) node.isGlobal = true;
       this.table[name] = node;
+    }
+  }
+
+  /**
+   * Set sth into table
+   * on absolute top
+   * @param {Node} node
+   */
+  registerExtension(node) {
+    if (this.parent !== void 0) {
+      return (this.parent.registerExtension(node));
+    } else {
+      let name = node.type.type;
+      if (this.extensions[name] === void 0) {
+        this.extensions[name] = node;
+      /** Already registered */
+      } else {
+        for (let key of node.body.body) {
+          this.extensions[name].body.body.push(key);
+        };
+      }
+    }
+  }
+
+  /**
+   * Get extension from table
+   * @param  {String} name
+   * @return {Node}
+   */
+  getExtension(name) {
+    if (this.extensions[name] !== void 0) {
+      return (this.extensions[name]);
+    } else {
+      if (this.parent !== void 0) {
+        return (this.parent.getExtension(name));
+      }
     }
   }
 

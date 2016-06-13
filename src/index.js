@@ -20,7 +20,7 @@ import beautify from "js-beautify";
       this.lexer = new Lexer();
       this.parser = new Parser();
       this.runtime = new Runtime();
-      this.semantic = new Semantic();
+      this.semantic = new Semantic(this.runtime);
       this.compiler = new JavaScript();
 
     }

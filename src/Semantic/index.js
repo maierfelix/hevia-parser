@@ -2,6 +2,7 @@ import {
   TOKEN
 } from "../Tokenize/tokens";
 
+import Node from "../Parse/nodes";
 import { Types } from "../Parse/nodes";
 
 /**
@@ -14,7 +15,9 @@ export default class Semantic{
   /**
    * @constructor
    */
-  constructor() {
+  constructor(runtime) {
+    this.runtime = runtime;
+    this.globals = this.runtime.global;
     this.scope = null;
   }
 
@@ -116,11 +119,19 @@ export default class Semantic{
    * @param  {Node} ast
    * @return {String}
    */
-  analyzeIdentifier(ast, isMember) {
+  analyzeIdentifier(ast) {
 
     let parent = null;
 
     if (ast.kind === Types.Identifier) {
+
+      /** Global callee */
+      if (this.scope.get(ast.name) === void 0) {
+        if (this.globals.hasOwnProperty(ast.name)) {
+          ast.isGlobal = true;
+        }
+      }
+
       if ((parent = this.scope.get(ast.name, this.scope))) {
         /** Declared as pointer */
         if (ast.isPointer) {
@@ -138,6 +149,7 @@ export default class Semantic{
           }
         }
       }
+
     } else if (
       ast.kind === Types.Literal ||
       ast.kind === Types.Parameter
@@ -151,9 +163,22 @@ export default class Semantic{
 
   analyzeMemberExpression(ast) {
 
-    this.analyzeStatement(ast.left);
+    if (ast.left && ast.left.kind === Types.Identifier) {
+      this.analyzeIdentifier(ast.left);
+    } else {
+      if (ast.parentVariable) {
+        let parent = this.scope.get(ast.parentVariable.name);
+        if (parent && parent.kind === Types.VariableDeclaration) {
+          parent = parent.init.left;
+          ast.left = new Node.Identifier();
+          ast.left.name = parent.name;
+        }
+      }
+      this.analyzeStatement(ast.left);
+    }
+
     if (ast.right.kind === Types.Identifier) {
-      this.analyzeIdentifier(ast.right, true);
+      this.analyzeIdentifier(ast.right);
     } else {
       this.analyzeStatement(ast.right);
     }
@@ -164,6 +189,8 @@ export default class Semantic{
 
     let param = ast.arguments;
     let callee = this.analyzeStatement(ast.callee);
+
+    this.analyzeIdentifier(ast.callee);
 
     let ii = 0;
     let length = param.length;
@@ -370,6 +397,10 @@ export default class Semantic{
    * @param {Node} ast
    */
   analyzeBinaryExpression(ast) {
+
+    if (ast.operator === TOKEN["="]) {
+      ast.right.parentVariable = ast.left;
+    }
 
     if (ast.kind === Types.BinaryExpression) {
       this.analyzeStatement(ast.left);

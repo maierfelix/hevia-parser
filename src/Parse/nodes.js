@@ -23,7 +23,10 @@ export let Types = {
   MemberExpression: 17,
   MultipleVariableDeclaration: 18,
   ArrayDeclaration: 19,
-  ObjectExpression: 20
+  ObjectExpression: 20,
+  EnumParameter: 21,
+  ExtensionExpression: 22,
+  Self: 23
 };
 
 /**
@@ -34,6 +37,18 @@ export let Types = {
 export default class Node {
 
   constructor() {}
+
+  static get ExtensionExpression() {
+    return (
+      class ExtensionExpression {
+        constructor() {
+          this.kind = Types.ExtensionExpression;
+          this.type = null;
+          this.body = [];
+        }
+      }
+    );
+  }
 
   static get ArrayDeclaration() {
     return (
@@ -90,6 +105,31 @@ export default class Node {
           this.name = null;
           this.type = null;
           this.reference = false;
+        }
+      }
+    );
+  }
+
+  static get EnumParameter() {
+    return (
+      class EnumParameter extends this.Parameter {
+        constructor() {
+          super(null);
+          this.kind = Types.EnumParameter;
+          this.name = null;
+          this.type = null;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get Self() {
+    return (
+      class Self {
+        constructor() {
+          this.kind = Types.Self;
+          this.name = null;
         }
       }
     );
@@ -197,7 +237,7 @@ export default class Node {
           this.id = null;
           this.init = null;
           this.isReference = false;
-          this.symbol = null;
+          this.isMutable = false;
         }
       }
     );
@@ -219,8 +259,8 @@ export default class Node {
       class Literal {
         constructor() {
           this.kind = Types.Literal;
-          this.name  = null;
           this.value = null;
+          this.type = null;
         }
       }
     );

@@ -53,3 +53,22 @@ export function parseString(value) {
   });
 
 }
+
+/**
+ * Numeric type check
+ * @param  {Type}  type
+ * @return {Boolean}
+ */
+export function isNumericType(type) {
+  return (
+    type === "Int" ||
+    type === "Int8" ||
+    type === "UInt8" ||
+    type === "Int32" ||
+    type === "UInt32" ||
+    type === "Int64" ||
+    type === "UInt64" ||
+    type === "Double" ||
+    type === "Float"
+  );
+}

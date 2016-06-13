@@ -95,7 +95,11 @@ export const TOKEN = {
   "Float": 67,
   "Bool": 68,
   "String": 69,
-  "Character": 70
+  "Character": 70,
+  "case": 71,
+  "self": 72,
+  "extension": 73,
+  "mutating": 74
 };
 
 /**

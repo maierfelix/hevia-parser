@@ -238,7 +238,7 @@ export default class Parser {
 
     /** Function type */
     if (this.peek(TOKEN["->"])) {
-      node.type = this.parseType(node, "->");
+      node.type = this.parseType("->");
       this.back();
       if (this.peek(TOKEN["("])) {
         this.next();
@@ -293,20 +293,20 @@ export default class Parser {
   parseVariableDeclaration() {
 
     let node = null;
-    let symbol = null;
+    let mutable = true;
 
     if (!this.peek(TOKEN["let"]) && !this.peek(TOKEN["var"])) {
       return (null);
     }
 
-    symbol = this.current.value;
+    mutable = this.peek(TOKEN["var"]);
 
     this.next();
 
     if (this.peek(TOKEN["identifier"])) {
       node = new Node.VariableDeclaration();
       node.id = this.current.value;
-      node.symbol = symbol;
+      node.isMutable = mutable;
       this.next();
       this.scope.register(node);
       if (this.peek(TOKEN["="])) {
@@ -315,7 +315,7 @@ export default class Parser {
         node.type = new Node.Type();
         node.type.type = "auto";
       } else {
-        node.type = this.parseType(node, ":");
+        node.type = this.parseType(":");
         if (this.eat(TOKEN["="])) {
           node.init = this.parseExpression(0);
         }
@@ -324,7 +324,6 @@ export default class Parser {
     /** (id,) = (expr,) */
     else if (this.eat(TOKEN["("])) {
       node = new Node.MultipleVariableDeclaration();
-      node.symbol = symbol;
       node.body = this.parseExpressionParameters();
       this.expect(TOKEN[")"]);
       this.expect(TOKEN["="]);
@@ -333,7 +332,7 @@ export default class Parser {
       for (let ii = 0; ii < node.body.length; ++ii) {
         let key = new Node.VariableDeclaration();
         key.id = node.body[ii].name;
-        key.symbol = symbol;
+        key.isMutable = mutable;
         key.init = tmp[ii];
         key.type = new Node.Type();
         key.type.type = "auto";
@@ -506,9 +505,14 @@ export default class Parser {
     node.name = this.current.value;
 
     this.next();
+
+    if (this.eat(TOKEN[":"])) {
+      node.type = this.parseType("*");
+    }
+
     this.expect(TOKEN["{"]);
 
-    node.body = this.parseParameters(false);
+    node.body = this.parseCases(node, true);
 
     this.expect(TOKEN["}"]);
 
@@ -517,6 +521,47 @@ export default class Parser {
     this.scope.register(node);
 
     return (node);
+
+  }
+
+  parseCases(parent, allowExpr) {
+
+    let node = null;
+    let args = [];
+
+    /** Empty arguments */
+    if (this.peek(TOKEN["}"])) return (args);
+
+    this.expect(TOKEN["case"]);
+
+    for (;true;) {
+      node = new Node.EnumParameter();
+      node.name = this.current.kind;
+      node.value = this.current.value;
+      node.parent = parent;
+      this.next();
+      args.push(node);
+      this.scope.register(node);
+      if (this.peek(TOKEN["("])) {
+        this.expect(TOKEN["("]);
+        node.type = this.parseType("*");
+        this.expect(TOKEN[")"]);
+      }
+      else if (this.eat(TOKEN["="])) {
+        node.argument = this.parseExpression(0);
+        if (node.argument.kind !== Types.Literal) {
+          console.error("Raw value for enum case must be a literal!");
+        }
+      }
+      if (this.peek(TOKEN[","])) {
+        this.next();
+      }
+      else if (this.peek(TOKEN["case"])) {
+        this.next();
+      } else break;
+    };
+
+    return (args);
 
   }
 
@@ -530,9 +575,7 @@ export default class Parser {
     let args = [];
 
     /** Empty arguments */
-    if (this.peek(TOKEN[")"])) {
-      return (args);
-    }
+    if (this.peek(TOKEN[")"])) return (args);
 
     for (;true;) {
       node = new Node.Parameter();
@@ -543,7 +586,7 @@ export default class Parser {
       node.value = this.current.value;
       this.next();
       if (typeStrict) {
-        node.type = this.parseType(node, ":");
+        node.type = this.parseType(":");
       }
       this.scope.register(node, this.scope);
       args.push(node);
@@ -556,7 +599,7 @@ export default class Parser {
 
   }
 
-  parseType(ast, type) {
+  parseType(type) {
 
     let node = new Node.Type();
 

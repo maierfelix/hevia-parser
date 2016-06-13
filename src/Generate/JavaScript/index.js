@@ -30,7 +30,6 @@ export default class JavaScript extends Compiler {
 
   run(compiled) {
 
-    window.print = function() { console.log.apply(console, arguments); };
     let exports = {};
     let code = new Function("global", "exports", compiled);
 
@@ -141,6 +140,11 @@ export default class JavaScript extends Compiler {
 
     let parent = null;
 
+    if (ast.isGlobal && !isMember) {
+      this.write(this.global);
+      this.write(".");
+    }
+
     if (ast.kind === Types.Identifier) {
       if ((parent = this.scope.get(ast.name, this.scope))) {
         /** Declared as pointer */
@@ -219,39 +223,41 @@ export default class JavaScript extends Compiler {
     let body = ast.body;
     let extern = ast.export;
 
-    if (extern) {
-      this.write(`var ${body.name} = ${this.export}`);
-      this.write(".");
-      this.write(body.name);
-    } else {
-      this.write(`var ${body.name}`);
-    }
+    this.write(`var ${body.name} = `);
 
-    this.write(" = {}; \n");
-
-    this.write(this.compileEnumerationBody(body));
+    this.write(`new ${this.runtime}.Enumeration(`);
+    this.compileEnumerationBody(body);
+    this.write(")\n");
 
   }
 
   compileEnumerationBody(body) {
 
-    let param = body.body;
-
-    let name = body.name;
-
     let ii = 0;
-    let index = 0;
-    let length = param.length;
+    let length = body.body.length;
 
-    let str = "";
+    let node = null;
 
-    str += `((${name}) => {\n`;
+    if (body.type !== void 0) {
+      this.write(`"${body.type.type}",`);
+    } else {
+      this.write(`"auto",`);
+    }
+
+    this.write("[");
     for (; ii < length; ++ii) {
-      str += `${name}[${name}["${param[ii].value}"] = ${index++}] = "${param[ii].value}";\n`;
+      node = body.body[ii];
+      this.write("{");
+      this.write(`name: "${node.value}"`);
+      if (node.argument !== null) {
+        this.write(`,value: ${node.argument.value}`);
+      }
+      this.write("}");
+      if (ii + 1 < length) {
+        this.write(",");
+      }
     };
-    str += `})(${name} || (${name} = {}))\n`;
-
-    return (str);
+    this.write("]");
 
   }
 
@@ -366,7 +372,7 @@ export default class JavaScript extends Compiler {
 
   compileVariableDeclaration(ast) {
 
-    this.write(ast.symbol === "let" ? "const" : ast.symbol);
+    this.write(ast.isMutable ? "var" : "const");
     this.write(" ");
     this.write(ast.id);
 

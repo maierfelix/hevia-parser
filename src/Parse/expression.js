@@ -59,7 +59,11 @@ export function parseExpression(id) {
 
   state = precedence[id];
 
-  ast = state === void 0 ? this.parseUnary() : this.parseExpression(id + 1);
+  if (state === void 0) {
+    ast = this.parseUnary();
+  } else {
+    ast = this.parseExpression(id + 1);
+  }
 
   for (;this.acceptPrecedenceState(state);) {
     if (this.peek(TOKEN["."])) {
@@ -127,8 +131,9 @@ export function parseBase() {
   let ast = null;
 
   if (
-    this.peek(TOKEN["true"])  === true ||
-    this.peek(TOKEN["false"]) === true
+    this.peek(TOKEN["true"]) ||
+    this.peek(TOKEN["false"]) ||
+    this.peek(TOKEN["self"])
   ) {
     ast = new Node.Identifier();
     ast.name = this.current.value;
@@ -174,19 +179,17 @@ export function parseBase() {
     /** Call expression */
     if (this.peek(TOKEN["("])) {
       ast = this.parseCallExpression(ast);
-    } else {
-      /** Member expression */
-      if (this.peek(TOKEN[":"])) {
-        this.back();
-        return (
-          this.parseTupleExpressions()
-        );
-      }
+    /** Member expression */
+    } else if (this.peek(TOKEN[":"])) {
+      this.back();
+      return (
+        this.parseTupleExpressions()
+      );
     }
   }
 
   else if (this.eat(TOKEN["["])) {
-    let type = this.parseType(this.current, "*");
+    let type = this.parseType("*");
     if (type !== null) {
       ast = new Node.ArrayDeclaration();
       ast.types.push(type);
@@ -198,10 +201,6 @@ export function parseBase() {
       }
     }
   }
-
-  /*if (this.peek(TOKEN["."])) {
-    ast = this.parseMemberExpression(ast);
-  }*/
 
   return (ast);
 
