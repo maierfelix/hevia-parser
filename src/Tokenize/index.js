@@ -122,7 +122,7 @@ export default class Lexer {
     for (; end < this.length; ++end) {
       c = this.buffer.charAt(end).charCodeAt(0);
       /** Also check for floating numbers */
-      if (c !== 46 && this.isDigit(c) === false) break;
+      if (this.isDigit(c) === false) break;
     };
 
     let value = this.buffer.slice(this.index, end);

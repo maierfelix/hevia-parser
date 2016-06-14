@@ -112,11 +112,17 @@ export default class JavaScript extends Compiler {
       case Types.Enumeration:
         this.compileEnumeration(ast);
       break;
+      case Types.ExtensionExpression:
+        this.compileExtensionExpression(body);
+      break;
       case Types.CallExpression:
         this.compileCallExpression(body);
       break;
       case Types.MemberExpression:
         this.compileMemberExpression(body);
+      break;
+      case Types.Self:
+        this.write("this");
       break;
       case Types.Literal:
       case Types.Parameter:
@@ -154,7 +160,7 @@ export default class JavaScript extends Compiler {
         /** Check if parent is a inout reference */
         if (parent.kind === Types.Parameter) {
           /** Parent is a reference */
-          if (!ast.isPointer && parent.reference) {
+          if (!ast.isPointer && parent.isReference) {
             return (`${ast.name}.value`);
           }
         } else {
@@ -177,9 +183,42 @@ export default class JavaScript extends Compiler {
 
   }
 
+  compileExtensionCall(ast) {
+
+    this.write(ast.right.callee.name);
+    this.write(".call");
+
+    this.write("(");
+    this.compileStatement(ast.left);
+
+    if (ast.right.arguments.length > 0) {
+      this.write(",");
+      this.compileParameters(ast.right.arguments);
+    }
+    this.write(")");
+
+  }
+
   compileMemberExpression(ast) {
 
-    this.compileStatement(ast.left);
+    if (
+      ast.left.kind === Types.Identifier ||
+      ast.left.kind === Types.Literal
+    ) {
+      if (ast.left.extension !== void 0) {
+        let extension = ast.left.extension;
+        this.write(extension.type.type);
+        this.write(".");
+        if (ast.right.kind === Types.CallExpression) {
+          this.compileExtensionCall(ast);
+        }
+        return void 0;
+      }
+      this.write(this.compileIdentifier(ast.left, true));
+    } else {
+      this.compileStatement(ast.left);
+    }
+
     this.write(".");
 
     if (ast.right.kind === Types.MemberExpression) {
@@ -323,10 +362,16 @@ export default class JavaScript extends Compiler {
     let body = ast.body;
     let extern = ast.export;
     let name = body.name;
+    let isStatic = body.isStatic;
 
-    this.write(`var ${name} = `);
+    if (isStatic) {
+      this.write("static ");
+      this.write(name);
+    } else {
+      this.write(`var ${name} = `);
+    }
 
-    if (extern) {
+    if (extern && !isStatic) {
       this.write(this.export);
       this.write(".");
       this.write(name);
@@ -337,10 +382,26 @@ export default class JavaScript extends Compiler {
     this.write("(");
     this.compileParameters(body.param);
     this.write(")");
-    this.write(" => {\n");
+    if (!isStatic) {
+      this.write(" => ");
+    }
+    this.write("{\n");
     this.compileBlock(body.body.body);
     this.popScope();
     this.write("\n}\n");
+
+  }
+
+  compileExtensionExpression(ast) {
+
+    this.write("class ");
+    this.write(ast.type.type);
+    this.write("{");
+    this.write("constructor() {}");
+    this.pushScope(ast.context);
+    this.compileBlock(ast.body.body);
+    this.popScope();
+    this.write("}");
 
   }
 

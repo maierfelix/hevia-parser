@@ -378,7 +378,7 @@ export default class Parser {
       node = this.parseStatement();
       if (node.body !== null) {
         nodes.push(node);
-      } else break;
+      }
     };
 
     return (nodes);
@@ -421,7 +421,10 @@ export default class Parser {
       }
     }
 
-    if (this.peek(TOKEN["let"]) || this.peek(TOKEN["var"])) {
+    if (this.eat(TOKEN["extension"])) {
+      node.body = this.parseExtension();
+    }
+    else if (this.peek(TOKEN["let"]) || this.peek(TOKEN["var"])) {
       node.body = this.parseVariableDeclaration();
     }
     else if (this.peek(TOKEN["if"])) {
@@ -444,9 +447,34 @@ export default class Parser {
 
   }
 
-  parseCallExpression(callee) {
+  parseExtension() {
 
-    if (callee.kind !== Types.Identifier) return (null);
+    let node = new Node.ExtensionExpression();
+
+    node.type = this.parseType("*");
+
+    this.pushScope(node);
+    if (this.peek(TOKEN["{"])) {
+      node.body = this.parseBody();
+    }
+    this.popScope(node);
+
+    let registered = this.scope.registerExtension(node);
+
+    let parentExtension = this.scope.getExtension(node.type.type);
+
+    if (registered !== void 0) {
+      for (let key of node.body.body) {
+        parentExtension.context.register(key.body);
+      };
+      node = null;
+    }
+
+    return (node);
+
+  }
+
+  parseCallExpression(callee) {
 
     let node = new Node.CallExpression();
 
@@ -579,14 +607,14 @@ export default class Parser {
 
     for (;true;) {
       node = new Node.Parameter();
-      if (this.eat(TOKEN["inout"])) {
-        node.reference = true;
-      }
       node.name = this.current.kind;
       node.value = this.current.value;
       this.next();
       if (typeStrict) {
         node.type = this.parseType(":");
+        if (node.type.isReference) {
+          node.isReference = true;
+        }
       }
       this.scope.register(node, this.scope);
       args.push(node);
@@ -603,7 +631,7 @@ export default class Parser {
 
     let node = new Node.Type();
 
-    if (type !== "*" && !this.expect(TOKEN[type])) return (null);
+    if (type !== "*" && !this.expect(TOKEN[type]) && !this.peek(TOKEN["inout"])) return (null);
 /*
     switch (this.current.value) {
       case "Void":
@@ -650,6 +678,10 @@ export default class Parser {
       break;
     };
 */
+
+    if (this.eat(TOKEN["inout"])) {
+      node.isReference = true;
+    }
 
     node.type = this.current.value;
     this.next();

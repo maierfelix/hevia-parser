@@ -1,3 +1,5 @@
+import { getNumericType } from "../utils";
+
 import Node from "./nodes";
 import { Types } from "./nodes";
 
@@ -130,10 +132,14 @@ export function parseBase() {
 
   let ast = null;
 
-  if (
+  if (this.peek(TOKEN["self"])) {
+    ast = new Node.Self();
+    this.next();
+  }
+
+  else if (
     this.peek(TOKEN["true"]) ||
-    this.peek(TOKEN["false"]) ||
-    this.peek(TOKEN["self"])
+    this.peek(TOKEN["false"])
   ) {
     ast = new Node.Identifier();
     ast.name = this.current.value;
@@ -142,8 +148,10 @@ export function parseBase() {
 
   else if (this.peek(TOKEN["number"]) === true) {
     ast = new Node.Literal();
-    ast.name = this.current.name;
     ast.value = Number(this.current.value);
+    let type = new Node.Type();
+    type.type = getNumericType(ast.value);
+    ast.type = type;
     this.next();
   }
 

@@ -91,6 +91,7 @@ export default class Scope {
    * Set sth into table
    * on absolute top
    * @param {Node} node
+   * @return {Node}
    */
   registerExtension(node) {
     if (this.parent !== void 0) {
@@ -104,8 +105,10 @@ export default class Scope {
         for (let key of node.body.body) {
           this.extensions[name].body.body.push(key);
         };
+        return (this.extensions[name]);
       }
     }
+    return void 0;
   }
 
   /**

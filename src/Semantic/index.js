@@ -96,6 +96,9 @@ export default class Semantic{
       case Types.Enumeration:
         this.analyzeEnumeration(ast);
       break;
+      case Types.ExtensionExpression:
+        this.analyzeExtensionExpression(body);
+      break;
       case Types.CallExpression:
         this.analyzeCallExpression(body);
       break;
@@ -114,12 +117,50 @@ export default class Semantic{
 
   }
 
+  analyzeExtensionExpression(ast) {
+
+    for (let key of ast.body.body) {
+      if (key.body.kind === Types.FunctionDeclaration) {
+        key.body.isStatic = true;
+      }
+    };
+
+  }
+
+  getExtension(ast) {
+    return (
+      this.scope.getExtension(ast.type.type)
+    );
+  }
+
+  analyzeExtension(ast) {
+
+    let extension = null;
+
+    if (ast.kind === Types.Identifier) {
+      let type = this.scope.get(ast.name, this.scope);
+      if (type) {
+        extension = this.getExtension(type);
+      }
+    }
+    else if (ast.kind === Types.Literal) {
+      extension = this.getExtension(ast);
+    }
+
+    if (extension) {
+      ast.extension = extension;
+    }
+
+  }
+
   /**
    * Analyze identifier
    * @param  {Node} ast
    * @return {String}
    */
   analyzeIdentifier(ast) {
+
+    this.analyzeExtension(ast);
 
     let parent = null;
 
@@ -140,7 +181,7 @@ export default class Semantic{
         /** Check if parent is a inout reference */
         if (parent.kind === Types.Parameter) {
           /** Parent is a reference */
-          if (!ast.isPointer && parent.reference) {
+          if (!ast.isPointer && parent.isReference) {
             return (`${ast.name}.value`);
           }
         } else {
@@ -188,7 +229,6 @@ export default class Semantic{
   analyzeCallExpression(ast) {
 
     let param = ast.arguments;
-    let callee = this.analyzeStatement(ast.callee);
 
     this.analyzeIdentifier(ast.callee);
 

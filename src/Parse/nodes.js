@@ -104,7 +104,7 @@ export default class Node {
           this.kind = Types.Parameter;
           this.name = null;
           this.type = null;
-          this.reference = false;
+          this.isReference = false;
         }
       }
     );
@@ -129,7 +129,6 @@ export default class Node {
       class Self {
         constructor() {
           this.kind = Types.Self;
-          this.name = null;
         }
       }
     );
@@ -156,6 +155,7 @@ export default class Node {
           this.param = [];
           this.body = [];
           this.returns = [];
+          this.isStatic = false;
         }
       }
     );
