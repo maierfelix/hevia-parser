@@ -1,9 +1,13 @@
+import { inherit } from "../utils";
+
 import {
   TOKEN
 } from "../Tokenize/tokens";
 
 import Node from "../Parse/nodes";
 import { Types } from "../Parse/nodes";
+
+import * as inference from "./inference";
 
 /**
  * Semantic
@@ -110,8 +114,11 @@ export default class Semantic{
       case Types.Identifier:
         this.analyzeIdentifier(body);
       break;
-      default:
+      case Types.BinaryExpression:
         this.analyzeBinaryExpression(body);
+      break;
+      default:
+        console.error(body);
       break;
     };
 
@@ -362,6 +369,10 @@ export default class Semantic{
       }
     }
 
+    if (ast.type.type === "auto") {
+      this.inferenceType(ast);
+    }
+
   }
 
   analyzeMultipleVariableDeclaration(ast) {
@@ -497,3 +508,5 @@ export default class Semantic{
   }
 
 }
+
+inherit(Semantic, inference);
