@@ -44,14 +44,14 @@ print(a1, c1);
     };
     var a1 = {
       value: 22
-    };
+    }
     var b1 = 33;
     var c1 = {
       value: Int.square.call(8)
     };
-    print(a1.value, Int.square.call(c1.value));
+    _global.print(a1.value, Int.square.call(c1.value));
     swap(a1, c1);
-    print(a1.value, c1.value);
+    _global.print(a1.value, c1.value);
   })(
     swift.runtime.global,
     typeof exports !== 'undefined' ? exports : this,
