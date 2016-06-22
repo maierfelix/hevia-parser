@@ -1,0 +1,43 @@
+let isBoolOrIntL = LEFT === INT || LEFT === BOOL;
+let isBoolOrIntR = RIGHT === INT || RIGHT === BOOL;
+
+let op = + - * / > < >= <= ...;
+
+isBoolOrIntL && isBoolOrIntR =>
+output += LEFT op RIGHT;
+
+var a = 10;
+b = a * 2;
+
+// Variable gets never changed
+if (this.isNeverChanged(a)) {
+  b = 20;
+}
+
+const a = 8;
+b = a * a;
+
+// Constants can be directly inserted by value
+if (a.isConstant) {
+  b = 8 * 8;
+  b = 64;
+}
+
+var a = (2 * a + (4 * (2 * 8)));
+
+// Can be optimised
+var a = (2 * a + 64);
+
+function a(b) {
+  b = 2 * 2;
+  if (b >= 4) { // always true, since pure integer operations, we can find out this
+    return;
+  }
+  b = 1337; // can be removed, will never be reached
+}
+
+// Optimised function
+function a(b) {
+  b = 2 * 2;
+  if (b >= 4) return;
+}
