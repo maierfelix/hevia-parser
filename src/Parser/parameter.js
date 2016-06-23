@@ -7,6 +7,8 @@ import {
 import Node from "../nodes";
 
 /**
+  Parse a parenthese, either
+  a expr, tuple, parameter or argument
   [x] parenthesed bin expr
   [x] parameter
   [x] tuple
@@ -21,11 +23,14 @@ export function parseParenthese() {
 
   param = this.parseStatement();
 
-  /** No parameter, abort */
+  /** No parameter, parse as expression */
   if (!this.peek(TT.COMMA)) {
     /** Dont forget to skip rparen */
     this.expect(TT.RPAREN);
-    return (param);
+    if (param !== null) {
+      node.arguments.push(param);
+    }
+    return (node);
   }
 
   while (true) {
@@ -53,23 +58,14 @@ export function parseParenthese() {
 
 export function parseParameter(node) {
 
-  if (this.eat(TT.BIT_AND)) {
-    node.isPointer = true;
-  }
   node.init = this.parseStatement();
-  /** Pointer target has to be single identifier */
-  if (node.isPointer) {
-    if (node.init.kind === Token.Identifier) {
-      console.error(`Invalid parameter ${node.init}`);
+
+  /** Labeled parameter */
+  if (this.peek(Token.Identifier)) {
+    if (node.init.kind === Type.Literal) {
+      node.label = node.init;
+      this.parseParameter(node);
     }
-  }
-  if (this.eat(TT.COLON)) {
-    if (this.eat(TT.INOUT)) {
-      node.isReference = true;
-      this.back();
-    }
-    this.back();
-    node.type = this.parseType();
   }
 
 }

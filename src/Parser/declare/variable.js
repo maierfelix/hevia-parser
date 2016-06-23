@@ -40,7 +40,11 @@ export function parseVariable() {
     this.expect(TT.RBRACE);
   /** expression */
   } else {
-    this.expect(TT.ASSIGN);
+    if (this.eat(TT.COLON)) {
+      node.isInner = true;
+    } else {
+      this.expect(TT.ASSIGN);
+    }
     node.init = this.parseStatement();
   }
 
@@ -59,7 +63,7 @@ export function parseVariableDeclarement() {
 
   node.name = this.current.value;
   this.next();
-  node.type = this.parseType();
+  node.type = this.parseStrictType();
 
   this.scope.register(node);
 

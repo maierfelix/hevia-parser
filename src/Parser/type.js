@@ -8,9 +8,9 @@ import Node from "../nodes";
 
 /*
   [x] tuple
-  [ ] function arguments
+  [x] type
 */
-export function parseType() {
+export function parseStrictType() {
 
   let node = new Node.TypeAnnotation();
 
@@ -25,7 +25,7 @@ export function parseType() {
         node.type = this.current.name;
         this.next();
       } else {
-        console.error("Unknown type", this.current);
+        node = this.parseBinaryExpression(0);
       }
     }
   } else if (this.peek(TT.ASSIGN)) {

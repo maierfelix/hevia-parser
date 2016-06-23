@@ -1,3 +1,0 @@
-var files = [
-  "./var.swift"
-];

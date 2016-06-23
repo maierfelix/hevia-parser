@@ -13,15 +13,12 @@ export function parseFunction() {
 
   let node = new Node.FunctionDeclaration();
 
-  this.pushScope(node);
-
   this.expect(TT.FUNCTION);
 
-  node.name = this.current.value;
+  this.pushScope(node);
 
-  this.expect(Token.Identifier);
-
-  node.body = this.parseFunctionBody(node);
+  node.name = this.extract(Token.Identifier).value;
+  node.body = this.parseFunctionBody(node, false);
 
   this.popScope();
 
@@ -31,14 +28,16 @@ export function parseFunction() {
 
 }
 
-export function parseFunctionBody(node) {
+export function parseFunctionBody(node, isClosure) {
+
+  node.isClosure = isClosure;
 
   if (this.peek(TT.LPAREN)) {
     node.arguments = this.parseStatement();
   }
 
   if (this.eat(TT.ARROW)) {
-    if (this.validateType(this.current.name)) {
+    if (this.isNativeType(this.current.name)) {
       node.type = this.current;
       this.next();
     }
@@ -49,7 +48,7 @@ export function parseFunctionBody(node) {
   }
 
   if (this.peek(TT.ARROW)) {
-    node.body = this.parseFunctionBody(node);
+    node.body = this.parseFunctionBody(node, true);
   } else {
     this.expect(TT.LBRACE);
     node.body = this.parseBlock();

@@ -25,8 +25,10 @@
   "scripts": {
     "live": "budo --dir static/ ./src/index.js:dist/swiftly.js --live -- -t babelify",
     "dist": "npm run dist-release && npm run dist-uglify",
-    "dist-release": "browserify ./src/index.js -t babelify -s CLAM -o dist/swiftly.js",
-    "dist-uglify": "uglifyjs dist/swiftly.js --compress --mangle > dist/swiftly.min.js"
+    "dist-release": "browserify ./src/index.js -t babelify -s SWIFT -o dist/swiftly.js",
+    "dist-uglify": "uglifyjs dist/swiftly.js --compress --mangle > dist/swiftly.min.js",
+    "dist-test": "npm run dist-release && npm run test",
+    "test": "node ./tests/index.js"
   },
   "engines": {
     "node": ">= 5.x"

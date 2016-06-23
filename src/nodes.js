@@ -77,9 +77,6 @@ export default class Node {
         constructor() {
           this.kind = Type.Parameter;
           this.init = null;
-          this.type = null;
-          this.isPointer = false;
-          this.isReference = false;
         }
       }
     );

@@ -41,7 +41,9 @@ export function parseFor() {
 
   this.eat(TT.LPAREN);
 
-  node.init = this.parseVariable();
+  if (!this.eat(TT.SEMICOLON)) {
+    node.init = this.parseVariable();
+  }
   node.test = this.parseExpressionStatement();
   this.expect(TT.SEMICOLON);
   node.update = this.parseExpressionStatement();

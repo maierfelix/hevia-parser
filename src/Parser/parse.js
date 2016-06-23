@@ -30,7 +30,7 @@ export function extract(kind) {
   let tmp = null;
   if (this.peek(kind)) {
     tmp = this.current;
-    this.next();
+    this.expect(kind);
     return (tmp);
   }
   return (tmp);

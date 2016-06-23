@@ -49,10 +49,30 @@ export function parseLiteral() {
   }
   else {
     node = new Node.Literal();
+    if (this.eat(TT.BIT_AND)) {
+      node.isPointer = true;
+    }
     node.type = this.current.name;
     node.value = this.current.value;
     node.raw = this.current.value;
     this.next();
+  }
+
+  if (this.eat(TT.COLON)) {
+    if (this.eat(TT.INOUT)) {
+      node.isReference = true;
+      this.back();
+    }
+    this.back();
+    let tmp = this.parseStrictType();
+    if (tmp.kind === Type.TypeAnnotation) {
+      node.type = tmp;
+    }
+    else if (tmp.kind === Type.Literal) {
+      node.init = tmp;
+    } else {
+      console.error("Fatal parse error");
+    }
   }
 
   return (node);
