@@ -1,3 +1,15 @@
+import {
+  Token,
+  Types as Type,
+  TokenList as TT
+} from "./labels";
+
+import Node from "./nodes";
+
+import {
+  getNameByLabel
+} from "./utils";
+
 /**
  * @class Scope
  * @export
@@ -62,15 +74,29 @@ export default class Scope {
   }
 
   /**
+   * Get name of node
+   * @param {Node} node
+   * @return {String}
+   */
+  getName(node) {
+    return (
+      node.value || node.name || node.id
+    );
+  }
+
+  /**
    * Set sth into table
    * @param {Node} node
    */
   register(node) {
-    let name = node.value || node.name || node.id;
+    let name = this.getName(node);
     if (
       name !== void 0 &&
       name !== null
     ) {
+      if (this.parent !== void 0) {
+        console.log(`Registered ${name}->${this.getName(this.scope)}:${getNameByLabel(this.scope.kind)}`);
+      }
       this.table[name] = node;
     }
   }

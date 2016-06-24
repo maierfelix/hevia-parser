@@ -13,7 +13,7 @@ import * as expressions from "./expression";
 /** Branches */
 import * as branches from "./branch";
 import * as guards from "./branch/guard";
-import * as ifelse from "./branch/ifelse";
+import * as ifelse from "./branch/if";
 import * as pseudos from "./branch/pseudo";
 import * as switches from "./branch/switch";
 

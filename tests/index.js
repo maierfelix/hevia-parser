@@ -15,6 +15,12 @@ fs.readdirSync(dir).forEach(function(entry) {
 });
 
 sources.map((src) => {
-  var ast = swift.parse(swift.tokenize(src));
+  var tokens = swift.tokenize(src);
+
+  for (let key in tokens) {
+    //console.log(pp.getNameByLabel(tokens[key].name));
+  };
+
+  var ast = swift.parse(tokens);
   console.log(ast);
 });

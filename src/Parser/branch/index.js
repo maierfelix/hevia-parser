@@ -16,10 +16,10 @@ export function parseBranchStatement() {
 
   switch (this.current.name) {
     case TT.IF:
-      return this.parseIf();
+      return this.parseIfStatement();
     break;
     case TT.GUARD:
-      return this.parseGuard();
+      return this.parseGuardStatement();
     break;
     case TT.SWITCH:
       return this.parseSwitch;

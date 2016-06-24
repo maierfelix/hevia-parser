@@ -8,8 +8,8 @@ import Node from "../../nodes";
 
 /**
   [x] name
-  [ ] pattern
-  [ ] block
+  [x] pattern
+  [x] block
   [x] getter-setter
   [x] willset-didset
   [x] expression
@@ -40,12 +40,9 @@ export function parseVariable() {
     this.expect(TT.RBRACE);
   /** expression */
   } else {
-    if (this.eat(TT.COLON)) {
-      node.isInner = true;
-    } else {
-      this.expect(TT.ASSIGN);
+    if (this.eat(TT.ASSIGN)) {
+      node.init = this.parseStatement();
     }
-    node.init = this.parseStatement();
   }
 
   this.scope.register(node);

@@ -12,6 +12,7 @@ import Node from "../../nodes";
 export function parseExpressionStatement() {
 
   switch (this.current.name) {
+    case TT.SELF:
     case TT.BIT_AND:
     case TT.UL:
     case TT.TRUE:

@@ -1,3 +1,11 @@
+import {
+  Token,
+  Types as Type,
+  TokenList as TT
+} from "./labels";
+
+import Node from "./nodes";
+
 /**
  * @param {Object} cls
  * @param {Object} prot
@@ -33,4 +41,20 @@ export function uHash() {
 
   return (index);
 
+}
+
+/**
+ * Debug helper
+ */
+export function getNameByLabel(name) {
+  if (Token[name] !== void 0) {
+    return (Token[name]);
+  }
+  else if (TT[name] !== void 0) {
+    return (TT[name]);
+  }
+  else if (Type[name] !== void 0) {
+    return (Type[name]);
+  }
+  return (null);
 }

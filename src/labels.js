@@ -8,31 +8,36 @@ let ii = 0;
 ((Label) => {
 
   Label[Label["Program"] = ++ii] = "Program";
-  Label[Label["BlockStatement"] = ++ii] = "BlockStatement";
-  Label[Label["Parameter"] = ++ii] = "Parameter";
-  Label[Label["ParameterExpression"] = ++ii] = "ParameterExpression";
-  Label[Label["Tuple"] = ++ii] = "Tuple";
-  Label[Label["TupleType"] = ++ii] = "TupleType";
-  Label[Label["TypeCast"] = ++ii] = "TypeCast";
-  Label[Label["BinaryExpression"] = ++ii] = "BinaryExpression";
-  Label[Label["CallExpression"] = ++ii] = "CallExpression";
-  Label[Label["Identifier"] = ++ii] = "Identifier";
-  Label[Label["Literal"] = ++ii] = "Literal";
+
   Label[Label["UnaryExpression"] = ++ii] = "UnaryExpression";
-  Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
-  Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
-  Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
-  Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
-  Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
-  Label[Label["VariableDeclarement"] = ++ii] = "VariableDeclarement";
   Label[Label["MemberExpression"] = ++ii] = "MemberExpression";
   Label[Label["TernaryExpression"] = ++ii] = "TernaryExpression";
-  Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
+  Label[Label["BinaryExpression"] = ++ii] = "BinaryExpression";
+  Label[Label["CallExpression"] = ++ii] = "CallExpression";
+  Label[Label["ParameterExpression"] = ++ii] = "ParameterExpression";
+
+  Label[Label["BlockStatement"] = ++ii] = "BlockStatement";
   Label[Label["ReturnStatement"] = ++ii] = "ReturnStatement";
   Label[Label["IfStatement"] = ++ii] = "IfStatement";
   Label[Label["ForStatement"] = ++ii] = "ForStatement";
   Label[Label["WhileStatement"] = ++ii] = "WhileStatement";
   Label[Label["RepeatStatement"] = ++ii] = "RepeatStatement";
+  Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
+
+  Label[Label["ExtensionDeclaration"] = ++ii] = "ExtensionDeclaration";
+  Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
+  Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
+  Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
+
+  Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
+  Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
+  Label[Label["Parameter"] = ++ii] = "Parameter";
+  Label[Label["TypeCast"] = ++ii] = "TypeCast";
+  Label[Label["Identifier"] = ++ii] = "Identifier";
+  Label[Label["Literal"] = ++ii] = "Literal";
+
+  Label[Label["Tuple"] = ++ii] = "Tuple";
+  Label[Label["TupleType"] = ++ii] = "TupleType";
 
 })(Types);
 

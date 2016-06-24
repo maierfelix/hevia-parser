@@ -22,6 +22,31 @@ export default class Node {
     );
   }
 
+  static get ClassDeclaration() {
+    return (
+      class ClassDeclaration {
+        constructor() {
+          this.kind = Type.ClassDeclaration;
+          this.name = null;
+          this.extend = null;
+          this.body = [];
+        }
+      }
+    );
+  }
+
+  static get ExtensionDeclaration() {
+    return (
+      class ExtensionDeclaration {
+        constructor() {
+          this.kind = Type.ExtensionDeclaration;
+          this.arguments = [];
+          this.body = [];
+        }
+      }
+    );
+  }
+
   static get RepeatStatement() {
     return (
       class RepeatStatement {

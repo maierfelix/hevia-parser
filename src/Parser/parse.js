@@ -7,6 +7,10 @@ import {
 import Node from "../nodes";
 import Scope from "../scope";
 
+import {
+  getNameByLabel
+} from "../utils";
+
 /**
  * Enter new scope
  * @param {Node} node
@@ -98,7 +102,7 @@ export function expect(kind) {
   if (!this.peek(kind)) {
     if (this.current !== void 0) {
       let loc = this.current.loc;
-      console.error(`Expected ${this.getNameByLabel(kind)} but got ${this.getNameByLabel(this.current.name)} in ${loc.start.line}:${loc.end.column}`);
+      console.error(`Expected ${getNameByLabel(kind)} but got ${getNameByLabel(this.current.name)} in ${loc.start.line}:${loc.end.column}`);
     }
     return (false);
   }
@@ -118,22 +122,6 @@ export function reset(tokens) {
 }
 
 /**
- * Debug helper
- */
-export function getNameByLabel(label) {
-  if (Token[label] !== void 0) {
-    return (Token[label]);
-  }
-  else if (TT[label] !== void 0) {
-    return (TT[label]);
-  }
-  else if (Type[label] !== void 0) {
-    return (Type[label]);
-  }
-  return (null);
-}
-
-/**
  * @return {Node}
  */
 export function parseProgram() {
@@ -142,6 +130,8 @@ export function parseProgram() {
 
   this.scope = void 0;
   this.pushScope(node);
+
+  if (this.current === void 0) return (node);
 
   node.body = this.parseBlock();
 

@@ -9,6 +9,6 @@ import Node from "../../nodes";
 /**
  * @return {Node}
  */
-export function parseGuard() {
+export function parseGuardStatement() {
   return (null);
 }

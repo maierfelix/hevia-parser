@@ -13,22 +13,19 @@ export function parseFunction() {
 
   let node = new Node.FunctionDeclaration();
 
-  this.expect(TT.FUNCTION);
-
-  this.pushScope(node);
+  /** Optional, so dont expect */
+  this.eat(TT.FUNCTION);
 
   node.name = this.extract(Token.Identifier).value;
   node.body = this.parseFunctionBody(node, false);
-
-  this.popScope();
-
-  this.scope.register(node);
 
   return (node);
 
 }
 
 export function parseFunctionBody(node, isClosure) {
+
+  this.pushScope(node);
 
   node.isClosure = isClosure;
 
@@ -54,6 +51,10 @@ export function parseFunctionBody(node, isClosure) {
     node.body = this.parseBlock();
     this.expect(TT.RBRACE);
   }
+
+  this.popScope();
+
+  this.scope.register(node);
 
   return (node.body);
 

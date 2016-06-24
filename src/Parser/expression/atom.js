@@ -22,10 +22,7 @@ export function parseAtomicExpression() {
   while (true) {
     /** Call expression ??? */
     if (this.peek(TT.LPAREN)) {
-      node = new Node.CallExpression();
-      node.callee = base;
-      node.arguments = this.parseParenthese() || [];
-      base = node;
+      base = this.parseCallExpression(base);
     }
     /** Ternary expression */
     else if (this.peek(TT.CONDITIONAL)) {
@@ -58,5 +55,26 @@ export function parseAtomicExpression() {
   };
 
   return (base);
+
+}
+
+export function parseCallExpression(callee) {
+
+  let node = new Node.CallExpression();
+
+  node.callee = callee ? callee : this.parseBinaryExpression(0);
+  node.arguments = this.parseParenthese() || [];
+
+  /** Oh dear, it's a function */
+  if (this.peek(TT.LBRACE)) {
+    /** Transform into dirty func decl */
+    let func = new Node.FunctionDeclaration();
+    func.name = node.callee.value;
+    func.arguments = node.arguments;
+    func.body = this.parseFunctionBody(func, false);
+    node = func;
+  }
+
+  return (node);
 
 }

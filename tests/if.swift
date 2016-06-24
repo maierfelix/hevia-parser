@@ -1,4 +1,3 @@
-let src = `
 var a = 10;
 var result:Int = 1337;
 if (a > 10) {
@@ -18,15 +17,3 @@ if (result == 1337) {
 } else {
   result = 1336;
 }
-`;
-
-swift.innerHTML = src;
-
-let tokens = swiftly.tokenize(src);
-
-for (let key in tokens) {
-  //console.log(pp.getNameByLabel(tokens[key].name));
-};
-
-let ast = swiftly.parse(tokens);
-console.log(ast);
