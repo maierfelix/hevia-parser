@@ -1,32 +1,36 @@
-let clam = new Clam();
+var src = 
+`infix operator ** {
+  associativity left
+  precedence 160
+}
+func ** (left: Double, right: Double) -> Double {
+  return pow(left, right);
+}
+func test(a:Int) -> Int {
+  return (a * a);
+}
+var b = 7 * 6;
+var c = test(b);
+var d = b + c;
+print(2 / 3);
+print(2 ** 8);
+`;
 
-let input = document.querySelector("#swift");
+swift.innerHTML = src;
 
-let files = [
-  "./index.swift"
-];
+function execute() {
+  new Function("__global", out.value)(hevia.global);
+}
 
-let init = () => {
+function build() {
 
-  clam.readProject(files, (src) => {
-    input.oninput = compile;
-    run.onmousedown = compile;
-    input.value = src;
-    compile(src);
-  });
+  var tokens = hevia.tokenize(swift.value);
+  var ast = hevia.parse(tokens);
+  var code = hevia.compile(ast, "JS");
 
-};
+  out.innerHTML = code;
 
-let compile = () => {
+}
 
-  let stream = input.value;
-
-  let compiled = clam.compile(stream);
-
-  js.value = compiled;
-
-  clam.run(compiled);
-
-};
-
-init();
+run.addEventListener('click', execute, false);
+compile.addEventListener('click', build, false);
