@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * @return {Node}
  */
@@ -28,6 +32,13 @@ export function parseExpressionStatement() {
     case TT.LPAREN:
       return this.parseParenthese();
     break;
+    /** Operator things */
+    case TT.ASSOCIATIVITY:
+      return this.parseAssociativityExpression();
+    break;
+    case TT.PRECEDENCE:
+      return this.parsePrecedenceExpression();
+    break;
     default:
       if (this.isNativeType(this.current.name)) {
         return (this.parseBinaryExpression(0));
@@ -40,17 +51,50 @@ export function parseExpressionStatement() {
 }
 
 /**
+ * @return {Node}
+ */
+export function parsePrecedenceExpression() {
+
+  let node = new Node.PrecedenceExpression();
+
+  this.expect(TT.PRECEDENCE);
+
+  node.level = this.parseLiteral();
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseAssociativityExpression() {
+
+  let node = new Node.AssociativityExpression();
+
+  this.expect(TT.ASSOCIATIVITY);
+
+  node.associativity = this.parseLiteral();
+
+  return (node);
+
+}
+
+/**
  * Accept precedence
  * @param  {Object}  token
  * @param  {Number}  state
  * @return {Boolean}
  */
 export function acceptPrecedence(state) {
-  return (
-    state !== void 0 &&
-    this.current !== void 0 &&
-    state.indexOf(this.current.name) > -1
-  );
+  if (state !== void 0 && this.current) {
+    /** Custom operator */
+    if (getNameByLabel(this.current.name) === "Identifier") {
+      return (TT[state.op] === TT[this.current.value]);
+    }
+    return (TT[state.op] === this.current.name);
+  }
+  return (false);
 }
 
 /**

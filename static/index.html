@@ -1,12 +1,40 @@
-<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
-<body>
-  <textarea id="swift" style="margin: 0px; width: 509px; height: 246px;" spellcheck="false"></textarea>
-  <br/>
-  <textarea id="js" style="margin: 0px; width: 509px; height: 246px;" spellcheck="false"></textarea>
-  <button id="run">Run</button>
-  <script type="text/javascript" src="./dist/swiftly.js"></script>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Language" content="en">
+  <meta name="viewport" content="width=device-width">
+  <meta content="origin-when-cross-origin" name="referrer" />
+  <title>Hevia Playground</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <link rel="stylesheet" type="text/css" href="pure.min.css">
+</head>
+<body class="body">
+
+  <div class="title">
+    <p>Hevia.js</p>
+    <p><a class="btn color-1 view" href="https://github.com/maierfelix/hevia">View on Github</a></p>
+  </div>
+
+  <div class="pure-g centered">
+    <div class="pure-u-1-2">
+      <div class="l-box">
+        <p><div class="btn color-1 noselect" id="compile">Compile</div></p>
+        <p><textarea class="txt" id="swift" spellcheck="false" placeholder="Swift code..."></textarea></p>
+      </div>
+    </div>
+    <div class="pure-u-1-2">
+      <div class="l-box">
+        <p><div class="btn color-1 noselect" id="run">Run</div></p>
+        <p><textarea class="txt" id="out" spellcheck="false" placeholder="Compiled code..." readonly></textarea></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="./stars.js"></script>
+  <script type="text/javascript" src="./dist/hevia.js"></script>
   <script type="text/javascript" src="./main.js"></script>
+
 </body>
 </html>

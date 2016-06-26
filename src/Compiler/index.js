@@ -1,0 +1,122 @@
+import {
+  inherit
+} from "../utils";
+
+import Scope from "../scope";
+
+import * as pack from "./lang";
+import * as compile from "./compile";
+import * as inference from "./inference";
+import * as globals from "../Environment/global";
+
+/**
+ * @class Compiler
+ * @export
+ */
+export default class Compiler {
+
+  /** @constructor */
+  constructor() {
+
+    /**
+     * Scope
+     * @type {Scope}
+     */
+    this.scope = null;
+
+    /**
+     * Extensions
+     * @type {Object}
+     */
+    this.extensions = {};
+
+    /**
+     * Operators
+     * @type {Object}
+     */
+    this.operators = {};
+
+    /**
+     * Global objects
+     * @type {Object}
+     */
+    this.global = globals;
+
+    /**
+     * Compiled output
+     * @type {String}
+     */
+    this.output = "";
+
+  }
+
+  reset() {
+    this.scope = void 0;
+    this.output = "";
+    this.operators = {};
+    this.extensions = {};
+  }
+
+  /** 
+   * Write
+   * @param {String} str
+   */
+  write(str) {
+    this.output += str;
+  }
+
+  /**
+   * Enter scope
+   * @param {Node} node
+   */
+  pushScope(node) {
+    node.context = new Scope(node, this.scope);
+    this.scope = node.context;
+  }
+
+  /** Leave scope */
+  popScope() {
+    this.scope = this.scope.parent;
+  }
+
+  /**
+   * @param {Node} ast
+   * @param {String} lang
+   * @return {String}
+   */
+  compile(ast, lang) {
+    this.reset();
+    this.pushScope(ast);
+    this.compileProgram(ast.body);
+    this.initLanguage(lang);
+    this.emitProgram(ast.body);
+    return (this.output);
+  }
+
+  /**
+   * @param {String} lang
+   */
+  initLanguage(lang) {
+
+    switch (lang) {
+      case "JS":
+        lang = "JavaScript";
+        inherit(Compiler, pack.JavaScript);
+      break;
+      case "JAVA":
+        lang = "Java";
+        inherit(Compiler, pack.Java);
+      break;
+      default:
+        console.error(`Unknown target language.`);
+      break;
+    }
+
+    console.log(`Compiling to ${lang}`);
+
+  }
+
+}
+
+inherit(Compiler, compile);
+inherit(Compiler, inference);

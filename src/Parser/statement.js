@@ -54,6 +54,9 @@ export function parseStatement() {
     case TT.PROTOCOL:
     case TT.EXTENSION:
     case TT.OPERATOR:
+    case TT.POSTFIX:
+    case TT.PREFIX:
+    case TT.INFIX:
       node = this.parseDeclarationStatement();
     break;
     /** Expression statement */
@@ -77,7 +80,9 @@ export function parseReturnStatement() {
 
   this.expect(TT.RETURN);
 
+  this.eat(TT.LPAREN);
   node.argument = this.parseExpressionStatement();
+  this.eat(TT.RPAREN);
 
   this.eat(TT.SEMICOLON);
 

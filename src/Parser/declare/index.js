@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /*
   [ ] import
   [x] constant
@@ -56,8 +60,10 @@ export function parseDeclarationStatement() {
     case TT.EXTENSION:
       node = this.parseExtension();
     break;
-    case TT.OPERATOR:
-      node = this.parseOperator();
+    case TT.POSTFIX:
+    case TT.PREFIX:
+    case TT.INFIX:
+      node = this.parseOperatorDeclaration();
     break;
   };
 
@@ -65,11 +71,4 @@ export function parseDeclarationStatement() {
 
   return (node);
 
-}
-
-/**
- * @return {Node}
- */
-export function parseOperator() {
-  return (null);
 }

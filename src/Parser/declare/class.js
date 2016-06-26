@@ -21,15 +21,9 @@ export function parseClass() {
     node.extend = this.parseStrictType();
   }
 
-  this.pushScope(node);
-
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
   this.expect(TT.RBRACE);
-
-  this.popScope();
-
-  this.scope.register(node);
 
   return (node);
 

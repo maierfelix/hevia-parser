@@ -25,8 +25,6 @@ export function parseFunction() {
 
 export function parseFunctionBody(node, isClosure) {
 
-  this.pushScope(node);
-
   node.isClosure = isClosure;
 
   if (this.peek(TT.LPAREN)) {
@@ -51,10 +49,6 @@ export function parseFunctionBody(node, isClosure) {
     node.body = this.parseBlock();
     this.expect(TT.RBRACE);
   }
-
-  this.popScope();
-
-  this.scope.register(node);
 
   return (node.body);
 

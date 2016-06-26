@@ -8,6 +8,10 @@ import Node from "../../nodes";
 
 import { Precedence } from "../../precedence";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * @param  {Number} index Precedence
  * @return {Node}
@@ -24,7 +28,7 @@ export function parseBinaryExpression(index) {
 
   while (this.acceptPrecedence(state)) {
     node = new Node.BinaryExpression();
-    node.operator = this.current.name;
+    node.operator = TT[state.op];
     this.next();
     node.left = ast;
     tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
@@ -58,7 +62,14 @@ export function parseLiteral() {
     this.next();
   }
 
-  if (this.eat(TT.COLON)) {
+  if (this.peek(TT.COLON)) {
+    /**
+     * Dirty hack:
+     * Numbers cannot have an colon attached type,
+     * so it seems like its a ternary expression
+     */
+    if (node.type === Token.NumericLiteral) return (node);
+    this.eat(TT.COLON);
     if (this.eat(TT.INOUT)) {
       node.isReference = true;
       this.back();
@@ -71,7 +82,7 @@ export function parseLiteral() {
     else if (tmp.kind === Type.Literal) {
       node.init = tmp;
     } else {
-      console.error("Fatal parse error");
+      throw new Error("Fatal literal parse error");
     }
   }
 

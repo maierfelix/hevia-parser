@@ -26,13 +26,7 @@ export function parseAtomicExpression() {
     }
     /** Ternary expression */
     else if (this.peek(TT.CONDITIONAL)) {
-      node  = new Node.TernaryExpression();
-      node.condition = base;
-      this.expect(TT.CONDITIONAL);
-      node.consequent = this.parseExpressionStatement();
-      this.expect(TT.COLON);
-      node.alternate = this.parseExpressionStatement();
-      base = node;
+      base = this.parseTernaryExpression(base);
     }
     /** Computed member expression */
     else if (this.peek(TT.LBRACK)) {
@@ -58,11 +52,14 @@ export function parseAtomicExpression() {
 
 }
 
+/**
+ * @return {Node}
+ */
 export function parseCallExpression(callee) {
 
   let node = new Node.CallExpression();
 
-  node.callee = callee ? callee : this.parseBinaryExpression(0);
+  node.callee = callee || this.parseBinaryExpression(0);
   node.arguments = this.parseParenthese() || [];
 
   /** Oh dear, it's a function */
@@ -74,6 +71,24 @@ export function parseCallExpression(callee) {
     func.body = this.parseFunctionBody(func, false);
     node = func;
   }
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseTernaryExpression(condition) {
+
+  let node  = new Node.TernaryExpression();
+
+  node.condition = condition || this.parseBinaryExpression(0);
+
+  this.expect(TT.CONDITIONAL);
+  node.consequent = this.parseExpressionStatement();
+  this.expect(TT.COLON);
+  node.alternate = this.parseExpressionStatement();
 
   return (node);
 

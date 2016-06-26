@@ -45,8 +45,6 @@ export function parseVariable() {
     }
   }
 
-  this.scope.register(node);
-
   return (node);
 
 }
@@ -61,8 +59,6 @@ export function parseVariableDeclarement() {
   node.name = this.current.value;
   this.next();
   node.type = this.parseStrictType();
-
-  this.scope.register(node);
 
   return (node);
 

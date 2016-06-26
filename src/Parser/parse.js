@@ -5,25 +5,10 @@ import {
 } from "../labels";
 
 import Node from "../nodes";
-import Scope from "../scope";
 
 import {
   getNameByLabel
 } from "../utils";
-
-/**
- * Enter new scope
- * @param {Node} node
- */
-export function pushScope(node) {
-  node.context = new Scope(node, this.scope);
-  this.scope = node.context;
-}
-
-/** Leave current scope */
-export function popScope() {
-  this.scope = this.scope.parent;
-}
 
 /**
  * Extract
@@ -102,7 +87,7 @@ export function expect(kind) {
   if (!this.peek(kind)) {
     if (this.current !== void 0) {
       let loc = this.current.loc;
-      console.error(`Expected ${getNameByLabel(kind)} but got ${getNameByLabel(this.current.name)} in ${loc.start.line}:${loc.end.column}`);
+      throw new Error(`Expected ${getNameByLabel(kind)} but got ${getNameByLabel(this.current.name)} in ${loc.start.line}:${loc.end.column}`);
     }
     return (false);
   }
@@ -117,7 +102,6 @@ export function expect(kind) {
 export function reset(tokens) {
   this.index = 0;
   this.tokens = tokens;
-  this.scopes = {};
   this.previous = this.current = this.tokens[this.index];
 }
 
@@ -127,9 +111,6 @@ export function reset(tokens) {
 export function parseProgram() {
 
   let node = new Node.Program();
-
-  this.scope = void 0;
-  this.pushScope(node);
 
   if (this.current === void 0) return (node);
 

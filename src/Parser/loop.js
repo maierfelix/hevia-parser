@@ -50,13 +50,9 @@ export function parseFor() {
 
   this.eat(TT.RPAREN);
 
-  this.pushScope(node);
-
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
   this.expect(TT.RBRACE);
-
-  this.popScope();
 
   return (node);
 
@@ -75,13 +71,9 @@ export function parseWhile() {
   node.test = this.parseExpressionStatement();
   this.eat(TT.RPAREN);
 
-  this.pushScope(node);
-
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
   this.expect(TT.RBRACE);
-
-  this.popScope();
 
   return (node);
 
@@ -96,13 +88,9 @@ export function parseRepeat() {
 
   this.expect(TT.REPEAT);
 
-  this.pushScope(node);
-
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
   this.expect(TT.RBRACE);
-
-  this.popScope();
 
   this.expect(TT.WHILE);
 

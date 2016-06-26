@@ -95,7 +95,7 @@ export default class Scope {
       name !== null
     ) {
       if (this.parent !== void 0) {
-        console.log(`Registered ${name}->${this.getName(this.scope)}:${getNameByLabel(this.scope.kind)}`);
+        //console.log(`Registered ${name}->${this.getName(this.scope)}:${getNameByLabel(this.scope.kind)}`);
       }
       this.table[name] = node;
     }

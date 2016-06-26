@@ -3,25 +3,22 @@
  */
 
 import {
-  TokenList as TT
+  TokenList as TT,
+  registerTT
 } from "./labels";
 
-export const Precedence = [
-  [TT.ASSIGN],
-  [TT.OR],
-  [TT.AND],
-  [TT.BIT_OR],
-  [TT.BIT_XOR],
-  [TT.BIT_AND],
-  [TT.EQ, TT.NEQ],
-  [TT.LT, TT.GT, TT.LE, TT.GE],
-  [TT.LSHIFT, TT.RSHIFT],
-  [TT.ADD, TT.SUB],
-  [TT.MUL, TT.DIV, TT.MOD],
-  [TT.CMP_OR],
-  [TT.CMP_XOR],
-  [TT.CMP_AND],
-  [TT.CMP_LSHIFT, TT.CMP_RSHIFT],
-  [TT.CMP_ADD, TT.CMP_SUB],
-  [TT.CMP_MUL, TT.CMP_DIV]
-];
+export let Precedence = [];
+
+export function registerOperator(op, lvl, assoc, name) {
+  Precedence.push({
+    op: op,
+    level: lvl,
+    associativity: assoc
+  });
+  Precedence.sort(function(a, b) {
+    if (a.level > b.level) return 1;
+    if (a.level < b.level) return -1;
+    return 0;
+  });
+  registerTT(name, op);
+}

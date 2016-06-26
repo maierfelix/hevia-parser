@@ -1,15 +1,15 @@
 {
-  "name": "Swiftly",
+  "name": "Hevia",
   "version": "0.0.2",
-  "description": "Swiftly.js",
+  "description": "Hevia Compiler",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/maierfelix/swiftly.js.git"
+    "url": "git+ssh://git@github.com/maierfelix/hevia.git"
   },
   "keywords": [
-    "Swiftly",
-    "SwiftlyJS",
-    "Swiftly.js",
+    "Hevia",
+    "HeviaJS",
+    "Hevia.js",
     "Swift",
     "Compiler",
     "Transpiler",
@@ -19,14 +19,14 @@
   ],
   "author": "Felix Maier <maier.felix96@gmail.com>",
   "bugs": {
-    "url": "https://github.com/maierfelix/swiftly.js/issues"
+    "url": "https://github.com/maierfelix/hevia/issues"
   },
-  "homepage": "https://github.com/maierfelix/swiftly.js#readme",
+  "homepage": "https://github.com/maierfelix/hevia#readme",
   "scripts": {
-    "live": "budo --dir static/ ./src/index.js:dist/swiftly.js --live -- -t babelify",
+    "live": "budo --dir static/ ./src/index.js:dist/hevia.js --live -- -t babelify",
     "dist": "npm run dist-release && npm run dist-uglify",
-    "dist-release": "browserify ./src/index.js -t babelify -s SWIFT -o dist/swiftly.js",
-    "dist-uglify": "uglifyjs dist/swiftly.js --compress --mangle > dist/swiftly.min.js",
+    "dist-release": "browserify ./src/index.js -t babelify -s HEVIA -o dist/hevia.js",
+    "dist-uglify": "uglifyjs dist/hevia.js --compress --mangle > dist/hevia.min.js",
     "dist-test": "npm run dist-release && npm run test",
     "test": "node ./tests/index.js"
   },

@@ -1,5 +1,5 @@
 var fs = require("fs");
-var swift = require("../dist/swiftly.js");
+var hevia = require("../dist/hevia.js");
 
 var dir = __dirname + "/";
 var sources = [];
@@ -14,13 +14,31 @@ fs.readdirSync(dir).forEach(function(entry) {
   }
 });
 
+var failures = 0;
+
 sources.map((src) => {
-  var tokens = swift.tokenize(src);
-
-  for (let key in tokens) {
-    //console.log(pp.getNameByLabel(tokens[key].name));
-  };
-
-  var ast = swift.parse(tokens);
-  console.log(ast);
+  var tokens = null;
+  var ast = null;
+  var success = false;
+  var error = null;
+  var name = src.name;
+  try {
+    success = true;
+    tokens = hevia.tokenize(src.src);
+    ast = hevia.parse(tokens);
+  } catch(e) {
+    error  = e;
+    success = false;
+  }
+  if (!success) {
+    failures++;
+  }
+  // super duper dirty
+  console.log(`[${success ? "PASSED" : "FAILED"}]::${name + (!success ? " => " + error : "")}`);
 });
+
+if (failures) {
+  console.log(`\n${failures} ${failures === 1 ? "FAILURE" : "FAILURES"}!`);
+} else {
+  console.log("\nSTABLE!");
+}

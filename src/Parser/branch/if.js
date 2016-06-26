@@ -21,9 +21,7 @@ export function parseIfStatement() {
 
   /** Consequent */
   this.expect(TT.LBRACE);
-  this.pushScope(node);
   node.consequent = this.parseBlock();
-  this.popScope();
   this.expect(TT.RBRACE);
 
   /** Consequent */

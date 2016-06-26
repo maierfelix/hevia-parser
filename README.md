@@ -1,5 +1,5 @@
 #
-Swiftly.js - A Swift to ES6 Compiler
+Hevia.js - A Swift to ES6 Compiler
 
 Compiles latest Swift 3.0 code into optimized ES6 code, running inside the Browser.<br>
 In near future, the compiler will be rewritten into Swift, to get self-hosted (compiles itself).

@@ -15,7 +15,7 @@ export function parseExtension() {
 
   this.expect(TT.EXTENSION);
 
-  node.arguments = this.parseExpressionStatement();
+  node.argument = this.parseExpressionStatement();
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();

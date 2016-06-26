@@ -30,8 +30,9 @@ import * as imports from "./declare/import";
 import * as functions from "./declare/function";
 import * as protocols from "./declare/protocol";
 import * as variables from "./declare/variable";
-import * as declarations from "./declare";
+import * as operators from "./declare/operator";
 import * as extensions from "./declare/extension";
+import * as declarations from "./declare";
 
 /**
  * @class Parser
@@ -66,12 +67,6 @@ export default class Parser {
      */
     this.current = null;
 
-    /**
-     * Current scope
-     * @type {Scope}
-     */
-    this.scope = null;
-
   }
 
 }
@@ -102,5 +97,6 @@ inherit(Parser, structs);
 inherit(Parser, protocols);
 inherit(Parser, functions);
 inherit(Parser, variables);
+inherit(Parser, operators);
 inherit(Parser, extensions);
 inherit(Parser, declarations);

@@ -1,32 +1,36 @@
-let src = `
-var a = 10;
-var result:Int = 1337;
-if (a > 10) {
-  result = 0;
-} else if (a > 100) {
-  result = 1;
-} else {
-  result = 2;
+var src = 
+`infix operator ** {
+  associativity left
+  precedence 160
 }
-
-if (result == 0) {
-  result = 1337;
+func ** (left: Double, right: Double) -> Double {
+  return pow(left, right);
 }
-
-if (result == 1337) {
-  result = 1338;
-} else {
-  result = 1336;
+func test(a:Int) -> Int {
+  return (a * a);
 }
+var b = 7 * 6;
+var c = test(b);
+var d = b + c;
+print(2 / 3);
+print(2 ** 8);
 `;
 
 swift.innerHTML = src;
 
-let tokens = swiftly.tokenize(src);
+function execute() {
+  new Function("__global", out.value)(hevia.global);
+}
 
-for (let key in tokens) {
-  //console.log(pp.getNameByLabel(tokens[key].name));
-};
+function build() {
 
-let ast = swiftly.parse(tokens);
-console.log(ast);
+  var tokens = hevia.tokenize(swift.value);
+  var ast = hevia.parse(tokens);
+  var code = hevia.compile(ast, "JS");
+
+  out.innerHTML = code;
+
+}
+
+run.addEventListener('click', execute, false);
+compile.addEventListener('click', build, false);

@@ -22,6 +22,40 @@ export default class Node {
     );
   }
 
+  static get AssociativityExpression() {
+    return (
+      class AssociativityExpression {
+        constructor() {
+          this.kind = Type.AssociativityExpression;
+          this.associativity = null;
+        }
+      }
+    );
+  }
+
+  static get PrecedenceExpression() {
+    return (
+      class PrecedenceExpression {
+        constructor() {
+          this.kind = Type.PrecedenceExpression;
+          this.level = -1;
+        }
+      }
+    );
+  }
+
+  static get OperatorDeclaration() {
+    return (
+      class OperatorDeclaration {
+        constructor() {
+          this.kind = Type.OperatorDeclaration;
+          this.name = null;
+          this.body = [];
+        }
+      }
+    );
+  }
+
   static get ClassDeclaration() {
     return (
       class ClassDeclaration {
@@ -40,7 +74,7 @@ export default class Node {
       class ExtensionDeclaration {
         constructor() {
           this.kind = Type.ExtensionDeclaration;
-          this.arguments = [];
+          this.argument = null;
           this.body = [];
         }
       }

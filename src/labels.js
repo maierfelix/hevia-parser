@@ -1,3 +1,12 @@
+/**
+ * This file contains all shit, to
+ * provide a clean & fast way, to compare
+ * nodes and tokens in later steps
+ */
+import {
+  registerOperator
+} from "./precedence";
+
 export let Types = {};
 export let Token = {};
 export let TokenList = {};
@@ -28,6 +37,7 @@ let ii = 0;
   Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
   Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
+  Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
   Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
@@ -35,6 +45,9 @@ let ii = 0;
   Label[Label["TypeCast"] = ++ii] = "TypeCast";
   Label[Label["Identifier"] = ++ii] = "Identifier";
   Label[Label["Literal"] = ++ii] = "Literal";
+
+  Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
+  Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
 
   Label[Label["Tuple"] = ++ii] = "Tuple";
   Label[Label["TupleType"] = ++ii] = "TupleType";
@@ -77,34 +90,10 @@ let ii = 0;
   Label[Label["->"] = ++ii] = "ARROW";
   /** Logical operators */
   Label[Label["!"] = ++ii] = "NOT";
-  Label[Label["||"] = ++ii] = "OR";
-  Label[Label["&&"] = ++ii] = "AND";
-  /** Binary operators */
-  Label[Label["+"] = ++ii] = "ADD";
-  Label[Label["-"] = ++ii] = "SUB";
-  Label[Label["*"] = ++ii] = "MUL";
-  Label[Label["/"] = ++ii] = "DIV";
-  Label[Label["%"] = ++ii] = "MOD";
-  /** Compare operators */
-  Label[Label["<"] = ++ii] = "LT";
-  Label[Label["<="] = ++ii] = "LE";
-  Label[Label[">"] = ++ii] = "GT";
-  Label[Label[">="] = ++ii] = "GE";
-  Label[Label["=="] = ++ii] = "EQ";
-  Label[Label["!="] = ++ii] = "NEQ";
   /** Bitwise operators */
   Label[Label["^"] = ++ii] = "BIT_XOR";
   Label[Label["~"] = ++ii] = "BIT_NOT";
   Label[Label["|"] = ++ii] = "BIT_OR";
-  Label[Label["&"] = ++ii] = "BIT_AND";
-  /** Assignment operators */
-  Label[Label["="] = ++ii] = "ASSIGN";
-  /** Compound operators */
-  Label[Label["+="] = ++ii] = "CMP_ADD";
-  Label[Label["-="] = ++ii] = "CMP_SUB";
-  Label[Label["*="] = ++ii] = "CMP_MUL";
-  Label[Label["/="] = ++ii] = "CMP_DIV";
-  Label[Label["%="] = ++ii] = "CMP_MOD";
   /** Bitwise compound operators */
   Label[Label["<<="] = ++ii] = "CMP_LSHIFT";
   Label[Label[">>="] = ++ii] = "CMP_RSHIFT";
@@ -160,6 +149,14 @@ let ii = 0;
   Label[Label["set"] = ++ii] = "SET";
   Label[Label["willSet"] = ++ii] = "WILLSET";
   Label[Label["didSet"] = ++ii] = "DIDSET";
+  /** Operator declaration */
+  Label[Label["prefix"] = ++ii] = "PREFIX";
+  Label[Label["postfix"] = ++ii] = "POSTFIX";
+  Label[Label["infix"] = ++ii] = "INFIX";
+  /** Associative */
+  Label[Label["associativity"] = ++ii] = "ASSOCIATIVITY";
+  /** Precedence clause */
+  Label[Label["precedence"] = ++ii] = "PRECEDENCE";
   /** Types */
   Label[Label["Void"] = ++ii] = "VOID";
   Label[Label["Int"] = ++ii] = "INT";
@@ -191,3 +188,40 @@ let ii = 0;
     ++index;
   };
 })();
+
+/**
+ * Register TokenList entry
+ * @param {String} name
+ * @param {String} value
+ */
+export function registerTT(name, value) {
+  TokenList[TokenList[value] = ++ii] = name;
+  TokenList[TokenList[ii]] = ii;
+}
+
+registerOperator("=", 80, "right", "ASSIGN");
+
+registerOperator("!=", 130, "none", "NEQ");
+registerOperator("==", 130, "none", "EQ");
+registerOperator(">=", 130, "none", "GE");
+registerOperator("<=", 130, "none", "LE");
+registerOperator(">", 130, "none", "GT");
+registerOperator("<", 130, "none", "LT");
+
+registerOperator("&&", 120, "left", "AND");
+registerOperator("||", 110, "left", "OR");
+
+registerOperator("+=", 90, "right", "CMP_ADD");
+registerOperator("-=", 90, "right", "CMP_SUB");
+registerOperator("/=", 90, "right", "CMP_DIV");
+registerOperator("*=", 90, "right", "CMP_MUL");
+registerOperator("%=", 90, "right", "CMP_MOD");
+
+registerOperator("/", 150, "left", "DIV");
+registerOperator("*", 150, "left", "MUL");
+registerOperator("%", 150, "left", "MOD");
+
+registerOperator("-", 140, "left", "SUB");
+registerOperator("+", 140, "left", "ADD");
+
+registerOperator("&", 150, "left", "BIT_AND");
