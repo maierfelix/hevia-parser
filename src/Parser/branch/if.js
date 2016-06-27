@@ -24,7 +24,7 @@ export function parseIfStatement() {
   node.consequent = this.parseBlock();
   this.expect(TT.RBRACE);
 
-  /** Consequent */
+  /** Alternate: else|else if */
   if (this.eat(TT.ELSE)) {
     node.alternate = this.parseIfStatement();
   }

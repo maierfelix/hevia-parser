@@ -10,6 +10,7 @@ import {
 export let Types = {};
 export let Token = {};
 export let TokenList = {};
+export let Operators = {};
 
 let ii = 0;
 
@@ -88,18 +89,6 @@ let ii = 0;
   Label[Label["_"] = ++ii] = "UL";
   Label[Label["#"] = ++ii] = "HASH";
   Label[Label["->"] = ++ii] = "ARROW";
-  /** Logical operators */
-  Label[Label["!"] = ++ii] = "NOT";
-  /** Bitwise operators */
-  Label[Label["^"] = ++ii] = "BIT_XOR";
-  Label[Label["~"] = ++ii] = "BIT_NOT";
-  Label[Label["|"] = ++ii] = "BIT_OR";
-  /** Bitwise compound operators */
-  Label[Label["<<="] = ++ii] = "CMP_LSHIFT";
-  Label[Label[">>="] = ++ii] = "CMP_RSHIFT";
-  Label[Label["&="] = ++ii] = "CMP_AND";
-  Label[Label["|="] = ++ii] = "CMP_OR";
-  Label[Label["^="] = ++ii] = "CMP_XOR";
   /** Literals */
   Label[Label["nil"] = ++ii] = "NULL";
   Label[Label["true"] = ++ii] = "TRUE";

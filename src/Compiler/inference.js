@@ -18,6 +18,8 @@ export function inferenceBlock(node) {
   for (let key of node.body) {
     if (key.kind === Type.ReturnStatement) {
       type = this.inferenceExpression(key.argument);
+    } else {
+      type = this.inferenceExpression(key);
     }
   };
 
@@ -28,6 +30,9 @@ export function inferenceBlock(node) {
 export function inferenceExpression(node) {
 
   switch (node.kind) {
+    case Type.Literal:
+      return this.inferenceIdentifier(node);
+    break;
     case Type.BinaryExpression:
       return this.inferenceBinaryExpression(node);
     break;
@@ -61,8 +66,8 @@ export function inferenceCallExpression(node) {
 export function inferenceBinaryExpression(node) {
 
   if (node.left && node.right) {
-    let left = this.inferenceBinaryExpression(node.left);
-    let right = this.inferenceBinaryExpression(node.right);
+    let left = this.inferenceExpression(node.left);
+    let right = this.inferenceExpression(node.right);
     return (left || right);
   } else {
     if (node.kind === Type.Literal) {
@@ -86,7 +91,7 @@ export function inferenceIdentifier(node) {
 
   let resolved = this.scope.get(node.value);
 
-  if (resolved) {
+  if (resolved && resolved.type) {
     return (
       resolved.type.name || resolved.type.type
     );

@@ -197,7 +197,6 @@ export default class Node {
           this.name = null;
           this.type = null;
           this.arguments = [];
-          this.returnTuple = [];
           this.body = [];
           this.isStatic = false;
         }

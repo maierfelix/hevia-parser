@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * @return {Node}
  */
@@ -23,33 +27,28 @@ export function parseFunction() {
 
 }
 
-export function parseFunctionBody(node, isClosure) {
-
-  node.isClosure = isClosure;
+export function parseFunctionBody(node) {
 
   if (this.peek(TT.LPAREN)) {
     node.arguments = this.parseStatement();
   }
 
-  if (this.eat(TT.ARROW)) {
-    if (this.isNativeType(this.current.name)) {
-      node.type = this.current;
-      this.next();
-    }
-  }
-
-  if (this.peek(TT.LPAREN)) {
-    node.returnTuple = this.parseStatement();
-  }
-
   if (this.peek(TT.ARROW)) {
-    node.body = this.parseFunctionBody(node, true);
-  } else {
-    this.expect(TT.LBRACE);
-    node.body = this.parseBlock();
-    this.expect(TT.RBRACE);
+    this.parseFunctionReturn(node);
   }
+
+  this.expect(TT.LBRACE);
+  node.body = this.parseBlock();
+  this.expect(TT.RBRACE);
 
   return (node.body);
+
+}
+
+export function parseFunctionReturn(node) {
+
+  this.expect(TT.ARROW);
+
+  node.type = this.parseStatement();
 
 }

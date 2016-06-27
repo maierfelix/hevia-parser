@@ -14,7 +14,11 @@ import {
 export function emitProgram(ast) {
   this.write(`"use strict";\n`);
   this.emitOperatorDefinitions();
-  this.emitBlock(ast);
+  for (let node of ast.body) {
+    this.emitStatement(node);
+    this.write("\n");
+  };
+  this.write("\n");
 }
 
 export function emitStartHeader() {
@@ -42,12 +46,13 @@ export function emitOperatorDefinitions() {
 }
 
 export function emitBlock(ast) {
+  this.write(" {");
   for (let node of ast.body) {
     this.write("\n");
     this.emitStatement(node);
     this.write(";");
   };
-  this.write("\n");
+  this.write("\n}");
 }
 
 export function emitStatement(ast) {
@@ -57,18 +62,18 @@ export function emitStatement(ast) {
     case Type.ForStatement:
     case Type.WhileStatement:
     case Type.RepeatStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Branch statement */
     case Type.IfStatement:
     case Type.GuardStatement:
     case Type.SwitchStatement:
     case Type.PseudoProperty:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Defer statement */
     case Type.DeferStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Return statement */
     case Type.ReturnStatement:
@@ -76,7 +81,7 @@ export function emitStatement(ast) {
     break;
     /** Do statement */
     case Type.DoStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Declaration statement */
     case Type.ImportStatement:
@@ -102,6 +107,9 @@ export function emitStatement(ast) {
     case Type.Parameter:
       this.emitParameter(ast);
     break;
+    case Type.ParameterExpression:
+      this.emitArguments(ast);
+    break;
     default:
       this.emitBinary(ast);
     break;
@@ -110,7 +118,12 @@ export function emitStatement(ast) {
 }
 
 export function emitParameter(ast) {
-  this.emitBinary(ast.init);
+  /** Labeled call parameter */
+  if (ast.init.init !== void 0) {
+    this.emitStatement(ast.init.init);
+  } else {
+    this.emitStatement(ast.init);
+  }
 }
 
 export function emitMember(ast) {
@@ -170,17 +183,20 @@ export function emitBinary(ast) {
 
   if (ast.kind === Type.BinaryExpression) {
     let op = getLabelByNumber(ast.operator);
+    /** Custom operator call */
     if (op in this.operators) {
       this.write(`__OP["${op}"]`);
       this.write("(");
-      this.emitBinary(ast.left);
-      this.write(",");
-      this.emitBinary(ast.right);
+      this.emitStatement(ast.left);
+      this.write(", ");
+      this.emitStatement(ast.right);
       this.write(")");
+    /** Default binary expr */
     } else {
-      this.emitBinary(ast.left);
-      this.write(op);
-      this.emitBinary(ast.right);
+      this.emitStatement(ast.left);
+      op = op === "==" ? "===" : op === "!=" ? "!==" : op;
+      this.write(` ${op} `);
+      this.emitStatement(ast.right);
     }
   }
   else if (ast.kind === Type.Literal) {
@@ -221,21 +237,15 @@ export function emitFunction(ast, allowOP) {
 
   this.emitArguments(ast.arguments);
 
-  this.write("{");
   this.emitBlock(ast.body);
-  this.write("}");
 
 }
 
 export function emitReturn(ast) {
 
-  this.write("return");
-
-  this.write("(");
+  this.write("return ");
 
   this.emitStatement(ast.argument);
-
-  this.write(")");
 
 }
 
@@ -250,7 +260,7 @@ export function emitArguments(ast) {
 
   for (; ii < length; ++ii) {
     this.emitStatement(param[ii]);
-    if (ii + 1 < length) this.write(",");
+    if (ii + 1 < length) this.write(", ");
   };
 
   this.write(")");

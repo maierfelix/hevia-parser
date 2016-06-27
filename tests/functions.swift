@@ -1,22 +1,36 @@
-func a() {
-  return (1337);
+func tuple(aa:Int, bb:Int) -> (aa: Int, bb: Int) {
+  return (aa * 2, bb * 2);
 }
-func b(a:Int) -> Int {
+
+func mul(aa:Int, bb:Int) -> (aa: Int, bb: Int) {
+  return (aa * bb);
+}
+
+func a() {
+  return 1337 * 4;
+}
+
+func b(c:Int) -> Int {
   return (a);
 }
-func c(a:Int, b:Int) -> (a: Int, b: Int) {
-  return (a, b);
-}
-func d(a: inout Int) {
+
+func d(e: inout Int) {
   a *= 2;
 }
 
-func add(a:Int, to b:Int) -> Int {
+func f(g:Int, to h:Int) -> Int {
   return (b + a);
 }
-print(add(a:1, to:1336)); // 1337
 
-func mul(a:Int, _ b:Int) {
+func i(j:Int, _ k:Int) {
   print(a * b);
 }
-mul(a:2, 4); // 8
+
+func l(m:Int, _ n: inout Int) {
+  print(a * b);
+}
+
+print(mul(a:2, to:668.5)); // 1337
+
+var s:Int = mul(a:2, 4) + mul(a:2, 4); // 16
+print(s);

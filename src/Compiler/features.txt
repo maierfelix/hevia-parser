@@ -9,6 +9,8 @@ output += LEFT op RIGHT;
 var a = 10;
 b = a * 2;
 
+::isNeverChanged => type == CONST && resolveSymbol(name).length;
+
 // Variable gets never changed
 if (this.isNeverChanged(a)) {
   b = 20;
@@ -39,5 +41,5 @@ function a(b) {
 // Optimised function
 function a(b) {
   b = 2 * 2;
-  if (b >= 4) return;
+  if (b >= 4) return; // can be removed too, if nothing to return
 }

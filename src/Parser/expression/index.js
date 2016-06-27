@@ -1,7 +1,8 @@
 import {
   Token,
   Types as Type,
-  TokenList as TT
+  TokenList as TT,
+  Operators as OP
 } from "../../labels";
 
 import Node from "../../nodes";
@@ -102,32 +103,7 @@ export function acceptPrecedence(state) {
  * @return {Boolean}
  */
 export function isOperator(name) {
-  switch (name) {
-    case TT.OR:
-    case TT.AND:
-    case TT.ADD:
-    case TT.SUB:
-    case TT.MUL:
-    case TT.DIV:
-    case TT.MOD:
-    case TT.LT:
-    case TT.LE:
-    case TT.GT:
-    case TT.GE:
-    case TT.EQ:
-    case TT.NEQ:
-    case TT.CMP_ADD:
-    case TT.CMP_SUB:
-    case TT.CMP_MUL:
-    case TT.CMP_DIV:
-    case TT.BIT_XOR:
-    case TT.BIT_NOT:
-    case TT.BIT_OR:
-    case TT.BIT_AND:
-      return (true);
-    break;
-    default:
-      return (false);
-    break;
-  };
+  return (
+    getNameByLabel(name) in OP
+  );
 }

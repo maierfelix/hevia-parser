@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * Handles deep:
  * - CallExpr   ()
@@ -45,8 +49,34 @@ export function parseAtomicExpression() {
     ) {
       base = this.parseCast(base);
     }
-    else break;
+    else {
+      /** Continues by binary expression */
+      base = this.continuesExpression(base);
+      break;
+    }
   };
+
+  return (base);
+
+}
+
+/**
+ * @param  {Node} base
+ * @return {Node}
+ */
+export function continuesExpression(base) {
+
+  if (
+    this.current !== void 0 &&
+    this.isOperator(this.current.name)
+  ) {
+    let node = new Node.BinaryExpression();
+    node.operator = this.current.name;
+    this.next();
+    node.left = base;
+    node.right = this.parseExpressionStatement();
+    return (node);
+  }
 
   return (base);
 

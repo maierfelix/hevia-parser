@@ -80,11 +80,11 @@ export function parseReturnStatement() {
 
   this.expect(TT.RETURN);
 
-  this.eat(TT.LPAREN);
-  node.argument = this.parseExpressionStatement();
-  this.eat(TT.RPAREN);
-
-  this.eat(TT.SEMICOLON);
+  if (this.peek(TT.LPAREN)) {
+    node.argument = this.parseParenthese();
+  } else {
+    node.argument = this.parseExpressionStatement();
+  }
 
   return (node);
 

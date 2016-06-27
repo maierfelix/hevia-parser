@@ -26,6 +26,7 @@ sources.map((src) => {
     success = true;
     tokens = hevia.tokenize(src.src);
     ast = hevia.parse(tokens);
+    hevia.compile(ast, "JS");
   } catch(e) {
     error  = e;
     success = false;

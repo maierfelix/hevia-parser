@@ -7,3 +7,9 @@ export function pow(rx, pow) {
     Math.pow(rx, pow)
   );
 }
+
+export function expect(truth) {
+  if (!truth) {
+    throw new Error("Fatal error!");
+  }
+}

@@ -33,26 +33,26 @@ export function compileStatement(ast) {
     case Type.ForStatement:
     case Type.WhileStatement:
     case Type.RepeatStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Branch statement */
     case Type.IfStatement:
     case Type.GuardStatement:
     case Type.SwitchStatement:
     case Type.PseudoProperty:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Defer statement */
     case Type.DeferStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Return statement */
     case Type.ReturnStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Do statement */
     case Type.DoStatement:
-      console.log(ast);
+      //console.log(ast);
     break;
     /** Declaration statement */
     case Type.ImportStatement:
@@ -108,7 +108,7 @@ export function compileDeclaration(ast) {
 
 export function compileCallExpression(ast) {
 
-  this.inferenceIdentifier(ast.callee);
+  this.inferenceExpression(ast.callee);
 
 }
 
@@ -136,6 +136,7 @@ export function compileFunctionDeclaration(ast) {
     this.inferenceBlock(ast.body);
   } else {
     this.scope.register(ast);
+    this.inferenceBlock(ast.body);
   }
 
 }
