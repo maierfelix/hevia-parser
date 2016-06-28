@@ -152,7 +152,7 @@ export function greet() {
     ];
     console.log.apply(console, args);
   } else {
-    console.log("Hevia.js - " + VERSION + " - http://www.heviajs.com/");
+    console.log("Hevia.js - " + VERSION + " - http://www.heviajs.com/\n");
   }
 
 }

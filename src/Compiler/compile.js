@@ -7,7 +7,8 @@ import {
 import Node from "../nodes";
 
 import {
-  getNameByLabel
+  getNameByLabel,
+  getLabelByNumber
 } from "../utils";
 
 export function compileProgram(ast) {
@@ -16,13 +17,9 @@ export function compileProgram(ast) {
 
 export function compileBlock(ast) {
 
-  this.pushScope(ast);
-
   for (let node of ast.body) {
     this.compileStatement(node);
   };
-
-  this.popScope();
 
 }
 
@@ -64,11 +61,11 @@ export function compileStatement(ast) {
     case Type.ProtocolDeclaration:
     case Type.ExtensionDeclaration:
     case Type.OperatorDeclaration:
-      this.compileDeclaration(ast);
+      return this.compileDeclaration(ast);
     break;
     /** Expression statement */
     default:
-      this.compileExpressionStatement(ast);
+      return this.compileExpressionStatement(ast);
     break;
   };
 
@@ -81,7 +78,7 @@ export function compileExpressionStatement(ast) {
       return this.inferenceExpression(ast);
     break;
     case Type.CallExpression:
-      this.compileCallExpression(ast);
+      return this.compileCallExpression(ast);
     break;
   };
 
@@ -91,36 +88,51 @@ export function compileDeclaration(ast) {
 
   switch (ast.kind) {
     case Type.ExtensionDeclaration:
-      //console.log(ast);
+      return this.compileExtensionDeclaration(ast);
     break;
     case Type.OperatorDeclaration:
-      this.compileOperatorDeclaration(ast);
+      return this.compileOperatorDeclaration(ast);
     break;
     case Type.FunctionDeclaration:
-      this.compileFunctionDeclaration(ast);
+      return this.compileFunctionDeclaration(ast);
     break;
     case Type.VariableDeclaration:
-      this.compileVariableDeclaration(ast);
+      return this.compileVariableDeclaration(ast);
     break;
   }
 
 }
 
+export function compileExtensionDeclaration(ast) {
+
+  let name = null;
+
+  if (this.isPureType(ast.argument)) {
+    name = getLabelByNumber(ast.argument.type);
+  } else {
+    name = ast.argument.value;
+  }
+
+  this.extensions[name] = ast.body;
+
+  this.compileBlock(ast.body);
+
+}
+
 export function compileCallExpression(ast) {
 
-  this.inferenceExpression(ast.callee);
+  return this.inferenceExpression(ast);
 
 }
 
 export function compileVariableDeclaration(ast) {
 
   let index = 0;
+
   for (let key of ast.declarations) {
     let init = ast.init[index] || ast.init;
     if (key.type.type === -1) {
-      key.type.type = this.inferenceExpression(init);
-    } else {
-      this.inferenceExpression(init);
+      key.type.type = this.compileStatement(init);
     }
     this.scope.register(key);
     index++;
@@ -133,11 +145,25 @@ export function compileFunctionDeclaration(ast) {
   if (ast.name in this.operators) {
     /** Can be overridden */
     this.operators[ast.name].func = ast;
-    this.inferenceBlock(ast.body);
   } else {
     this.scope.register(ast);
-    this.inferenceBlock(ast.body);
   }
+
+  this.pushScope(ast, this.scope);
+
+  this.compileArguments(ast.arguments);
+  this.compileBlock(ast.body);
+  this.inferenceBlock(ast.body);
+
+  this.popScope();
+
+}
+
+export function compileArguments(node) {
+
+  for (let key of node.arguments) {
+    this.scope.register(key.init);
+  };
 
 }
 

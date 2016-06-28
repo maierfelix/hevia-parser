@@ -22,7 +22,7 @@ const tokenize = (code, opts) => {
   return (tokenizer.scan(code, opts));
 };
 
-const compile = (ast, opts) => {
+const generate = (ast, opts) => {
   let compiler = new Compiler();
   return (compiler.compile(ast, opts));
 };
@@ -34,11 +34,35 @@ for (let key in globals) {
   }
 }
 
+const compile = (src) => {
+
+  var tokens = null;
+  var ast = null;
+  var code = null;
+
+  console.time("Generated in");
+
+  tokens = tokenize(src);
+  ast = parse(tokens);
+  code = generate(ast, "JS");
+
+  console.timeEnd("Generated in");
+
+  return (code);
+
+};
+
+const evaluate = (code) => {
+  new Function("__global", code)(global);
+};
+
 greet();
 
 export {
   parse,
   tokenize,
+  generate,
+  evaluate,
   compile,
   global,
   VERSION
@@ -48,8 +72,10 @@ if (typeof window !== "undefined") {
   window.hevia = {
     parse,
     tokenize,
-    compile,
+    generate,
     global,
+    evaluate,
+    compile,
     VERSION
   };
 }

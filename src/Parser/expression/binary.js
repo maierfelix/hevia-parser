@@ -53,8 +53,9 @@ export function parseLiteral() {
   }
   else {
     node = new Node.Literal();
-    if (this.eat(TT.BIT_AND)) {
+    if (this.current.value === "&") {
       node.isPointer = true;
+      this.next();
     }
     node.type = this.current.name;
     node.value = this.current.value;

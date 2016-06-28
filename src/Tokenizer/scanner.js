@@ -632,6 +632,7 @@ function scanPunctuator() {
           str === '<<=' || str === '>>=') {
           index += 3;
         } else {
+          let org = str;
           // 2-character punctuators.
           str = str.substr(0, 2);
           if (TT[str] !== void 0 && Number.isInteger(TT[str])) {
@@ -644,7 +645,7 @@ function scanPunctuator() {
             }
             if (TT[str.trim()] === void 0) {
               token.type = Token.Identifier;
-              index++;
+              str = org;
             } else {
               str = tmp;
             }

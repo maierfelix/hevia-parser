@@ -8,7 +8,8 @@ import Node from "../../../nodes";
 
 import {
   getNameByLabel,
-  getLabelByNumber
+  getLabelByNumber,
+  getNumericType
 } from "../../../utils";
 
 export function emitProgram(ast) {
@@ -52,7 +53,7 @@ export function emitBlock(ast) {
     this.emitStatement(node);
     this.write(";");
   };
-  this.write("\n}");
+  this.write("\n}\n");
 }
 
 export function emitStatement(ast) {
@@ -65,7 +66,6 @@ export function emitStatement(ast) {
       //console.log(ast);
     break;
     /** Branch statement */
-    case Type.IfStatement:
     case Type.GuardStatement:
     case Type.SwitchStatement:
     case Type.PseudoProperty:
@@ -108,12 +108,45 @@ export function emitStatement(ast) {
       this.emitParameter(ast);
     break;
     case Type.ParameterExpression:
+      this.write("(");
       this.emitArguments(ast);
+      this.write(")");
+    break;
+    case Type.TernaryExpression:
+      this.emitTernary(ast);
+    break;
+    case Type.IfStatement:
+      this.emitIf(ast);
     break;
     default:
       this.emitBinary(ast);
     break;
   };
+
+}
+
+export function emitIf(ast) {
+
+  if (ast.condition) {
+    this.write("if (");
+    this.emitStatement(ast.condition);
+    this.write(")");
+  }
+  this.emitBlock(ast.consequent);
+  if (ast.alternate && ast.alternate.kind === Type.IfStatement) {
+    this.write(" else ");
+    this.emitStatement(ast.alternate);
+  }
+
+}
+
+export function emitTernary(ast) {
+
+  this.emitStatement(ast.condition);
+  this.write("?");
+  this.emitStatement(ast.consequent);
+  this.write(":");
+  this.emitStatement(ast.alternate);
 
 }
 
@@ -138,7 +171,33 @@ export function emitMember(ast) {
 
   if (ast.property.kind === Type.Literal) {
     this.emitLiteral(ast.property);
+  } else {
+    this.emitStatement(ast.property);
   }
+
+}
+
+export function emitCall(ast) {
+
+  this.emitStatement(ast.callee);
+
+  this.write("(");
+  this.emitArguments(ast.arguments);
+  this.write(")");
+
+}
+
+export function emitArguments(ast) {
+
+  let param = ast.arguments;
+
+  let ii = 0;
+  let length = param.length;
+
+  for (; ii < length; ++ii) {
+    this.emitStatement(param[ii]);
+    if (ii + 1 < length) this.write(", ");
+  };
 
 }
 
@@ -149,7 +208,7 @@ export function emitDeclaration(ast) {
       this.emitFunction(ast, false);
     break;
     case Type.ExtensionDeclaration:
-      //console.log(ast);
+      this.emitExtension(ast);
     break;
     case Type.VariableDeclaration:
       this.emitVariableDeclaration(ast);
@@ -158,9 +217,32 @@ export function emitDeclaration(ast) {
 
 }
 
-export function emitVariableDeclaration(ast) {
+export function emitExtension(ast) {
 
-  this.write(getNameByLabel(ast.symbol).toLowerCase() + " ");
+  this.write("class ");
+
+  this.write("__");
+
+  this.emitLiteral(ast.argument);
+
+  this.write(" {\n");
+
+  for (let node of ast.body.body) {
+    if (node.kind === Type.FunctionDeclaration) {
+      node.isStatic = true;
+      this.emitFunction(node, false, true);
+    }
+  };
+
+  this.write("}");
+
+}
+
+export function emitVariableDeclaration(ast, noKeyword) {
+
+  if (!noKeyword) {
+    this.write(getNameByLabel(ast.symbol).toLowerCase() + " ");
+  }
 
   let index = 0;
   for (let node of ast.declarations) {
@@ -175,7 +257,13 @@ export function emitVariable(ast, init) {
   this.write(ast.name);
   this.write(" = ");
 
+  this.type = getLabelByNumber(ast.type.type);
+
+  if (ast.isLaterPointer) this.write("{\nvalue: ");
+
   this.emitStatement(init);
+
+  if (ast.isLaterPointer) this.write("\n}");
 
 }
 
@@ -185,12 +273,7 @@ export function emitBinary(ast) {
     let op = getLabelByNumber(ast.operator);
     /** Custom operator call */
     if (op in this.operators) {
-      this.write(`__OP["${op}"]`);
-      this.write("(");
-      this.emitStatement(ast.left);
-      this.write(", ");
-      this.emitStatement(ast.right);
-      this.write(")");
+      this.emitCustomOperator(ast, op);
     /** Default binary expr */
     } else {
       this.emitStatement(ast.left);
@@ -205,39 +288,77 @@ export function emitBinary(ast) {
 
 }
 
+export function emitCustomOperator(ast, op) {
+
+  this.write(`__OP["${op}"]`);
+  this.write("(");
+  this.emitStatement(ast.left);
+  this.write(", ");
+  this.emitStatement(ast.right);
+  this.write(")");
+
+}
+
 export function emitLiteral(ast) {
 
   if (ast.isGlobal) {
     this.write("__global.");
   }
 
-  this.write(ast.value);
+  let name = this.isPureType(ast) ? getNameByLabel(ast.type) : ast.value || ast.name;
+
+  let resolve = this.scope.get(ast.value);
+
+  if (this.isPureType(ast)) {
+    if (ast.type === TT.SELF) {
+      this.write("this");
+    } else {
+      this.write(getLabelByNumber(TT[name]));
+    }
+  } else {
+    this.write(ast.value || ast.name);
+  }
+
+  if (resolve && resolve.isLaterPointer) {
+    if (ast.isPointer === void 0) {
+      this.write(".value");
+    }
+  } else {
+    resolve = this.scope.get(ast.value);
+    if (!ast.isReference && resolve && resolve.isReference) {
+      this.write(".value");
+    }
+  }
 
 }
 
-export function emitCall(ast) {
-
-  this.emitStatement(ast.callee);
-
-  this.emitArguments(ast.arguments);
-
-}
-
-export function emitFunction(ast, allowOP) {
+export function emitFunction(ast, allowOP, noKeyword) {
 
   if (!allowOP && ast.name in this.operators) {
     return void 0;
   }
 
-  this.write("function ");
+  this.scope = ast.context;
+
+  if (!noKeyword) {
+    this.write("function ");
+  }
+
+  if (ast.isStatic) {
+    this.write("static ");
+  }
 
   if (!allowOP) {
     this.write(ast.name);
   }
 
+  this.write("(");
   this.emitArguments(ast.arguments);
+  this.write(")");
 
   this.emitBlock(ast.body);
+
+  this.popScope();
 
 }
 
@@ -246,23 +367,5 @@ export function emitReturn(ast) {
   this.write("return ");
 
   this.emitStatement(ast.argument);
-
-}
-
-export function emitArguments(ast) {
-
-  let param = ast.arguments;
-
-  let ii = 0;
-  let length = param.length;
-
-  this.write("(");
-
-  for (; ii < length; ++ii) {
-    this.emitStatement(param[ii]);
-    if (ii + 1 < length) this.write(", ");
-  };
-
-  this.write(")");
 
 }

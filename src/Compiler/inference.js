@@ -8,6 +8,7 @@ import Node from "../nodes";
 
 import {
   getNameByLabel,
+  getLabelByNumber,
   getNumericType
 } from "../utils";
 
@@ -18,7 +19,8 @@ export function inferenceBlock(node) {
   for (let key of node.body) {
     if (key.kind === Type.ReturnStatement) {
       type = this.inferenceExpression(key.argument);
-    } else {
+    }
+    else {
       type = this.inferenceExpression(key);
     }
   };
@@ -31,7 +33,7 @@ export function inferenceExpression(node) {
 
   switch (node.kind) {
     case Type.Literal:
-      return this.inferenceIdentifier(node);
+      return this.inferenceLiteral(node);
     break;
     case Type.BinaryExpression:
       return this.inferenceBinaryExpression(node);
@@ -42,6 +44,20 @@ export function inferenceExpression(node) {
     case Type.MemberExpression:
       return this.inferenceMemberExpression(node);
     break;
+    case Type.ParameterExpression:
+      this.inferenceParameterExpression(node);
+    break;
+    case Type.Parameter:
+      this.inferenceExpression(node.init);
+    break;
+  };
+
+}
+
+export function inferenceParameterExpression(node) {
+
+  for (let key of node.arguments) {
+    this.inferenceExpression(key);
   };
 
 }
@@ -57,7 +73,9 @@ export function inferenceMemberExpression(node) {
 
 export function inferenceCallExpression(node) {
 
-  let type = this.inferenceIdentifier(node.callee);
+  let type = this.inferenceExpression(node.callee);
+
+  this.inferenceExpression(node.arguments);
 
   return (type);
 
@@ -87,9 +105,17 @@ export function inferenceBinaryExpression(node) {
 
 }
 
-export function inferenceIdentifier(node) {
+export function inferenceLiteral(node) {
 
   let resolved = this.scope.get(node.value);
+
+  if (node.isPointer) {
+    if (resolved && resolved.kind === Type.VariableDeclarement) {
+      resolved.isLaterPointer = true;
+    } else {
+      throw new Error(`Can't resolve ${node.value} declarement!`);
+    }
+  }
 
   if (resolved && resolved.type) {
     return (
@@ -97,6 +123,7 @@ export function inferenceIdentifier(node) {
     );
   } else {
     this.globalCheck(node);
+    return (TT[getNumericType(Number(node.raw))]);
   }
 
 }

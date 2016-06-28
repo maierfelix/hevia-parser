@@ -80,13 +80,28 @@ export default class Compiler {
   }
 
   /**
+   * Literal contains type only
+   * @param  {Node}  ast
+   * @return {Boolean}
+   */
+  isPureType(node) {
+    return (
+      node.value === void 0 &&
+      node.raw === void 0 &&
+      node.type >= 0 ||
+      node.type <= 0
+    );
+  }
+
+  /**
    * @param {Node} ast
    * @param {String} lang
    * @return {String}
    */
   compile(ast, lang) {
     this.reset();
-    this.pushScope(ast);
+    this.scope = void 0;
+    this.pushScope(ast.body);
     this.compileProgram(ast.body);
     this.initLanguage(lang);
     this.emitProgram(ast.body);
@@ -112,7 +127,7 @@ export default class Compiler {
       break;
     }
 
-    console.log(`Compiling to ${lang}`);
+    //console.log(`Compiling to ${lang}`);
 
   }
 
