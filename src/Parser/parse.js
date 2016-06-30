@@ -1,7 +1,8 @@
 import {
   Token,
   Types as Type,
-  TokenList as TT
+  TokenList as TT,
+  Operators as OP
 } from "../labels";
 
 import Node from "../nodes";
@@ -143,4 +144,31 @@ export function parseBlock() {
 export function parse(tokens) {
   this.reset(tokens);
   return (this.parseProgram());
+}
+
+/**
+ * Accept precedence
+ * @param  {Object}  token
+ * @param  {Number}  state
+ * @return {Boolean}
+ */
+export function acceptPrecedence(state) {
+  if (state !== void 0 && this.current) {
+    /** Custom operator */
+    if (getNameByLabel(this.current.name) === "Identifier") {
+      return (TT[state.op] === TT[this.current.value]);
+    }
+    return (TT[state.op] === this.current.name);
+  }
+  return (false);
+}
+
+/**
+ * @param  {Number}  name
+ * @return {Boolean}
+ */
+export function isOperator(name) {
+  return (
+    getNameByLabel(name) in OP
+  );
 }

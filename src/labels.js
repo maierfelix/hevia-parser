@@ -39,6 +39,7 @@ let ii = 0;
   Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
+  Label[Label["InitializerDeclaration"] = ++ii] = "InitializerDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
   Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
@@ -98,6 +99,7 @@ let ii = 0;
   Label[Label["var"] = ++ii] = "VAR";
   Label[Label["let"] = ++ii] = "CONST";
   Label[Label["class"] = ++ii] = "CLASS";
+  Label[Label["init"] = ++ii] = "INIT";
   Label[Label["enum"] = ++ii] = "ENUM";
   Label[Label["extension"] = ++ii] = "EXTENSION";
   Label[Label["import"] = ++ii] = "IMPORT";

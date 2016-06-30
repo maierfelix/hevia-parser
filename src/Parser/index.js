@@ -6,8 +6,8 @@ import * as parse from "./parse";
 /** Expressions */
 import * as atoms from "./expression/atom";
 import * as casts from "./expression/cast";
-import * as tuples from "./expression/tuple";
 import * as binaries from "./expression/binary";
+import * as literals from "./expression/literal";
 import * as expressions from "./expression";
 
 /** Branches */
@@ -20,7 +20,6 @@ import * as switches from "./branch/switch";
 /** Globals */
 import * as loops from "./loop";
 import * as types from "./type";
-import * as parameters from "./parameter";
 import * as statements from "./statement";
 
 /** Declarations */
@@ -76,6 +75,7 @@ inherit(Parser, parse);
 inherit(Parser, casts);
 inherit(Parser, atoms);
 inherit(Parser, binaries);
+inherit(Parser, literals);
 inherit(Parser, expressions);
 
 inherit(Parser, guards);
@@ -86,9 +86,7 @@ inherit(Parser, branches);
 
 inherit(Parser, loops);
 inherit(Parser, types);
-inherit(Parser, tuples);
 inherit(Parser, branches);
-inherit(Parser, parameters);
 inherit(Parser, statements);
 
 inherit(Parser, imports);

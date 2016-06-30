@@ -51,6 +51,7 @@ export function parseStatement() {
     case TT.ENUM:
     case TT.STRUCT:
     case TT.CLASS:
+    case TT.INIT:
     case TT.PROTOCOL:
     case TT.EXTENSION:
     case TT.OPERATOR:
@@ -80,11 +81,7 @@ export function parseReturnStatement() {
 
   this.expect(TT.RETURN);
 
-  if (this.peek(TT.LPAREN)) {
-    node.argument = this.parseParenthese();
-  } else {
-    node.argument = this.parseExpressionStatement();
-  }
+  node.argument = this.parseExpressionStatement();
 
   return (node);
 

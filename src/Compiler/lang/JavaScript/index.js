@@ -238,15 +238,18 @@ export function emitExtension(ast) {
 
 }
 
-export function emitVariableDeclaration(ast, noKeyword) {
-
-  if (!noKeyword) {
-    this.write(getNameByLabel(ast.symbol).toLowerCase() + " ");
-  }
+export function emitVariableDeclaration(ast) {
 
   let index = 0;
   for (let node of ast.declarations) {
-    this.emitVariable(node, ast.init[index] || ast.init);
+    let init = ast.init[index] || ast.init;
+    let symbol = getNameByLabel(ast.symbol).toLowerCase() + " ";
+    if (node.kind === Type.ParameterExpression) {
+      this.emitMultipleVariable(node, init, symbol);
+    } else {
+      this.write(symbol);
+      this.emitVariable(node, init);
+    }
     index++;
   };
 
@@ -254,16 +257,27 @@ export function emitVariableDeclaration(ast, noKeyword) {
 
 export function emitVariable(ast, init) {
 
-  this.write(ast.name);
+  this.write(ast.name || ast.value);
   this.write(" = ");
-
-  this.type = getLabelByNumber(ast.type.type);
 
   if (ast.isLaterPointer) this.write("{\nvalue: ");
 
   this.emitStatement(init);
 
   if (ast.isLaterPointer) this.write("\n}");
+
+  this.write(";\n");
+
+}
+
+export function emitMultipleVariable(ast, init, symbol) {
+
+  let index = 0;
+  for (let node of ast.arguments) {
+    this.write(symbol);
+    this.emitVariable(node.init, init.arguments[index]);
+    index++;
+  };
 
 }
 
@@ -276,10 +290,12 @@ export function emitBinary(ast) {
       this.emitCustomOperator(ast, op);
     /** Default binary expr */
     } else {
+      if (ast.isParenthised) this.write("(");
       this.emitStatement(ast.left);
       op = op === "==" ? "===" : op === "!=" ? "!==" : op;
       this.write(` ${op} `);
       this.emitStatement(ast.right);
+      if (ast.isParenthised) this.write(")");
     }
   }
   else if (ast.kind === Type.Literal) {
@@ -300,6 +316,8 @@ export function emitCustomOperator(ast, op) {
 }
 
 export function emitLiteral(ast) {
+
+  if (ast.init) ast = ast.init;
 
   if (ast.isGlobal) {
     this.write("__global.");

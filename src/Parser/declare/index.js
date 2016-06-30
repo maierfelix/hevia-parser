@@ -65,9 +65,34 @@ export function parseDeclarationStatement() {
     case TT.INFIX:
       node = this.parseOperatorDeclaration();
     break;
+    case TT.INIT:
+      node = this.parseInitializerDeclaration();
+    break;
   };
 
   this.eat(TT.SEMICOLON);
+
+  return (node);
+
+}
+
+/*
+ * @return {Node}
+ */
+export function parseInitializerDeclaration() {
+
+  let node = new Node.InitializerDeclaration();
+
+  this.expect(TT.INIT);
+
+  node.arguments = this.parseArguments();
+
+  this.expect(TT.LBRACE);
+  node.body = this.parseBlock();
+  this.expect(TT.RBRACE);
+
+  console.log(getNameByLabel(this.current.name), this.current);
+  console.log(node);
 
   return (node);
 

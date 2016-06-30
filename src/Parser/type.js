@@ -6,31 +6,46 @@ import {
 
 import Node from "../nodes";
 
+import {
+  getNameByLabel
+} from "../utils";
+
 /*
   [x] tuple
   [x] type
 */
-export function parseStrictType() {
+export function parseStrictType(base) {
 
-  let node = new Node.TypeAnnotation();
+  let node = new Node.Parameter();
 
   if (this.eat(TT.COLON)) {
     this.eat(TT.INOUT);
-    /** id:(type,type) */
-    if (this.peek(TT.LPAREN)) {
-      node.type = this.parseTupleType();
-    /** id:type */
+    node.init = base;
+    if (this.isNativeType(this.current.name)) {
+      node.argument = this.parseType();
     } else {
-      if (this.isNativeType(this.current.name)) {
-        node.type = this.current.name;
-        this.next();
-      } else {
-        node = this.parseBinaryExpression(0);
-      }
+      node.argument = this.parseExpressionStatement();
     }
-  } else if (this.peek(TT.ASSIGN)) {
-    node.type = -1;
   }
+  else if (this.eat(TT.ARROW)) {
+    if (this.peek(TT.LPAREN)) {
+      node = this.parseExpressionStatement();
+    } else {
+      node = this.parseType();
+    }
+  }
+
+  return (node);
+
+}
+
+export function parseType() {
+
+  let node = new Node.TypeAnnotation();
+
+  node.type = this.current.name;
+
+  this.next();
 
   return (node);
 

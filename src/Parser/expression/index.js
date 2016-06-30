@@ -1,8 +1,7 @@
 import {
   Token,
   Types as Type,
-  TokenList as TT,
-  Operators as OP
+  TokenList as TT
 } from "../../labels";
 
 import Node from "../../nodes";
@@ -17,6 +16,7 @@ import {
 export function parseExpressionStatement() {
 
   switch (this.current.name) {
+    case TT.LPAREN:
     case TT.SELF:
     case TT.BIT_AND:
     case TT.UL:
@@ -29,21 +29,12 @@ export function parseExpressionStatement() {
     case Token.BooleanLiteral:
       return this.parseAtomicExpression();
     break;
-    /** Parenthised expression */
-    case TT.LPAREN:
-      return this.parseParenthese();
-    break;
     /** Operator things */
     case TT.ASSOCIATIVITY:
       return this.parseAssociativityExpression();
     break;
     case TT.PRECEDENCE:
       return this.parsePrecedenceExpression();
-    break;
-    default:
-      if (this.isNativeType(this.current.name)) {
-        return (this.parseBinaryExpression(0));
-      }
     break;
   };
 
@@ -52,58 +43,66 @@ export function parseExpressionStatement() {
 }
 
 /**
- * @return {Node}
+  [x] parenthesed bin expr
+  [x] parameter
+  [x] tuple
+  @return {Node}
  */
-export function parsePrecedenceExpression() {
+export function parseParenthese() {
 
-  let node = new Node.PrecedenceExpression();
+  let node = null;
+  let base = null;
 
-  this.expect(TT.PRECEDENCE);
+  /** Empty parenthese */
+  this.expect(TT.LPAREN);
+  if (this.eat(TT.RPAREN)) return (null);
 
-  node.level = this.parseLiteral();
+  base = this.parseExpressionStatement();
 
-  return (node);
-
-}
-
-/**
- * @return {Node}
- */
-export function parseAssociativityExpression() {
-
-  let node = new Node.AssociativityExpression();
-
-  this.expect(TT.ASSOCIATIVITY);
-
-  node.associativity = this.parseLiteral();
-
-  return (node);
-
-}
-
-/**
- * Accept precedence
- * @param  {Object}  token
- * @param  {Number}  state
- * @return {Boolean}
- */
-export function acceptPrecedence(state) {
-  if (state !== void 0 && this.current) {
-    /** Custom operator */
-    if (getNameByLabel(this.current.name) === "Identifier") {
-      return (TT[state.op] === TT[this.current.value]);
-    }
-    return (TT[state.op] === this.current.name);
+  if (this.eat(TT.COMMA)) {
+    node = this.parseComplexParenthese();
+    node.unshift(base);
+  } else {
+    node = base;
   }
-  return (false);
+
+  this.expect(TT.RPAREN);
+
+  return (node);
+
 }
 
 /**
- * @param  {Number}  name
- * @return {Boolean}
+ * @return {Array}
  */
-export function isOperator(name) {
-  return (
-    getNameByLabel(name) in OP
-  );
+export function parseComplexParenthese() {
+
+  let args = [];
+
+  while (true) {
+    args.push(this.parseExpressionStatement());
+    if (!this.eat(TT.COMMA)) break;
+  };
+
+  return (args);
+
+}
+
+/**
+ * @return {Array}
+ */
+export function parseArguments() {
+
+  let args = this.parseExpressionStatement();
+
+  /** Handle empty arguments */
+  if (args === null) {
+    args = [];
+  }
+  else if (!args.length) {
+    args = [args];
+  }
+
+  return (args);
+
 }

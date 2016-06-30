@@ -25,7 +25,6 @@ export function parsePseudoProperty() {
   this.next();
 
   if (this.peek(TT.LPAREN) && allowParameters) {
-    node.arguments = this.parseParenthese();
   }
 
   this.expect(TT.LBRACE);

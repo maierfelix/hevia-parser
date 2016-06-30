@@ -44,6 +44,36 @@ export function parseOperatorDeclaration() {
 }
 
 /**
+ * @return {Node}
+ */
+export function parsePrecedenceExpression() {
+
+  let node = new Node.PrecedenceExpression();
+
+  this.expect(TT.PRECEDENCE);
+
+  node.level = this.parseLiteral();
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseAssociativityExpression() {
+
+  let node = new Node.AssociativityExpression();
+
+  this.expect(TT.ASSOCIATIVITY);
+
+  node.associativity = this.parseLiteral();
+
+  return (node);
+
+}
+
+/**
  * @param {Node}
  * @return {String}
  */

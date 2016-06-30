@@ -80,7 +80,7 @@ export default class Scope {
    */
   getName(node) {
     return (
-      node.value || node.name || node.id
+      node.value || node.name || node.id || (node.init ? node.init.value : void 0)
     );
   }
 

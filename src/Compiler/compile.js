@@ -131,11 +131,27 @@ export function compileVariableDeclaration(ast) {
 
   for (let key of ast.declarations) {
     let init = ast.init[index] || ast.init;
-    if (key.type.type === -1) {
-      key.type.type = this.compileStatement(init);
+    /** Multiple declarations */
+    if (key.kind === Type.ParameterExpression) {
+      this.compileMultipleVariableDeclarations(ast.declarations[0], init);
+    } else {
+      if (key.type.type === -1) {
+        key.type.type = this.compileStatement(init);
+      }
+      this.scope.register(key);
     }
-    this.scope.register(key);
     index++;
+  };
+
+}
+
+export function compileMultipleVariableDeclarations(ast, init) {
+
+  let index = 0;
+
+  for (let key of ast.arguments) {
+    this.scope.register(key);
+    ++index;
   };
 
 }

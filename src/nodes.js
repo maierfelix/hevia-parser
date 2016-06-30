@@ -44,6 +44,18 @@ export default class Node {
     );
   }
 
+  static get InitializerDeclaration() {
+    return (
+      class InitializerDeclaration {
+        constructor() {
+          this.kind = Type.InitializerDeclaration;
+          this.arguments = [];
+          this.body = [];
+        }
+      }
+    );
+  }
+
   static get OperatorDeclaration() {
     return (
       class OperatorDeclaration {
@@ -135,6 +147,8 @@ export default class Node {
       class Parameter {
         constructor() {
           this.kind = Type.Parameter;
+          this.label = null;
+          this.argument = null;
           this.init = null;
         }
       }
@@ -302,18 +316,6 @@ export default class Node {
     );
   }
 
-  static get VariableDeclarement() {
-    return (
-      class VariableDeclarement {
-        constructor() {
-          this.kind = Type.VariableDeclarement;
-          this.name = null;
-          this.type = null;
-        }
-      }
-    );
-  }
-
   static get AssignmentExpression() {
     return (
       class AssignmentExpression {
@@ -335,6 +337,7 @@ export default class Node {
           this.operator = null;
           this.left = null;
           this.right = null;
+          this.isParenthised = false;
         }
       }
     );

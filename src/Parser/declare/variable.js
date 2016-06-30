@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
   [x] name
   [x] pattern
@@ -54,12 +58,6 @@ export function parseVariable() {
  */
 export function parseVariableDeclarement() {
 
-  let node = new Node.VariableDeclarement();
-
-  node.name = this.current.value;
-  this.next();
-  node.type = this.parseStrictType();
-
-  return (node);
+  return (this.parseLiteral().label);
 
 }

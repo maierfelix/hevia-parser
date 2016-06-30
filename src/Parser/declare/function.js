@@ -21,34 +21,17 @@ export function parseFunction() {
   this.eat(TT.FUNCTION);
 
   node.name = this.extract(Token.Identifier).value;
-  node.body = this.parseFunctionBody(node, false);
-
-  return (node);
-
-}
-
-export function parseFunctionBody(node) {
-
-  if (this.peek(TT.LPAREN)) {
-    node.arguments = this.parseStatement();
-  }
+  node.arguments = this.parseArguments();
 
   if (this.peek(TT.ARROW)) {
-    this.parseFunctionReturn(node);
+    node.type = this.parseStrictType();
   }
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
+
   this.expect(TT.RBRACE);
 
-  return (node.body);
-
-}
-
-export function parseFunctionReturn(node) {
-
-  this.expect(TT.ARROW);
-
-  node.type = this.parseStatement();
+  return (node);
 
 }
