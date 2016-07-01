@@ -28,7 +28,7 @@ export function parseExpressionStatement() {
     case Token.StringLiteral:
     case Token.NumericLiteral:
     case Token.BooleanLiteral:
-      return this.parseAtomicExpression();
+      return this.parseBinaryExpression(0);
     break;
     /** Operator things */
     case TT.ASSOCIATIVITY:

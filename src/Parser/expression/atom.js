@@ -11,38 +11,38 @@ import {
 } from "../../utils";
 
 /**
- * Handles deep:
- * - CallExpr   ()
- * - MemberExpr []
- * - MemberExpr .
- * - TernaryExpr ?:
  * @return {Node}
  */
-export function parseAtomicExpression() {
+export function parseAtom() {
 
-  let base = this.parseBinaryExpression(0);
+  let node = this.parseLiteral();
 
   while (true) {
     if (this.peek(TT.CONDITIONAL)) {
-      base = this.parseTernaryExpression(base);
+      node = this.parseTernaryExpression(node);
     }
     /** Member expression */
     else if (
       this.peek(TT.LBRACK) ||
       this.peek(TT.PERIOD)
     ) {
-      base = this.parseMemberExpression(base);
+      node = this.parseMemberExpression(node);
+    }
     /** Type casting */
-    } else if (
+    else if (
       this.peek(TT.AS) ||
       this.peek(TT.IS)
     ) {
-      base = this.parseCast(base);
+      node = this.parseCast(node);
     }
-    else break;
+    else if (this.peek(TT.LPAREN)) {
+      node = this.parseCallExpression(node);
+    } else {
+      break;
+    }
   };
 
-  return (base);
+  return (node);
 
 }
 
@@ -58,7 +58,7 @@ export function parseMemberExpression(base) {
   this.next();
 
   node.object = base;
-  node.property = this.parseBinaryExpression(0);
+  node.property = this.parseAtom();
 
   if (node.isComputed) {
     this.expect(TT.RBRACK);
@@ -71,11 +71,11 @@ export function parseMemberExpression(base) {
 /**
  * @return {Node}
  */
-export function parseCallExpression(callee) {
+export function parseCallExpression(base) {
 
   let node = new Node.CallExpression();
 
-  node.callee = callee;
+  node.callee = base;
   node.arguments = this.parseArguments();
 
   return (node);
@@ -85,13 +85,13 @@ export function parseCallExpression(callee) {
 /**
  * @return {Node}
  */
-export function parseTernaryExpression(condition) {
+export function parseTernaryExpression(base) {
 
   let node  = new Node.TernaryExpression();
 
   this.inTernary = true;
 
-  node.condition = condition;
+  node.condition = base;
 
   this.expect(TT.CONDITIONAL);
   node.consequent = this.parseExpressionStatement();

@@ -167,12 +167,20 @@ export function emitMember(ast) {
     this.emitStatement(ast.object);
   }
 
-  this.write(".");
+  if (ast.isComputed) {
+    this.write("[");
+  } else {
+    this.write(".");
+  }
 
   if (ast.property.kind === Type.Literal) {
     this.emitLiteral(ast.property);
   } else {
     this.emitStatement(ast.property);
+  }
+
+  if (ast.isComputed) {
+    this.write("]");
   }
 
 }

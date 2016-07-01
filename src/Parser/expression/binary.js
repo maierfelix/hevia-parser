@@ -24,14 +24,14 @@ export function parseBinaryExpression(index) {
 
   let state = Precedence[index];
 
-  ast = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
+  ast = state ? this.parseBinaryExpression(index + 1) : this.parseAtom();
 
   while (this.acceptPrecedence(state)) {
     node = new Node.BinaryExpression();
     node.operator = TT[state.op];
     this.next();
     node.left = ast;
-    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
+    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseAtom();
     node.right = tmp;
     ast = node;
     node.isParenthised = this.peek(TT.RPAREN);

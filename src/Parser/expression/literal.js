@@ -60,11 +60,6 @@ export function parseLiteral() {
     }
   }
 
-  /** Call expression */
-  if (this.peek(TT.LPAREN)) {
-    node = this.parseCallExpression(node);
-  }
-
   return (node);
 
 }
