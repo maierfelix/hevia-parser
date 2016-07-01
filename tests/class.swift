@@ -1,18 +1,17 @@
-class Earth {
-  init() {}
-}
-
-class Human {
+class A { }
+class B { }
+class Human: A, B {
   var gender:String
-}
-
-class Person: Human {
-
-  var firstName:String
-  var lastName:String
-
-  init(gender: String) {
-    self.gender = "male"
+  init(gender:String) {
+    self.gender = "undefined";
+  }
+  
+  func numeric(a:Int) -> Int {
+    return (a * 2);
   }
 
 }
+
+var a = Human(gender: "rofl");
+
+print(a);

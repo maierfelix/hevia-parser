@@ -29,7 +29,6 @@ export function parseFunction() {
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
-
   this.expect(TT.RBRACE);
 
   return (node);

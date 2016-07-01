@@ -17,8 +17,8 @@ export function parseClass() {
 
   node.name = this.extract(Token.Identifier).value;
 
-  if (this.peek(TT.COLON)) {
-    node.extend = this.parseStrictType(node);
+  if (this.eat(TT.COLON)) {
+    node.extend = this.parseCommaSeperatedValues() || [];
   }
 
   this.expect(TT.LBRACE);

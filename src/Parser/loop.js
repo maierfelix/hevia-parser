@@ -6,6 +6,10 @@ import {
 
 import Node from "../nodes";
 
+import {
+  getNameByLabel
+} from "../utils";
+
 /*
   [ ] for
   [ ] while
@@ -37,16 +41,26 @@ export function parseFor() {
 
   let node = new Node.ForStatement();
 
+  let init = null;
+
   this.expect(TT.FOR);
 
   this.eat(TT.LPAREN);
 
   if (!this.eat(TT.SEMICOLON)) {
-    node.init = this.parseVariable();
+    init = this.parseExpressionStatement();
   }
-  node.test = this.parseExpressionStatement();
-  this.expect(TT.SEMICOLON);
-  node.update = this.parseExpressionStatement();
+
+  /** for ex in ex */
+  if (this.eat(TT.IN)) {
+    node = new Node.ForInStatement();
+    this.parseForInLoop(node);
+  /** for ex;ex;ex */
+  } else {
+    this.parseDefaultForLoop(node);
+  }
+
+  node.init = init;
 
   this.eat(TT.RPAREN);
 
@@ -55,6 +69,20 @@ export function parseFor() {
   this.expect(TT.RBRACE);
 
   return (node);
+
+}
+
+export function parseForInLoop(node) {
+
+  node.expression = this.parseExpressionStatement();
+
+}
+
+export function parseDefaultForLoop(node) {
+
+  node.test = this.parseExpressionStatement();
+  this.expect(TT.SEMICOLON);
+  node.update = this.parseExpressionStatement();
 
 }
 

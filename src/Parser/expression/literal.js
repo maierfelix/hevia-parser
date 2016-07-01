@@ -17,8 +17,11 @@ import {
  */
 export function parseLiteral() {
 
-  if (this.peek(TT.LPAREN)) {
-    return (this.parseParenthese());
+  if (this.peek(TT.LBRACK)) {
+    return (this.parseArrayDeclaration());
+  }
+  else if (this.peek(TT.LPAREN)) {
+    return (this.parseParenthese(TT.LPAREN, TT.RPAREN));
   }
 
   let node = new Node.Literal();
@@ -61,6 +64,21 @@ export function parseLiteral() {
   if (this.peek(TT.LPAREN)) {
     node = this.parseCallExpression(node);
   }
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseArrayDeclaration() {
+
+  let node = new Node.ArrayDeclaration();
+
+  let args = this.parseParenthese(TT.LBRACK, TT.RBRACK);
+
+  node.argument = this.parseArguments(args);
 
   return (node);
 

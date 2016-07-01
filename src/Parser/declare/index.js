@@ -37,7 +37,7 @@ export function parseDeclarationStatement() {
     break;
     case TT.VAR:
     case TT.CONST:
-      node = this.parseVariable();
+      node = this.parseVariableDeclaration();
     break;
     case TT.TYPEALIAS:
       //
@@ -90,9 +90,6 @@ export function parseInitializerDeclaration() {
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
   this.expect(TT.RBRACE);
-
-  console.log(getNameByLabel(this.current.name), this.current);
-  console.log(node);
 
   return (node);
 

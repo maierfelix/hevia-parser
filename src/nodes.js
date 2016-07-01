@@ -74,7 +74,7 @@ export default class Node {
         constructor() {
           this.kind = Type.ClassDeclaration;
           this.name = null;
-          this.extend = null;
+          this.extend = [];
           this.body = [];
         }
       }
@@ -111,6 +111,19 @@ export default class Node {
         constructor() {
           this.kind = Type.WhileStatement;
           this.test = null;
+          this.body = [];
+        }
+      }
+    );
+  }
+
+  static get ForInStatement() {
+    return (
+      class ForInStatement {
+        constructor() {
+          this.kind = Type.ForInStatement;
+          this.init = null;
+          this.expression = null;
           this.body = [];
         }
       }
@@ -265,6 +278,7 @@ export default class Node {
           this.kind = Type.MemberExpression;
           this.object = null;
           this.property = null;
+          this.isComputed = false;
         }
       }
     );
@@ -298,6 +312,17 @@ export default class Node {
         constructor() {
           this.kind = Type.TypeAnnotation;
           this.type = null;
+        }
+      }
+    );
+  }
+
+  static get ArrayDeclaration() {
+    return (
+      class ArrayDeclaration {
+        constructor() {
+          this.kind = Type.ArrayDeclaration;
+          this.argument = [];
         }
       }
     );

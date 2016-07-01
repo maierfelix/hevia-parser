@@ -1,36 +1,42 @@
-func tuple(aa:Int, bb:Int) -> (aa: Int, bb: Int) {
+var me:Int = 22;
+
+/*func tuple(aa:Int, bb:Int) -> (aa: Int, bb: Int) {
   return (aa * 2, bb * 2);
+}*/
+
+func test1()->Int {
+  return 1337;
 }
 
-func mul(aa:Int, bb:Int) -> (aa: Int, bb: Int) {
-  return (aa * bb);
+func test2(_ c:Int) -> Int {
+  return (c * 10);
 }
 
-func a() {
-  return 1337 * 4;
+func test3(e: inout Int) {
+  e *= 4;
 }
 
-func b(c:Int) -> Int {
-  return (a);
+func test4(g:Int, to h:Int) -> Int {
+  return (g + h);
 }
 
-func d(e: inout Int) {
-  a *= 2;
+func test5(m:Int, _ n: inout Int) {
+  n *= 2;
+  expect((m * n) == 1760);
 }
 
-func f(g:Int, to h:Int) -> Int {
-  return (b + a);
-}
+/*expect(tuple(aa:1, bb:2));*/
 
-func i(j:Int, _ k:Int) {
-  print(a * b);
-}
+expect(test1() + test1() == 2674);
 
-func l(m:Int, _ n: inout Int) {
-  print(a * b);
-}
+expect(test2(44) == 440);
 
-print(mul(a:2, to:668.5)); // 1337
+expect(me == 22);
+test3(e: &me);
+expect(me == 88);
 
-var s:Int = mul(a:2, 4) + mul(a:2, 4); // 16
-print(s);
+expect(test4(g: 22, to: 33) == 55);
+
+expect(me == 88);
+test5(m:10, &me);
+expect(me == 176);

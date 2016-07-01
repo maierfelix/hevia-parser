@@ -19,14 +19,14 @@ var failures = 0;
 sources.map((src) => {
   var tokens = null;
   var ast = null;
+  var code = null;
   var success = false;
   var error = null;
   var name = src.name;
   try {
+    //hevia.evaluate(hevia.compile(src.src))
+    hevia.parse(hevia.tokenize(src.src));
     success = true;
-    tokens = hevia.tokenize(src.src);
-    ast = hevia.parse(tokens);
-    hevia.compile(ast, "JS");
   } catch(e) {
     error  = e;
     success = false;

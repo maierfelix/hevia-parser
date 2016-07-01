@@ -4,6 +4,7 @@ import { inherit } from "../utils";
 import * as parse from "./parse";
 
 /** Expressions */
+import * as args from "./expression/args";
 import * as atoms from "./expression/atom";
 import * as casts from "./expression/cast";
 import * as binaries from "./expression/binary";
@@ -66,12 +67,19 @@ export default class Parser {
      */
     this.current = null;
 
+    /**
+     * Inside ternary expr
+     * @type {Boolean}
+     */
+    this.inTernary = false;
+
   }
 
 }
 
 inherit(Parser, parse);
 
+inherit(Parser, args);
 inherit(Parser, casts);
 inherit(Parser, atoms);
 inherit(Parser, binaries);

@@ -20,7 +20,7 @@ import {
   [x] type annotation (opt)
   @return {Node}
  */
-export function parseVariable() {
+export function parseVariableDeclaration() {
 
   let declaration = null;
   let node = new Node.VariableDeclaration();
@@ -28,15 +28,15 @@ export function parseVariable() {
   node.symbol = this.current.name;
   this.next();
 
-  /** pattern */
-  if (this.peek(TT.LPAREN)) {
-    declaration = this.parseExpressionStatement();
-  /** type annotation */
-  } else {
-    declaration = this.parseVariableDeclarement();
-  }
+  this.parseVariable(node);
 
-  node.declarations.push(declaration);
+  return (node);
+
+}
+
+export function parseVariable(node) {
+
+  node.declarations = this.parseVariableDeclarement();
 
   /** block */
   if (this.eat(TT.LBRACE)) {
@@ -49,15 +49,23 @@ export function parseVariable() {
     }
   }
 
-  return (node);
+  if (this.eat(TT.COMMA)) {
+    let loc = this.current.loc;
+    throw new Error(`Comma seperated variable declarations - not supported yet (${loc.start.line}:${loc.start.column - 1})`);
+  }
 
 }
 
-/**
- * @return {Node}
- */
 export function parseVariableDeclarement() {
 
-  return (this.parseLiteral().label);
+  let args = null;
+
+  if (this.peek(Token.Identifier)) {
+    args = [this.parseLiteral()];
+  } else if (this.peek(TT.LPAREN)) {
+    args = this.parseParenthese(TT.LPAREN, TT.RPAREN);
+  }
+
+  return (args);
 
 }

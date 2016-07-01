@@ -26,16 +26,12 @@ export function parseAtomicExpression() {
     if (this.peek(TT.CONDITIONAL)) {
       base = this.parseTernaryExpression(base);
     }
-    /** Computed member expression */
-    else if (this.peek(TT.LBRACK)) {
-      console.log("LBRACK EXPR");
-    }
-    /** Uncomputed member expression */
-    else if (this.eat(TT.PERIOD)) {
-      let node = new Node.MemberExpression();
-      node.object = base;
-      node.property = this.parseBinaryExpression(0);
-      base = node;
+    /** Member expression */
+    else if (
+      this.peek(TT.LBRACK) ||
+      this.peek(TT.PERIOD)
+    ) {
+      base = this.parseMemberExpression(base);
     /** Type casting */
     } else if (
       this.peek(TT.AS) ||
@@ -47,6 +43,28 @@ export function parseAtomicExpression() {
   };
 
   return (base);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseMemberExpression(base) {
+
+  let node = new Node.MemberExpression();
+
+  node.isComputed = this.peek(TT.LBRACK);
+
+  this.next();
+
+  node.object = base;
+  node.property = this.parseBinaryExpression(0);
+
+  if (node.isComputed) {
+    this.expect(TT.RBRACK);
+  }
+
+  return (node);
 
 }
 
