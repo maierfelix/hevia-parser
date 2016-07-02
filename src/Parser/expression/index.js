@@ -15,6 +15,8 @@ import {
  */
 export function parseExpressionStatement() {
 
+  let node = null;
+
   switch (this.current.name) {
     case TT.LBRACK:
     case TT.LPAREN:
@@ -28,17 +30,21 @@ export function parseExpressionStatement() {
     case Token.StringLiteral:
     case Token.NumericLiteral:
     case Token.BooleanLiteral:
-      return this.parseBinaryExpression(0);
+      node = this.parseBinaryExpression(0);
     break;
     /** Operator things */
     case TT.ASSOCIATIVITY:
-      return this.parseAssociativityExpression();
+      node = this.parseAssociativityExpression();
     break;
     case TT.PRECEDENCE:
-      return this.parsePrecedenceExpression();
+      node = this.parsePrecedenceExpression();
     break;
   };
 
-  return (null);
+  if (this.peek(TT.CONDITIONAL)) {
+    node = this.parseTernaryExpression(node);
+  }
+
+  return (node);
 
 }

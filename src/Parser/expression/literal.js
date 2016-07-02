@@ -19,7 +19,7 @@ export function parseLiteral() {
 
   if (this.peek(TT.LPAREN)) {
     this.expect(TT.LPAREN);
-    let tmp = this.parseBinaryExpression(0);
+    let tmp = this.parseExpressionStatement();
     this.expect(TT.RPAREN);
     return (tmp);
   }

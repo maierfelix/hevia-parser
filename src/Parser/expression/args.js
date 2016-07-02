@@ -28,7 +28,7 @@ export function parseParenthese(left, right) {
   this.expect(left);
   if (this.eat(right)) return (null);
 
-  base = this.parseBinaryExpression(0);
+  base = this.parseExpressionStatement();
 
   if (this.eat(TT.COMMA)) {
     node = this.parseCommaSeperatedValues();
@@ -51,7 +51,7 @@ export function parseCommaSeperatedValues() {
   let args = [];
 
   while (true) {
-    args.push(this.parseBinaryExpression(0));
+    args.push(this.parseExpressionStatement());
     if (!this.eat(TT.COMMA)) break;
   };
 

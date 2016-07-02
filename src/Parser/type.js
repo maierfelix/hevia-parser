@@ -47,6 +47,8 @@ export function parseType() {
 
   this.next();
 
+  node.isOptional = this.eat(TT.CONDITIONAL);
+
   return (node);
 
 }

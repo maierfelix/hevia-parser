@@ -33,11 +33,8 @@ export function parseBinaryExpression(index) {
     node.left = left;
     tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
     node.right = tmp;
-    left = node;
     node.isParenthised = this.peek(TT.RPAREN);
-    if (this.peek(TT.CONDITIONAL)) {
-      left = this.parseTernaryExpression(left);
-    }
+    left = node;
   };
 
   return (left);
