@@ -2,17 +2,33 @@ var fs = require("fs");
 var hevia = require("../dist/hevia.js");
 
 var dir = __dirname + "/";
+var ignore = ["unreached", "index.js"];
 var sources = [];
 
-fs.readdirSync(dir).forEach(function(entry) {
+function readFile(entry) {
   if (/\.swift$/.test(entry)) {
     var src = {
       name: entry,
-      src: fs.readFileSync(dir + "/" + entry, "utf8"),
+      src: fs.readFileSync(entry, "utf8"),
     };
     sources.push(src);
   }
-});
+}
+
+function readDir(dir) {
+  fs.readdirSync(dir).forEach(function(entry) {
+    if (ignore.indexOf(entry) > -1) return void 0;
+    var file = dir + '/' + entry;
+    var stat = fs.statSync(file);
+    if (stat.isDirectory()) {
+      readDir(file);
+    } else {
+      readFile(file);
+    }
+  });
+}
+
+readDir(dir);
 
 var failures = 0;
 
@@ -22,7 +38,7 @@ sources.map((src) => {
   var code = null;
   var success = false;
   var error = null;
-  var name = src.name;
+  var name = src.name.replace(dir, "").slice(1, src.name.length);
   try {
     //hevia.evaluate(hevia.compile(src.src))
     hevia.parse(hevia.tokenize(src.src));
