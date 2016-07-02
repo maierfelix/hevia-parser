@@ -19,24 +19,27 @@ import {
 export function parseBinaryExpression(index) {
 
   let tmp = null;
-  let ast = null;
+  let left = null;
   let node = null;
 
   let state = Precedence[index];
 
-  ast = state ? this.parseBinaryExpression(index + 1) : this.parseAtom();
+  left = state ? this.parseBinaryExpression(index + 1) : this.parseAtom(this.parseLiteral());
 
   while (this.acceptPrecedence(state)) {
     node = new Node.BinaryExpression();
     node.operator = TT[state.op];
     this.next();
-    node.left = ast;
-    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseAtom();
+    node.left = left;
+    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
     node.right = tmp;
-    ast = node;
+    left = node;
     node.isParenthised = this.peek(TT.RPAREN);
+    if (this.peek(TT.CONDITIONAL)) {
+      left = this.parseTernaryExpression(left);
+    }
   };
 
-  return (ast);
+  return (left);
 
 }

@@ -39,10 +39,6 @@ export function parseExpressionStatement() {
     break;
   };
 
-  if (this.isNativeType(this.current.name)) {
-    return (this.parseLiteral());
-  }
-
   return (null);
 
 }

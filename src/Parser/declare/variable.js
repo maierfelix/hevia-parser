@@ -25,8 +25,12 @@ export function parseVariableDeclaration() {
   let declaration = null;
   let node = new Node.VariableDeclaration();
 
-  node.symbol = this.current.name;
-  this.next();
+  if (
+    this.peek(TT.VAR) || this.peek(TT.CONST)
+  ) {
+    node.symbol = this.current.name;
+    this.next();
+  }
 
   this.parseVariable(node);
 
@@ -45,13 +49,25 @@ export function parseVariable(node) {
   /** expression */
   } else {
     if (this.eat(TT.ASSIGN)) {
-      node.init = this.parseStatement();
+      if (this.peek(TT.LPAREN)) {
+        node.init = this.parseArguments();
+      } else {
+        node.init = this.parseStatement();
+      }
     }
   }
 
   if (this.eat(TT.COMMA)) {
-    let loc = this.current.loc;
-    throw new Error(`Comma seperated variable declarations - not supported yet (${loc.start.line}:${loc.start.column - 1})`);
+    if (!node.init.length) {
+      node.init = [node.init];
+    }
+    while (true) {
+      let tmp = this.parseVariableDeclaration();
+      tmp.symbol = node.symbol;
+      node.declarations = node.declarations.concat(tmp.declarations);
+      node.init = node.init.concat(tmp.init);
+      if (!this.peek(TT.COMMA)) break;
+    };
   }
 
 }
@@ -63,7 +79,7 @@ export function parseVariableDeclarement() {
   if (this.peek(Token.Identifier)) {
     args = [this.parseLiteral()];
   } else if (this.peek(TT.LPAREN)) {
-    args = this.parseParenthese(TT.LPAREN, TT.RPAREN);
+    args = this.parseArguments();
   }
 
   return (args);

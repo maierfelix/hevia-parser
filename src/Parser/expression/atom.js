@@ -11,38 +11,41 @@ import {
 } from "../../utils";
 
 /**
- * @return {Node}
+  [x] ?:
+  [x] .
+  [x] []
+  [x] AS|IS
+  [x] ()
+  @param {Node} base
+  @return {Node}
  */
-export function parseAtom() {
-
-  let node = this.parseLiteral();
+export function parseAtom(base) {
 
   while (true) {
-    if (this.peek(TT.CONDITIONAL)) {
-      node = this.parseTernaryExpression(node);
-    }
-    /** Member expression */
-    else if (
+    /** Un/computed member expression */
+    if (
       this.peek(TT.LBRACK) ||
       this.peek(TT.PERIOD)
     ) {
-      node = this.parseMemberExpression(node);
+      base = this.parseMemberExpression(base);
+    }
+    /** Call expression */
+    else if (this.peek(TT.LPAREN)) {
+      base = this.parseCallExpression(base);
     }
     /** Type casting */
     else if (
       this.peek(TT.AS) ||
       this.peek(TT.IS)
     ) {
-      node = this.parseCast(node);
+      base = this.parseCast(base);
     }
-    else if (this.peek(TT.LPAREN)) {
-      node = this.parseCallExpression(node);
-    } else {
+    else {
       break;
     }
   };
 
-  return (node);
+  return (base);
 
 }
 
@@ -58,7 +61,7 @@ export function parseMemberExpression(base) {
   this.next();
 
   node.object = base;
-  node.property = this.parseAtom();
+  node.property = this.parseLiteral();
 
   if (node.isComputed) {
     this.expect(TT.RBRACK);

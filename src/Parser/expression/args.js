@@ -15,6 +15,7 @@ import {
 /**
   [x] parenthesed bin expr
   [x] parameter
+  [x] argument
   [x] tuple
   @return {Node}
  */

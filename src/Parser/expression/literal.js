@@ -17,11 +17,11 @@ import {
  */
 export function parseLiteral() {
 
-  if (this.peek(TT.LBRACK)) {
-    return (this.parseArrayDeclaration());
-  }
-  else if (this.peek(TT.LPAREN)) {
-    return (this.parseParenthese(TT.LPAREN, TT.RPAREN));
+  if (this.peek(TT.LPAREN)) {
+    this.expect(TT.LPAREN);
+    let tmp = this.parseBinaryExpression(0);
+    this.expect(TT.RPAREN);
+    return (tmp);
   }
 
   let node = new Node.Literal();
