@@ -1,5 +1,6 @@
 #Hevia
 <a href="https://travis-ci.org/maierfelix/Hevia"><img src="https://travis-ci.org/maierfelix/Hevia.svg?branch=master" alt="Build Status"></a>
+[![npm version](https://img.shields.io/npm/v/hevia.svg)](https://www.npmjs.com/package/hevia)
 
 A Swift to ES6 Compiler.
 
