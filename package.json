@@ -1,7 +1,9 @@
 {
   "name": "Hevia",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Hevia Compiler",
+  "license": "BSD",
+  "contributors": ,
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/maierfelix/hevia.git"
@@ -13,9 +15,15 @@
     "Swift",
     "Compiler",
     "Transpiler",
+    "Transcompiler"
     "Swift2JavaScript",
     "Swift2JS",
-    "Swift2ES6"
+    "Swift2ES6",
+    "ast",
+    "ecmascript",
+    "javascript",
+    "parser",
+    "syntax"
   ],
   "author": "Felix Maier <maier.felix96@gmail.com>",
   "bugs": {
@@ -28,26 +36,27 @@
     "dist-release": "browserify ./src/index.js -t babelify -s HEVIA -o dist/hevia.js",
     "dist-uglify": "uglifyjs dist/hevia.js --compress --mangle > dist/hevia.min.js",
     "dist-test": "npm run dist-release && npm run test",
-    "test": "node ./tests/index.js"
+    "test": "node ./tests/index.js",
+    "travis": "npm dist-test"
   },
   "engines": {
     "node": ">= 5.x"
   },
   "dependencies": {
-    "babel-runtime": "latest"
+    "babel-runtime": "^6.9.1"
   },
   "devDependencies": {
-    "babel-core": "latest",
+    "babel-core": "^6.0.20",
     "babel-cli": "^6.1.2",
     "babel-preset-es2015": "^6.1.2",
     "browserify": "^12.0.1",
     "babelify": "^7.2.0",
     "uglify-js": "^2.6.1",
-    "babel-loader": "latest",
-    "babel-plugin-transform-runtime": "latest",
-    "babel-preset-stage-0": "latest",
-    "babel-preset-es2015": "latest",
-    "node-libs-browser": "latest",
-    "budo": "latest"
+    "babel-loader": "^6.0.1",
+    "babel-plugin-transform-runtime": "^6.4.3",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-preset-es2015": "^6.9.0",
+    "node-libs-browser": "^0.5.3",
+    "budo": "^8.3.0"
   }
 }
