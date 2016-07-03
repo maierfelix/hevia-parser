@@ -1,0 +1,8 @@
+sudo: false
+language: node_js
+script: "npm run dist-test"
+node_js:
+  - "0.12"
+  - "4"
+  - "5"
+  - "6"
