@@ -9,26 +9,30 @@ import Node from "../nodes";
 import {
   getNameByLabel,
   getLabelByNumber,
-  getNumericType
+  getNumericType,
+  isBoolean
 } from "../utils";
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 export function inferenceBlock(node) {
 
   let type = null;
 
   for (let key of node.body) {
-    if (key.kind === Type.ReturnStatement) {
-      type = this.inferenceExpression(key.argument);
-    }
-    else {
-      type = this.inferenceExpression(key);
-    }
+    type = this.inferenceExpression(key);
   };
 
   return (type);
 
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 export function inferenceExpression(node) {
 
   switch (node.kind) {
@@ -45,15 +49,43 @@ export function inferenceExpression(node) {
       return this.inferenceMemberExpression(node);
     break;
     case Type.ParameterExpression:
-      this.inferenceParameterExpression(node);
+      return this.inferenceParameterExpression(node);
+    break;
+    case Type.TernaryExpression:
+      return this.inferenceTernaryExpression(node);
     break;
     case Type.Parameter:
-      this.inferenceExpression(node.init);
+      return this.inferenceExpression(node.init);
+    break;
+    case Type.ReturnStatement:
+      return this.inferenceExpression(node.argument);
     break;
   };
 
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
+export function inferenceTernaryExpression(node) {
+
+  let consequent = this.inferenceExpression(node.consequent);
+  let alternate = this.inferenceExpression(node.alternate);
+
+  if (consequent !== alternate) {
+    let a = getNameByLabel(consequent);
+    let b = getNameByLabel(alternate);
+    throw new Error(`Ternary expression has mismatching types ${a} and ${b}`);
+  }
+
+  return (consequent || alternate);
+
+}
+
+/**
+ * @param {Node} node
+ */
 export function inferenceParameterExpression(node) {
 
   for (let key of node.arguments) {
@@ -62,6 +94,10 @@ export function inferenceParameterExpression(node) {
 
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 export function inferenceMemberExpression(node) {
 
   let left = this.inferenceExpression(node.object);
@@ -71,6 +107,10 @@ export function inferenceMemberExpression(node) {
 
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 export function inferenceCallExpression(node) {
 
   let type = this.inferenceExpression(node.callee);
@@ -81,6 +121,10 @@ export function inferenceCallExpression(node) {
 
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 export function inferenceBinaryExpression(node) {
 
   if (node.left && node.right) {
@@ -105,7 +149,15 @@ export function inferenceBinaryExpression(node) {
 
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 export function inferenceLiteral(node) {
+
+  if (isBoolean(node)) {
+    return (TT.BOOLEAN);
+  }
 
   let resolved = this.scope.get(node.value);
 
@@ -118,9 +170,7 @@ export function inferenceLiteral(node) {
   }
 
   if (resolved && resolved.type) {
-    return (
-      resolved.type.name || resolved.type.type
-    );
+    return (resolved.type);
   } else {
     this.globalCheck(node);
     return (TT[getNumericType(Number(node.raw))]);

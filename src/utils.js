@@ -95,6 +95,20 @@ export function isNumericType(type) {
 }
 
 /**
+ * @param  {Node} node
+ * @return {Boolean}
+ */
+export function isBoolean(node) {
+  return (
+    node.kind === Type.Literal &&
+    (
+      node.type === TT.TRUE ||
+      node.type === TT.FALSE
+    )
+  );
+}
+
+/**
  * @param  {Number} n
  * @return {String}
  */

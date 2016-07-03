@@ -49,7 +49,7 @@ export function parseVariable(node) {
   /** expression */
   } else {
     if (this.eat(TT.ASSIGN)) {
-      if (this.peek(TT.LPAREN)) {
+      if (this.peek(TT.LPAREN) && node.declarations.length > 1) {
         node.init = this.parseArguments();
       } else {
         node.init = this.parseStatement();
@@ -57,10 +57,11 @@ export function parseVariable(node) {
     }
   }
 
+  if (node.init && !node.init.length) {
+    node.init = [node.init];
+  }
+
   if (this.eat(TT.COMMA)) {
-    if (!node.init.length) {
-      node.init = [node.init];
-    }
     while (true) {
       let tmp = this.parseVariableDeclaration();
       tmp.symbol = node.symbol;
