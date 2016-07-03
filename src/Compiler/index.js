@@ -5,9 +5,13 @@ import {
 import Scope from "../scope";
 
 import * as pack from "./lang";
-import * as compile from "./compile";
 import * as inference from "./inference";
 import * as globals from "../Environment/global";
+
+import * as compile from "./compile";
+import * as statement from "./compile/statement";
+import * as expression from "./compile/expression";
+import * as declaration from "./compile/declaration";
 
 /**
  * @class Compiler
@@ -133,5 +137,9 @@ export default class Compiler {
 
 }
 
-inherit(Compiler, compile);
 inherit(Compiler, inference);
+
+inherit(Compiler, compile);
+inherit(Compiler, statement);
+inherit(Compiler, expression);
+inherit(Compiler, declaration);

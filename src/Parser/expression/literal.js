@@ -35,10 +35,14 @@ export function parseLiteral() {
     this.next();
   }
 
-  node.type = this.current.name;
-  node.value = this.current.value;
-  node.raw = this.current.value;
-  this.next();
+  if (node.isExplicit && this.peek(TT.COLON)) {
+    // explicit only parameter
+  } else {
+    node.type = this.current.name;
+    node.value = this.current.value;
+    node.raw = this.current.value;
+    this.next();
+  }
 
   /** Labeled literal */
   if (this.peek(Token.Identifier)) {

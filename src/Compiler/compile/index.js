@@ -2,20 +2,26 @@ import {
   Token,
   Types as Type,
   TokenList as TT
-} from "../labels";
+} from "../../labels";
 
-import Node from "../nodes";
+import Node from "../../nodes";
 
 import {
   getNameByLabel,
   getLabelByNumber
-} from "../utils";
+} from "../../utils";
 
+/**
+ * @param {Node} node
+ */
 export function compileProgram(node) {
   this.pushScope(node);
   this.compileBlock(node);
 }
 
+/**
+ * @param {Node} node
+ */
 export function compileBlock(node) {
 
   for (let key of node.body) {
@@ -24,6 +30,9 @@ export function compileBlock(node) {
 
 }
 
+/**
+ * @param {Node} node
+ */
 export function compileStatement(node) {
 
   switch (node.kind) {
@@ -62,34 +71,15 @@ export function compileStatement(node) {
     case Type.ProtocolDeclaration:
     case Type.ExtensionDeclaration:
     case Type.OperatorDeclaration:
-      return this.compileVariableDeclaration(node);
+      this.compileDeclaration(node);
+    break;
+    case Type.CallExpression:
+      this.compileExpression(node);
     break;
     /** Expression statement */
     default:
       //console.log(node);
     break;
-  };
-
-}
-
-export function compileVariableDeclaration(node) {
-
-  let index = 0;
-
-  let init = null;
-  let label = null;
-
-  for (let key of node.declarations) {
-    label = key.kind === Type.Parameter ? key.init : key;
-    init = node.init[index];
-    this.scope.register(label);
-    index++;
-    if (key.kind !== Type.Parameter) {
-      label.type = this.inferenceExpression(init);
-    } else {
-      label.type = key.argument.type;
-    }
-    //console.log(label, getNameByLabel(label.type));
   };
 
 }

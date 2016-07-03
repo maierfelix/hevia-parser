@@ -141,13 +141,7 @@ export function getNumericType(n) {
     return ("Uint32");
   }
   if (+n === n) {
-    return ("Float");
-  }
-  if (+n === n && Math.abs(n) <= 3.4028234e+38) {
-    return ("Float32");
-  }
-  if (+n === n && Math.abs(n) <= 1.7976931348623157e+308) {
-    return ("Float64");
+    return ("Double");
   }
 }
 
