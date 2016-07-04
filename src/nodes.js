@@ -76,6 +76,9 @@ export default class Node {
           this.name = null;
           this.extend = [];
           this.body = [];
+          this.isPublic = false;
+          this.isPrivate = false;
+          this.isInternal = false;
         }
       }
     );
@@ -226,6 +229,10 @@ export default class Node {
           this.arguments = [];
           this.body = [];
           this.isStatic = false;
+          this.isOverride = false;
+          this.isPublic = false;
+          this.isPrivate = false;
+          this.isInternal = false;
         }
       }
     );
@@ -279,28 +286,6 @@ export default class Node {
           this.object = null;
           this.property = null;
           this.isComputed = false;
-        }
-      }
-    );
-  }
-
-  static get Tuple() {
-    return (
-      class Tuple {
-        constructor() {
-          this.kind = Type.Tuple;
-          this.arguments = [];
-        }
-      }
-    );
-  }
-
-  static get TupleType() {
-    return (
-      class TupleType {
-        constructor() {
-          this.kind = Type.TupleType;
-          this.arguments = [];
         }
       }
     );

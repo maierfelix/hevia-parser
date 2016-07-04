@@ -8,6 +8,13 @@ export let IFX_PRECEDENCE = [];
 export let PEX_PRECEDENCE = [];
 export let POX_PRECEDENCE = [];
 
+/**
+ * @param {String} op
+ * @param {Number} lvl
+ * @param {String} assoc
+ * @param {String} name
+ * @param {Number} type
+ */
 export function registerOperator(op, lvl, assoc, name, type) {
 
   let obj = {

@@ -6,6 +6,10 @@ import {
 
 import Node from "../nodes";
 
+import {
+  getNameByLabel
+} from "../utils";
+
 /**
  * @return {Node}
  */
@@ -70,6 +74,9 @@ export function parseStatement() {
     case TT.OVERRIDE:
       node = this.parseOverride();
     break;
+    case TT.STATIC:
+      node = this.parseStatic();
+    break;
     /** Expression statement */
     default:
       node = this.parseExpressionStatement();
@@ -91,7 +98,34 @@ export function parseOverride() {
 
   let node = this.parseStatement();
 
+  if (
+    !node.hasOwnProperty("isOverride")
+  ) {
+    throw new Error("Can't attach override property to node!");
+  }
+
   node.isOverride = true;
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseStatic() {
+
+  this.expect(TT.STATIC);
+
+  let node = this.parseStatement();
+
+  if (
+    !node.hasOwnProperty("isStatic")
+  ) {
+    throw new Error("Can't attach static property to node!");
+  }
+
+  node.isStatic = true;
 
   return (node);
 
@@ -107,6 +141,14 @@ export function parseAccessControl() {
   this.next();
 
   let node = this.parseStatement();
+
+  if (
+    !node.hasOwnProperty("isPublic") &&
+    !node.hasOwnProperty("isPrivate") &&
+    !node.hasOwnProperty("isInternal")
+  ) {
+    throw new Error("Can't attach access control to node!");
+  }
 
   switch (access.name) {
     case TT.PUBLIC:

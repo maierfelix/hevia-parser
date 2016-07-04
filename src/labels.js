@@ -54,9 +54,6 @@ let ii = 0;
   Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
   Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
 
-  Label[Label["Tuple"] = ++ii] = "Tuple";
-  Label[Label["TupleType"] = ++ii] = "TupleType";
-
 })(Types);
 
 /** Data types */
