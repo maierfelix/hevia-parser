@@ -4,43 +4,58 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.compileProgram = compileProgram;
-exports.compileBlock = compileBlock;
-exports.compileStatement = compileStatement;
-exports.compileExpressionStatement = compileExpressionStatement;
 exports.compileDeclaration = compileDeclaration;
-exports.compileCallExpression = compileCallExpression;
 exports.compileVariableDeclaration = compileVariableDeclaration;
-exports.compileFunctionDeclaration = compileFunctionDeclaration;
-exports.compileOperatorDeclaration = compileOperatorDeclaration;
 
-var _labels = require("../labels");
+var _labels = require("../../labels");
 
-var _nodes = require("../nodes");
+var _nodes = require("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = require("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function compileProgram(ast) {
-  this.compileBlock(ast);
+/**
+ * @param {Node} node
+ */
+function compileDeclaration(node) {
+
+  switch (node.kind) {
+    case _labels.Types.VariableDeclaration:
+      this.compileVariableDeclaration(node);
+      break;
+  };
 }
 
-function compileBlock(ast) {
+/**
+ * @param {Node} node
+ */
+function compileVariableDeclaration(node) {
 
-  this.pushScope(ast);
+  var index = 0;
+
+  var init = null;
+  var label = null;
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
 
   try {
-    for (var _iterator = ast.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var node = _step.value;
+    for (var _iterator = node.declarations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
 
-      this.compileStatement(node);
+      label = key.kind === _labels.Types.Parameter ? key.init : key;
+      init = node.init[index];
+      this.scope.register(label);
+      index++;
+      if (key.kind !== _labels.Types.Parameter) {
+        label.resolvedType = this.inferenceExpression(init);
+      } else {
+        label.resolvedType = key.argument.type;
+      }
     }
   } catch (err) {
     _didIteratorError = true;
@@ -58,37 +73,135 @@ function compileBlock(ast) {
   }
 
   ;
-
-  this.popScope();
 }
 
-function compileStatement(ast) {
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],2:[function(require,module,exports){
+"use strict";
 
-  switch (ast.kind) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.compileExpression = compileExpression;
+exports.compileCallExpression = compileCallExpression;
+
+var _labels = require("../../labels");
+
+var _nodes = require("../../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @param {Node} node
+ */
+function compileExpression(node) {
+
+  switch (node.kind) {
+    case _labels.Types.CallExpression:
+      this.compileCallExpression(node);
+      break;
+  };
+}
+
+/**
+ * @param {Node} node
+ */
+function compileCallExpression(node) {}
+
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.compileProgram = compileProgram;
+exports.compileBlock = compileBlock;
+exports.compileStatement = compileStatement;
+
+var _labels = require("../../labels");
+
+var _nodes = require("../../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @param {Node} node
+ */
+function compileProgram(node) {
+  this.pushScope(node);
+  this.compileBlock(node);
+}
+
+/**
+ * @param {Node} node
+ */
+function compileBlock(node) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+
+    for (var _iterator = node.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
+
+      this.compileStatement(key);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  ;
+}
+
+/**
+ * @param {Node} node
+ */
+function compileStatement(node) {
+
+  switch (node.kind) {
     /** Loop statement */
     case _labels.Types.ForStatement:
     case _labels.Types.WhileStatement:
     case _labels.Types.RepeatStatement:
-      console.log(ast);
+      //console.log(node);
       break;
     /** Branch statement */
     case _labels.Types.IfStatement:
     case _labels.Types.GuardStatement:
     case _labels.Types.SwitchStatement:
     case _labels.Types.PseudoProperty:
-      console.log(ast);
+      //console.log(node);
       break;
     /** Defer statement */
     case _labels.Types.DeferStatement:
-      console.log(ast);
+      //console.log(node);
       break;
     /** Return statement */
     case _labels.Types.ReturnStatement:
-      console.log(ast);
+      //console.log(node);
       break;
     /** Do statement */
     case _labels.Types.DoStatement:
-      console.log(ast);
+      //console.log(node);
       break;
     /** Declaration statement */
     case _labels.Types.ImportStatement:
@@ -100,146 +213,32 @@ function compileStatement(ast) {
     case _labels.Types.ProtocolDeclaration:
     case _labels.Types.ExtensionDeclaration:
     case _labels.Types.OperatorDeclaration:
-      this.compileDeclaration(ast);
+      this.compileDeclaration(node);
+      break;
+    case _labels.Types.CallExpression:
+      this.compileExpression(node);
       break;
     /** Expression statement */
     default:
-      this.compileExpressionStatement(ast);
+      //console.log(node);
       break;
   };
 }
 
-function compileExpressionStatement(ast) {
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],4:[function(require,module,exports){
+"use strict";
 
-  switch (ast.kind) {
-    case _labels.Types.BinaryExpression:
-      return this.inferenceExpression(ast);
-      break;
-    case _labels.Types.CallExpression:
-      this.compileCallExpression(ast);
-      break;
-  };
-}
+var _labels = require("../../labels");
 
-function compileDeclaration(ast) {
+var _nodes = require("../../nodes");
 
-  switch (ast.kind) {
-    case _labels.Types.ExtensionDeclaration:
-      //console.log(ast);
-      break;
-    case _labels.Types.OperatorDeclaration:
-      this.compileOperatorDeclaration(ast);
-      break;
-    case _labels.Types.FunctionDeclaration:
-      this.compileFunctionDeclaration(ast);
-      break;
-    case _labels.Types.VariableDeclaration:
-      this.compileVariableDeclaration(ast);
-      break;
-  }
-}
+var _nodes2 = _interopRequireDefault(_nodes);
 
-function compileCallExpression(ast) {
+var _utils = require("../../utils");
 
-  this.inferenceIdentifier(ast.callee);
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function compileVariableDeclaration(ast) {
-
-  var index = 0;
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = ast.declarations[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var key = _step2.value;
-
-      var init = ast.init[index] || ast.init;
-      if (key.type.type === -1) {
-        key.type.type = this.inferenceExpression(init);
-      } else {
-        this.inferenceExpression(init);
-      }
-      this.scope.register(key);
-      index++;
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
-
-  ;
-}
-
-function compileFunctionDeclaration(ast) {
-
-  if (ast.name in this.operators) {
-    /** Can be overridden */
-    this.operators[ast.name].func = ast;
-    this.inferenceBlock(ast.body);
-  } else {
-    this.scope.register(ast);
-  }
-}
-
-function compileOperatorDeclaration(ast) {
-
-  var op = ast.operator.raw;
-  var lvl = -1;
-  var assoc = null;
-
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
-
-  try {
-    for (var _iterator3 = ast.body.body[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var node = _step3.value;
-
-      if (node.kind === _labels.Types.AssociativityExpression) {
-        assoc = node.associativity.raw;
-      }
-      if (node.kind === _labels.Types.PrecedenceExpression) {
-        lvl = Number(node.level.raw);
-      }
-    }
-  } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3.return) {
-        _iterator3.return();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
-  }
-
-  ;
-
-  this.operators[op] = {
-    name: ast.name,
-    level: lvl,
-    associativity: assoc,
-    func: null
-  };
-}
-
-},{"../labels":38,"../nodes":39,"../utils":42}],2:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -258,10 +257,6 @@ var _lang = require("./lang");
 
 var pack = _interopRequireWildcard(_lang);
 
-var _compile = require("./compile");
-
-var compile = _interopRequireWildcard(_compile);
-
 var _inference = require("./inference");
 
 var inference = _interopRequireWildcard(_inference);
@@ -269,6 +264,22 @@ var inference = _interopRequireWildcard(_inference);
 var _global = require("../Environment/global");
 
 var globals = _interopRequireWildcard(_global);
+
+var _compile = require("./compile");
+
+var compile = _interopRequireWildcard(_compile);
+
+var _statement = require("./compile/statement");
+
+var statement = _interopRequireWildcard(_statement);
+
+var _expression = require("./compile/expression");
+
+var expression = _interopRequireWildcard(_expression);
+
+var _declaration = require("./compile/declaration");
+
+var declaration = _interopRequireWildcard(_declaration);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -320,6 +331,20 @@ var Compiler = function () {
   }
 
   _createClass(Compiler, [{
+    key: "reset",
+    value: function reset() {
+      this.scope = void 0;
+      this.output = "";
+      this.operators = {};
+      this.extensions = {};
+    }
+
+    /** 
+     * Write
+     * @param {String} str
+     */
+
+  }, {
     key: "write",
     value: function write(str) {
       this.output += str;
@@ -346,6 +371,18 @@ var Compiler = function () {
     }
 
     /**
+     * Literal contains type only
+     * @param  {Node}  ast
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "isPureType",
+    value: function isPureType(node) {
+      return node.value === void 0 && node.raw === void 0 && node.type >= 0 || node.type <= 0;
+    }
+
+    /**
      * @param {Node} ast
      * @param {String} lang
      * @return {String}
@@ -354,8 +391,9 @@ var Compiler = function () {
   }, {
     key: "compile",
     value: function compile(ast, lang) {
+      this.reset();
       this.scope = void 0;
-      this.pushScope(ast);
+      this.pushScope(ast.body);
       this.compileProgram(ast.body);
       this.initLanguage(lang);
       this.emitProgram(ast.body);
@@ -384,7 +422,7 @@ var Compiler = function () {
           break;
       }
 
-      console.log("Compiling to " + lang);
+      //console.log(`Compiling to ${lang}`);
     }
   }]);
 
@@ -394,10 +432,14 @@ var Compiler = function () {
 exports.default = Compiler;
 
 
-(0, _utils.inherit)(Compiler, compile);
 (0, _utils.inherit)(Compiler, inference);
 
-},{"../Environment/global":7,"../scope":41,"../utils":42,"./compile":1,"./inference":3,"./lang":6}],3:[function(require,module,exports){
+(0, _utils.inherit)(Compiler, compile);
+(0, _utils.inherit)(Compiler, statement);
+(0, _utils.inherit)(Compiler, expression);
+(0, _utils.inherit)(Compiler, declaration);
+
+},{"../Environment/global":10,"../scope":45,"../utils":46,"./compile":3,"./compile/declaration":1,"./compile/expression":2,"./compile/statement":4,"./inference":6,"./lang":9}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -405,10 +447,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.inferenceBlock = inferenceBlock;
 exports.inferenceExpression = inferenceExpression;
+exports.inferenceTernaryExpression = inferenceTernaryExpression;
+exports.inferenceParameterExpression = inferenceParameterExpression;
 exports.inferenceMemberExpression = inferenceMemberExpression;
 exports.inferenceCallExpression = inferenceCallExpression;
 exports.inferenceBinaryExpression = inferenceBinaryExpression;
-exports.inferenceIdentifier = inferenceIdentifier;
+exports.inferenceLiteral = inferenceLiteral;
 exports.globalCheck = globalCheck;
 
 var _labels = require("../labels");
@@ -421,6 +465,10 @@ var _utils = require("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 function inferenceBlock(node) {
 
   var type = null;
@@ -433,9 +481,7 @@ function inferenceBlock(node) {
     for (var _iterator = node.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var key = _step.value;
 
-      if (key.kind === _labels.Types.ReturnStatement) {
-        type = this.inferenceExpression(key.argument);
-      }
+      type = this.inferenceExpression(key);
     }
   } catch (err) {
     _didIteratorError = true;
@@ -457,9 +503,16 @@ function inferenceBlock(node) {
   return type;
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 function inferenceExpression(node) {
 
   switch (node.kind) {
+    case _labels.Types.Literal:
+      return this.inferenceLiteral(node);
+      break;
     case _labels.Types.BinaryExpression:
       return this.inferenceBinaryExpression(node);
       break;
@@ -469,9 +522,76 @@ function inferenceExpression(node) {
     case _labels.Types.MemberExpression:
       return this.inferenceMemberExpression(node);
       break;
+    case _labels.Types.ParameterExpression:
+      return this.inferenceParameterExpression(node);
+      break;
+    case _labels.Types.TernaryExpression:
+      return this.inferenceTernaryExpression(node);
+      break;
+    case _labels.Types.Parameter:
+      return this.inferenceExpression(node.init);
+      break;
+    case _labels.Types.ReturnStatement:
+      return this.inferenceExpression(node.argument);
+      break;
   };
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
+function inferenceTernaryExpression(node) {
+
+  var consequent = this.inferenceExpression(node.consequent);
+  var alternate = this.inferenceExpression(node.alternate);
+
+  if (consequent !== alternate) {
+    var a = (0, _utils.getNameByLabel)(consequent);
+    var b = (0, _utils.getNameByLabel)(alternate);
+    throw new Error("Ternary expression has mismatching types " + a + " and " + b);
+  }
+
+  return consequent || alternate;
+}
+
+/**
+ * @param {Node} node
+ */
+function inferenceParameterExpression(node) {
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+
+    for (var _iterator2 = node.arguments[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var key = _step2.value;
+
+      this.inferenceExpression(key);
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  ;
+}
+
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 function inferenceMemberExpression(node) {
 
   var left = this.inferenceExpression(node.object);
@@ -480,18 +600,28 @@ function inferenceMemberExpression(node) {
   return left || right;
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 function inferenceCallExpression(node) {
 
-  var type = this.inferenceIdentifier(node.callee);
+  var type = this.inferenceExpression(node.callee);
+
+  this.inferenceExpression(node.arguments);
 
   return type;
 }
 
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
 function inferenceBinaryExpression(node) {
 
   if (node.left && node.right) {
-    var left = this.inferenceBinaryExpression(node.left);
-    var right = this.inferenceBinaryExpression(node.right);
+    var left = this.inferenceExpression(node.left);
+    var right = this.inferenceExpression(node.right);
     return left || right;
   } else {
     if (node.kind === _labels.Types.Literal) {
@@ -506,14 +636,31 @@ function inferenceBinaryExpression(node) {
   }
 }
 
-function inferenceIdentifier(node) {
+/**
+ * @param {Node} node
+ * @return {Number}
+ */
+function inferenceLiteral(node) {
+
+  if ((0, _utils.isBoolean)(node)) {
+    return _labels.TokenList.BOOLEAN;
+  }
 
   var resolved = this.scope.get(node.value);
 
-  if (resolved) {
-    return resolved.type.name || resolved.type.type;
+  if (node.isPointer) {
+    if (resolved && resolved.kind === _labels.Types.VariableDeclarement) {
+      resolved.isLaterPointer = true;
+    } else {
+      throw new Error("Can't resolve " + node.value + " declarement!");
+    }
+  }
+
+  if (resolved && resolved.type) {
+    return resolved.type;
   } else {
     this.globalCheck(node);
+    return _labels.TokenList[(0, _utils.getNumericType)(Number(node.raw))];
   }
 }
 
@@ -530,7 +677,7 @@ function globalCheck(node) {
   }
 }
 
-},{"../labels":38,"../nodes":39,"../utils":42}],4:[function(require,module,exports){
+},{"../labels":42,"../nodes":43,"../utils":46}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -542,17 +689,22 @@ exports.emitEndHeader = emitEndHeader;
 exports.emitOperatorDefinitions = emitOperatorDefinitions;
 exports.emitBlock = emitBlock;
 exports.emitStatement = emitStatement;
+exports.emitIf = emitIf;
+exports.emitTernary = emitTernary;
 exports.emitParameter = emitParameter;
 exports.emitMember = emitMember;
+exports.emitCall = emitCall;
+exports.emitArguments = emitArguments;
 exports.emitDeclaration = emitDeclaration;
+exports.emitExtension = emitExtension;
 exports.emitVariableDeclaration = emitVariableDeclaration;
 exports.emitVariable = emitVariable;
+exports.emitMultipleVariable = emitMultipleVariable;
 exports.emitBinary = emitBinary;
+exports.emitCustomOperator = emitCustomOperator;
 exports.emitLiteral = emitLiteral;
-exports.emitCall = emitCall;
 exports.emitFunction = emitFunction;
 exports.emitReturn = emitReturn;
-exports.emitArguments = emitArguments;
 
 var _labels = require("../../../labels");
 
@@ -567,7 +719,34 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function emitProgram(ast) {
   this.write("\"use strict\";\n");
   this.emitOperatorDefinitions();
-  this.emitBlock(ast);
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = ast.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var node = _step.value;
+
+      this.emitStatement(node);
+      this.write("\n");
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  ;
+  this.write("\n");
 }
 
 function emitStartHeader() {
@@ -594,35 +773,36 @@ function emitOperatorDefinitions() {
 }
 
 function emitBlock(ast) {
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
+  this.write(" {");
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator = ast.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var node = _step.value;
+    for (var _iterator2 = ast.body[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var node = _step2.value;
 
       this.write("\n");
       this.emitStatement(node);
       this.write(";");
     }
   } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
       }
     } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
+      if (_didIteratorError2) {
+        throw _iteratorError2;
       }
     }
   }
 
   ;
-  this.write("\n");
+  this.write("\n}\n");
 }
 
 function emitStatement(ast) {
@@ -632,18 +812,17 @@ function emitStatement(ast) {
     case _labels.Types.ForStatement:
     case _labels.Types.WhileStatement:
     case _labels.Types.RepeatStatement:
-      console.log(ast);
+      //console.log(ast);
       break;
     /** Branch statement */
-    case _labels.Types.IfStatement:
     case _labels.Types.GuardStatement:
     case _labels.Types.SwitchStatement:
     case _labels.Types.PseudoProperty:
-      console.log(ast);
+      //console.log(ast);
       break;
     /** Defer statement */
     case _labels.Types.DeferStatement:
-      console.log(ast);
+      //console.log(ast);
       break;
     /** Return statement */
     case _labels.Types.ReturnStatement:
@@ -651,7 +830,7 @@ function emitStatement(ast) {
       break;
     /** Do statement */
     case _labels.Types.DoStatement:
-      console.log(ast);
+      //console.log(ast);
       break;
     /** Declaration statement */
     case _labels.Types.ImportStatement:
@@ -677,14 +856,53 @@ function emitStatement(ast) {
     case _labels.Types.Parameter:
       this.emitParameter(ast);
       break;
+    case _labels.Types.ParameterExpression:
+      this.write("(");
+      this.emitArguments(ast);
+      this.write(")");
+      break;
+    case _labels.Types.TernaryExpression:
+      this.emitTernary(ast);
+      break;
+    case _labels.Types.IfStatement:
+      this.emitIf(ast);
+      break;
     default:
       this.emitBinary(ast);
       break;
   };
 }
 
+function emitIf(ast) {
+
+  if (ast.condition) {
+    this.write("if (");
+    this.emitStatement(ast.condition);
+    this.write(")");
+  }
+  this.emitBlock(ast.consequent);
+  if (ast.alternate && ast.alternate.kind === _labels.Types.IfStatement) {
+    this.write(" else ");
+    this.emitStatement(ast.alternate);
+  }
+}
+
+function emitTernary(ast) {
+
+  this.emitStatement(ast.condition);
+  this.write("?");
+  this.emitStatement(ast.consequent);
+  this.write(":");
+  this.emitStatement(ast.alternate);
+}
+
 function emitParameter(ast) {
-  this.emitBinary(ast.init);
+  /** Labeled call parameter */
+  if (ast.init.init !== void 0) {
+    this.emitStatement(ast.init.init);
+  } else {
+    this.emitStatement(ast.init);
+  }
 }
 
 function emitMember(ast) {
@@ -695,134 +913,29 @@ function emitMember(ast) {
     this.emitStatement(ast.object);
   }
 
-  this.write(".");
+  if (ast.isComputed) {
+    this.write("[");
+  } else {
+    this.write(".");
+  }
 
   if (ast.property.kind === _labels.Types.Literal) {
     this.emitLiteral(ast.property);
-  }
-}
-
-function emitDeclaration(ast) {
-
-  switch (ast.kind) {
-    case _labels.Types.FunctionDeclaration:
-      this.emitFunction(ast, false);
-      break;
-    case _labels.Types.ExtensionDeclaration:
-      //console.log(ast);
-      break;
-    case _labels.Types.VariableDeclaration:
-      this.emitVariableDeclaration(ast);
-      break;
-  }
-}
-
-function emitVariableDeclaration(ast) {
-
-  this.write((0, _utils.getNameByLabel)(ast.symbol).toLowerCase() + " ");
-
-  var index = 0;
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = ast.declarations[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var node = _step2.value;
-
-      this.emitVariable(node, ast.init[index] || ast.init);
-      index++;
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
+  } else {
+    this.emitStatement(ast.property);
   }
 
-  ;
-}
-
-function emitVariable(ast, init) {
-
-  this.write(ast.name);
-  this.write(" = ");
-
-  this.emitStatement(init);
-}
-
-function emitBinary(ast) {
-
-  if (ast.kind === _labels.Types.BinaryExpression) {
-    var op = (0, _utils.getLabelByNumber)(ast.operator);
-    if (op in this.operators) {
-      this.write("__OP[\"" + op + "\"]");
-      this.write("(");
-      this.emitBinary(ast.left);
-      this.write(",");
-      this.emitBinary(ast.right);
-      this.write(")");
-    } else {
-      this.emitBinary(ast.left);
-      this.write(op);
-      this.emitBinary(ast.right);
-    }
-  } else if (ast.kind === _labels.Types.Literal) {
-    this.emitLiteral(ast);
+  if (ast.isComputed) {
+    this.write("]");
   }
-}
-
-function emitLiteral(ast) {
-
-  if (ast.isGlobal) {
-    this.write("__global.");
-  }
-
-  this.write(ast.value);
 }
 
 function emitCall(ast) {
 
   this.emitStatement(ast.callee);
 
-  this.emitArguments(ast.arguments);
-}
-
-function emitFunction(ast, allowOP) {
-
-  if (!allowOP && ast.name in this.operators) {
-    return void 0;
-  }
-
-  this.write("function ");
-
-  if (!allowOP) {
-    this.write(ast.name);
-  }
-
-  this.emitArguments(ast.arguments);
-
-  this.write("{");
-  this.emitBlock(ast.body);
-  this.write("}");
-}
-
-function emitReturn(ast) {
-
-  this.write("return");
-
   this.write("(");
-
-  this.emitStatement(ast.argument);
-
+  this.emitArguments(ast.arguments);
   this.write(")");
 }
 
@@ -833,17 +946,258 @@ function emitArguments(ast) {
   var ii = 0;
   var length = param.length;
 
-  this.write("(");
-
   for (; ii < length; ++ii) {
     this.emitStatement(param[ii]);
-    if (ii + 1 < length) this.write(",");
+    if (ii + 1 < length) this.write(", ");
   };
+}
 
+function emitDeclaration(ast) {
+
+  switch (ast.kind) {
+    case _labels.Types.FunctionDeclaration:
+      this.emitFunction(ast, false);
+      break;
+    case _labels.Types.ExtensionDeclaration:
+      this.emitExtension(ast);
+      break;
+    case _labels.Types.VariableDeclaration:
+      this.emitVariableDeclaration(ast);
+      break;
+  }
+}
+
+function emitExtension(ast) {
+
+  this.write("class ");
+
+  this.write("__");
+
+  this.emitLiteral(ast.argument);
+
+  this.write(" {\n");
+
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = ast.body.body[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var node = _step3.value;
+
+      if (node.kind === _labels.Types.FunctionDeclaration) {
+        node.isStatic = true;
+        this.emitFunction(node, false, true);
+      }
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3.return) {
+        _iterator3.return();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+
+  ;
+
+  this.write("}");
+}
+
+function emitVariableDeclaration(ast) {
+
+  var index = 0;
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
+
+  try {
+    for (var _iterator4 = ast.declarations[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      var node = _step4.value;
+
+      var init = ast.init[index] || ast.init;
+      var symbol = (0, _utils.getNameByLabel)(ast.symbol).toLowerCase() + " ";
+      if (node.kind === _labels.Types.ParameterExpression) {
+        this.emitMultipleVariable(node, init, symbol);
+      } else {
+        this.write(symbol);
+        this.emitVariable(node, init);
+      }
+      index++;
+    }
+  } catch (err) {
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion4 && _iterator4.return) {
+        _iterator4.return();
+      }
+    } finally {
+      if (_didIteratorError4) {
+        throw _iteratorError4;
+      }
+    }
+  }
+
+  ;
+}
+
+function emitVariable(ast, init) {
+
+  this.write(ast.name || ast.value);
+  this.write(" = ");
+
+  if (ast.isLaterPointer) this.write("{\nvalue: ");
+
+  this.emitStatement(init);
+
+  if (ast.isLaterPointer) this.write("\n}");
+
+  this.write(";\n");
+}
+
+function emitMultipleVariable(ast, init, symbol) {
+
+  var index = 0;
+  var _iteratorNormalCompletion5 = true;
+  var _didIteratorError5 = false;
+  var _iteratorError5 = undefined;
+
+  try {
+    for (var _iterator5 = ast.arguments[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+      var node = _step5.value;
+
+      this.write(symbol);
+      this.emitVariable(node.init, init.arguments[index]);
+      index++;
+    }
+  } catch (err) {
+    _didIteratorError5 = true;
+    _iteratorError5 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion5 && _iterator5.return) {
+        _iterator5.return();
+      }
+    } finally {
+      if (_didIteratorError5) {
+        throw _iteratorError5;
+      }
+    }
+  }
+
+  ;
+}
+
+function emitBinary(ast) {
+
+  if (ast.kind === _labels.Types.BinaryExpression) {
+    var op = (0, _utils.getLabelByNumber)(ast.operator);
+    /** Custom operator call */
+    if (op in this.operators) {
+      this.emitCustomOperator(ast, op);
+      /** Default binary expr */
+    } else {
+      if (ast.isParenthised) this.write("(");
+      this.emitStatement(ast.left);
+      op = op === "==" ? "===" : op === "!=" ? "!==" : op;
+      this.write(" " + op + " ");
+      this.emitStatement(ast.right);
+      if (ast.isParenthised) this.write(")");
+    }
+  } else if (ast.kind === _labels.Types.Literal) {
+    this.emitLiteral(ast);
+  }
+}
+
+function emitCustomOperator(ast, op) {
+
+  this.write("__OP[\"" + op + "\"]");
+  this.write("(");
+  this.emitStatement(ast.left);
+  this.write(", ");
+  this.emitStatement(ast.right);
   this.write(")");
 }
 
-},{"../../../labels":38,"../../../nodes":39,"../../../utils":42}],5:[function(require,module,exports){
+function emitLiteral(ast) {
+
+  if (ast.init) ast = ast.init;
+
+  if (ast.isGlobal) {
+    this.write("__global.");
+  }
+
+  var name = this.isPureType(ast) ? (0, _utils.getNameByLabel)(ast.type) : ast.value || ast.name;
+
+  var resolve = this.scope.get(ast.value);
+
+  if (this.isPureType(ast)) {
+    if (ast.type === _labels.TokenList.SELF) {
+      this.write("this");
+    } else {
+      this.write((0, _utils.getLabelByNumber)(_labels.TokenList[name]));
+    }
+  } else {
+    this.write(ast.value || ast.name);
+  }
+
+  if (resolve && resolve.isLaterPointer) {
+    if (ast.isPointer === void 0) {
+      this.write(".value");
+    }
+  } else {
+    resolve = this.scope.get(ast.value);
+    if (!ast.isReference && resolve && resolve.isReference) {
+      this.write(".value");
+    }
+  }
+}
+
+function emitFunction(ast, allowOP, noKeyword) {
+
+  if (!allowOP && ast.name in this.operators) {
+    return void 0;
+  }
+
+  this.scope = ast.context;
+
+  if (!noKeyword) {
+    this.write("function ");
+  }
+
+  if (ast.isStatic) {
+    this.write("static ");
+  }
+
+  if (!allowOP) {
+    this.write(ast.name);
+  }
+
+  this.write("(");
+  this.emitArguments(ast.arguments);
+  this.write(")");
+
+  this.emitBlock(ast.body);
+
+  this.popScope();
+}
+
+function emitReturn(ast) {
+
+  this.write("return ");
+
+  this.emitStatement(ast.argument);
+}
+
+},{"../../../labels":42,"../../../nodes":43,"../../../utils":46}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -865,7 +1219,7 @@ function emitProgram(ast) {
   //this.emitBlock(ast);
 }
 
-},{"../../../labels":38,"../../../nodes":39,"../../../utils":42}],6:[function(require,module,exports){
+},{"../../../labels":42,"../../../nodes":43,"../../../utils":46}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -886,7 +1240,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 exports.Java = _Java;
 exports.JavaScript = _JavaScript;
 
-},{"./Java":5,"./JavaScript":4}],7:[function(require,module,exports){
+},{"./Java":8,"./JavaScript":7}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -894,6 +1248,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.print = print;
 exports.pow = pow;
+exports.expect = expect;
 function print() {
   console.log.apply(console, arguments);
 }
@@ -902,7 +1257,13 @@ function pow(rx, pow) {
   return Math.pow(rx, pow);
 }
 
-},{}],8:[function(require,module,exports){
+function expect(truth) {
+  if (!truth) {
+    throw new Error("Expection error!");
+  }
+}
+
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -925,7 +1286,7 @@ function parseGuardStatement() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],9:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -959,7 +1320,7 @@ function parseIfStatement() {
   node.consequent = this.parseBlock();
   this.expect(_labels.TokenList.RBRACE);
 
-  /** Consequent */
+  /** Alternate: else|else if */
   if (this.eat(_labels.TokenList.ELSE)) {
     node.alternate = this.parseIfStatement();
   }
@@ -967,7 +1328,7 @@ function parseIfStatement() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],10:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1012,7 +1373,7 @@ function parseBranchStatement() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],11:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1043,7 +1404,7 @@ function parsePseudoProperty() {
   this.next();
 
   if (this.peek(_labels.TokenList.LPAREN) && allowParameters) {
-    node.arguments = this.parseParenthese();
+    node.arguments = this.parseArguments();
   }
 
   this.expect(_labels.TokenList.LBRACE);
@@ -1053,7 +1414,7 @@ function parsePseudoProperty() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],12:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1076,7 +1437,7 @@ function parseSwitch() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],13:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1103,8 +1464,8 @@ function parseClass() {
 
   node.name = this.extract(_labels.Token.Identifier).value;
 
-  if (this.peek(_labels.TokenList.COLON)) {
-    node.extend = this.parseStrictType();
+  if (this.eat(_labels.TokenList.COLON)) {
+    node.extend = this.parseCommaSeperatedValues() || [];
   }
 
   this.expect(_labels.TokenList.LBRACE);
@@ -1114,7 +1475,7 @@ function parseClass() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],14:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1148,20 +1509,21 @@ function parseExtension() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],15:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseFunction = parseFunction;
-exports.parseFunctionBody = parseFunctionBody;
 
 var _labels = require("../../labels");
 
 var _nodes = require("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1176,42 +1538,20 @@ function parseFunction() {
   this.eat(_labels.TokenList.FUNCTION);
 
   node.name = this.extract(_labels.Token.Identifier).value;
-  node.body = this.parseFunctionBody(node, false);
+  node.arguments = this.parseArguments();
+
+  if (this.peek(_labels.TokenList.ARROW)) {
+    node.type = this.parseStrictType();
+  }
+
+  this.expect(_labels.TokenList.LBRACE);
+  node.body = this.parseBlock();
+  this.expect(_labels.TokenList.RBRACE);
 
   return node;
 }
 
-function parseFunctionBody(node, isClosure) {
-
-  node.isClosure = isClosure;
-
-  if (this.peek(_labels.TokenList.LPAREN)) {
-    node.arguments = this.parseStatement();
-  }
-
-  if (this.eat(_labels.TokenList.ARROW)) {
-    if (this.isNativeType(this.current.name)) {
-      node.type = this.current;
-      this.next();
-    }
-  }
-
-  if (this.peek(_labels.TokenList.LPAREN)) {
-    node.returnTuple = this.parseStatement();
-  }
-
-  if (this.peek(_labels.TokenList.ARROW)) {
-    node.body = this.parseFunctionBody(node, true);
-  } else {
-    this.expect(_labels.TokenList.LBRACE);
-    node.body = this.parseBlock();
-    this.expect(_labels.TokenList.RBRACE);
-  }
-
-  return node.body;
-}
-
-},{"../../labels":38,"../../nodes":39}],16:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1234,13 +1574,14 @@ function parseImport() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],17:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseDeclarationStatement = parseDeclarationStatement;
+exports.parseInitializerDeclaration = parseInitializerDeclaration;
 
 var _labels = require("../../labels");
 
@@ -1279,7 +1620,7 @@ function parseDeclarationStatement() {
       break;
     case _labels.TokenList.VAR:
     case _labels.TokenList.CONST:
-      node = this.parseVariable();
+      node = this.parseVariableDeclaration();
       break;
     case _labels.TokenList.TYPEALIAS:
       //
@@ -1307,6 +1648,9 @@ function parseDeclarationStatement() {
     case _labels.TokenList.INFIX:
       node = this.parseOperatorDeclaration();
       break;
+    case _labels.TokenList.INIT:
+      node = this.parseInitializerDeclaration();
+      break;
   };
 
   this.eat(_labels.TokenList.SEMICOLON);
@@ -1314,13 +1658,33 @@ function parseDeclarationStatement() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":42}],18:[function(require,module,exports){
+/*
+ * @return {Node}
+ */
+function parseInitializerDeclaration() {
+
+  var node = new _nodes2.default.InitializerDeclaration();
+
+  this.expect(_labels.TokenList.INIT);
+
+  node.arguments = this.parseArguments();
+
+  this.expect(_labels.TokenList.LBRACE);
+  node.body = this.parseBlock();
+  this.expect(_labels.TokenList.RBRACE);
+
+  return node;
+}
+
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseOperatorDeclaration = parseOperatorDeclaration;
+exports.parsePrecedenceExpression = parsePrecedenceExpression;
+exports.parseAssociativityExpression = parseAssociativityExpression;
 exports.getOperatorAssociativity = getOperatorAssociativity;
 exports.getOperatorPrecedence = getOperatorPrecedence;
 
@@ -1357,9 +1721,35 @@ function parseOperatorDeclaration() {
   var associativity = this.getOperatorAssociativity(node.body.body);
   var precedence = this.getOperatorPrecedence(node.body.body);
 
-  var symbol = (node.name === _labels.TokenList.INFIX ? "IFX" : node.name === _labels.TokenList.PREFIX ? "PEX" : node.name === _labels.TokenList.POSTFIX ? "POX" : "") + ("::" + node.operator.raw);
+  (0, _precedence.registerOperator)(node.operator.raw, precedence, associativity, node.name);
 
-  (0, _precedence.registerOperator)(node.operator.raw, precedence, associativity, symbol);
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
+function parsePrecedenceExpression() {
+
+  var node = new _nodes2.default.PrecedenceExpression();
+
+  this.expect(_labels.TokenList.PRECEDENCE);
+
+  node.level = this.parseLiteral();
+
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
+function parseAssociativityExpression() {
+
+  var node = new _nodes2.default.AssociativityExpression();
+
+  this.expect(_labels.TokenList.ASSOCIATIVITY);
+
+  node.associativity = this.parseLiteral();
 
   return node;
 }
@@ -1440,7 +1830,7 @@ function getOperatorPrecedence(body) {
   return -1;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":42}],19:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../precedence":44,"../../utils":46}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1463,7 +1853,7 @@ function parseProtocol() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],20:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1486,12 +1876,13 @@ function parseStruct() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],21:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.parseVariableDeclaration = parseVariableDeclaration;
 exports.parseVariable = parseVariable;
 exports.parseVariableDeclarement = parseVariableDeclarement;
 
@@ -1500,6 +1891,8 @@ var _labels = require("../../labels");
 var _nodes = require("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1513,23 +1906,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   [x] type annotation (opt)
   @return {Node}
  */
-function parseVariable() {
+function parseVariableDeclaration() {
 
   var declaration = null;
   var node = new _nodes2.default.VariableDeclaration();
 
-  node.symbol = this.current.name;
-  this.next();
+  if (this.peek(_labels.TokenList.VAR) || this.peek(_labels.TokenList.CONST)) {
+    node.symbol = this.current.name;
+    this.next();
+  }
 
-  /** pattern */
-  if (this.peek(_labels.TokenList.LPAREN)) {
-    declaration = this.parseExpressionStatement();
-    /** type annotation */
-  } else {
-      declaration = this.parseVariableDeclarement();
-    }
+  this.parseVariable(node);
 
-  node.declarations.push(declaration);
+  return node;
+}
+
+function parseVariable(node) {
+
+  node.declarations = this.parseVariableDeclarement();
 
   /** block */
   if (this.eat(_labels.TokenList.LBRACE)) {
@@ -1537,35 +1931,133 @@ function parseVariable() {
     this.expect(_labels.TokenList.RBRACE);
     /** expression */
   } else {
-      if (this.eat(_labels.TokenList.ASSIGN)) {
+    if (this.eat(_labels.TokenList.ASSIGN)) {
+      if (this.peek(_labels.TokenList.LPAREN) && node.declarations.length > 1) {
+        node.init = this.parseArguments();
+      } else {
         node.init = this.parseStatement();
       }
     }
+  }
 
-  return node;
+  if (node.init && !node.init.length) {
+    node.init = [node.init];
+  }
+
+  if (this.eat(_labels.TokenList.COMMA)) {
+    while (true) {
+      var tmp = this.parseVariableDeclaration();
+      tmp.symbol = node.symbol;
+      node.declarations = node.declarations.concat(tmp.declarations);
+      node.init = node.init.concat(tmp.init);
+      if (!this.peek(_labels.TokenList.COMMA)) break;
+    };
+  }
 }
 
-/**
- * @return {Node}
- */
 function parseVariableDeclarement() {
 
-  var node = new _nodes2.default.VariableDeclarement();
+  var args = null;
 
-  node.name = this.current.value;
-  this.next();
-  node.type = this.parseStrictType();
+  if (this.peek(_labels.Token.Identifier)) {
+    args = [this.parseLiteral()];
+  } else if (this.peek(_labels.TokenList.LPAREN)) {
+    args = this.parseArguments();
+  }
 
-  return node;
+  return args;
 }
 
-},{"../../labels":38,"../../nodes":39}],22:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parseAtomicExpression = parseAtomicExpression;
+exports.parseParenthese = parseParenthese;
+exports.parseCommaSeperatedValues = parseCommaSeperatedValues;
+exports.parseArguments = parseArguments;
+
+var _labels = require("../../labels");
+
+var _nodes = require("../../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+  [x] parenthesed bin expr
+  [x] parameter
+  [x] argument
+  [x] tuple
+  @return {Node}
+ */
+function parseParenthese(left, right) {
+
+  var node = null;
+  var base = null;
+
+  /** Empty parenthese */
+  this.expect(left);
+  if (this.eat(right)) return null;
+
+  base = this.parseStatement();
+
+  if (this.eat(_labels.TokenList.COMMA)) {
+    node = this.parseCommaSeperatedValues();
+    node.unshift(base);
+  } else {
+    node = base;
+  }
+
+  this.expect(right);
+
+  return node;
+}
+
+/**
+ * @return {Array}
+ */
+function parseCommaSeperatedValues() {
+
+  var args = [];
+
+  while (true) {
+    args.push(this.parseStatement());
+    if (!this.eat(_labels.TokenList.COMMA)) break;
+  };
+
+  return args;
+}
+
+/**
+ * @return {Array}
+ */
+function parseArguments(args) {
+
+  var argz = args === void 0 ? this.parseParenthese(_labels.TokenList.LPAREN, _labels.TokenList.RPAREN) : args;
+
+  /** Handle empty arguments */
+  if (argz === null) {
+    argz = [];
+  } else if (!argz.length) {
+    argz = [argz];
+  }
+
+  return argz;
+}
+
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],26:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parseAtom = parseAtom;
+exports.parseMemberExpression = parseMemberExpression;
 exports.parseCallExpression = parseCallExpression;
 exports.parseTernaryExpression = parseTernaryExpression;
 
@@ -1575,44 +2067,36 @@ var _nodes = require("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
+var _utils = require("../../utils");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * Handles deep:
- * - CallExpr   ()
- * - MemberExpr []
- * - MemberExpr .
- * - TernaryExpr ?:
- * @return {Node}
+  [x] ?:
+  [x] .
+  [x] []
+  [x] AS|IS
+  [x] ()
+  @param {Node} base
+  @return {Node}
  */
-function parseAtomicExpression() {
-
-  var base = this.parseBinaryExpression(0);
-  var node = null;
+function parseAtom(base) {
 
   while (true) {
-    /** Call expression ??? */
-    if (this.peek(_labels.TokenList.LPAREN)) {
-      base = this.parseCallExpression(base);
+    /** Un/computed member expression */
+    if (this.peek(_labels.TokenList.LBRACK) || this.peek(_labels.TokenList.PERIOD)) {
+      base = this.parseMemberExpression(base);
     }
-    /** Ternary expression */
-    else if (this.peek(_labels.TokenList.CONDITIONAL)) {
-        base = this.parseTernaryExpression(base);
+    /** Call expression */
+    else if (this.peek(_labels.TokenList.LPAREN)) {
+        base = this.parseCallExpression(base);
       }
-      /** Computed member expression */
-      else if (this.peek(_labels.TokenList.LBRACK)) {
-          console.log("LBRACK EXPR");
+      /** Type casting */
+      else if (this.peek(_labels.TokenList.AS) || this.peek(_labels.TokenList.IS)) {
+          base = this.parseCast(base);
+        } else {
+          break;
         }
-        /** Uncomputed member expression */
-        else if (this.eat(_labels.TokenList.PERIOD)) {
-            node = new _nodes2.default.MemberExpression();
-            node.object = base;
-            node.property = this.parseBinaryExpression(0);
-            base = node;
-            /** Type casting */
-          } else if (this.peek(_labels.TokenList.AS) || this.peek(_labels.TokenList.IS)) {
-              base = this.parseCast(base);
-            } else break;
   };
 
   return base;
@@ -1621,21 +2105,19 @@ function parseAtomicExpression() {
 /**
  * @return {Node}
  */
-function parseCallExpression(callee) {
+function parseMemberExpression(base) {
 
-  var node = new _nodes2.default.CallExpression();
+  var node = new _nodes2.default.MemberExpression();
 
-  node.callee = callee || this.parseBinaryExpression(0);
-  node.arguments = this.parseParenthese() || [];
+  node.isComputed = this.peek(_labels.TokenList.LBRACK);
 
-  /** Oh dear, it's a function */
-  if (this.peek(_labels.TokenList.LBRACE)) {
-    /** Transform into dirty func decl */
-    var func = new _nodes2.default.FunctionDeclaration();
-    func.name = node.callee.value;
-    func.arguments = node.arguments;
-    func.body = this.parseFunctionBody(func, false);
-    node = func;
+  this.next();
+
+  node.object = base;
+  node.property = this.parseLiteral();
+
+  if (node.isComputed) {
+    this.expect(_labels.TokenList.RBRACK);
   }
 
   return node;
@@ -1644,28 +2126,44 @@ function parseCallExpression(callee) {
 /**
  * @return {Node}
  */
-function parseTernaryExpression(condition) {
+function parseCallExpression(base) {
+
+  var node = new _nodes2.default.CallExpression();
+
+  node.callee = base;
+  node.arguments = this.parseArguments();
+
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
+function parseTernaryExpression(base) {
 
   var node = new _nodes2.default.TernaryExpression();
 
-  node.condition = condition || this.parseBinaryExpression(0);
+  this.inTernary = true;
+
+  node.condition = base;
 
   this.expect(_labels.TokenList.CONDITIONAL);
   node.consequent = this.parseExpressionStatement();
   this.expect(_labels.TokenList.COLON);
   node.alternate = this.parseExpressionStatement();
 
+  this.inTernary = false;
+
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],23:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseBinaryExpression = parseBinaryExpression;
-exports.parseLiteral = parseLiteral;
 
 var _labels = require("../../labels");
 
@@ -1680,80 +2178,34 @@ var _utils = require("../../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * @param  {Number} index Precedence
+ * @param  {Number} index
  * @return {Node}
  */
 function parseBinaryExpression(index) {
 
   var tmp = null;
-  var ast = null;
+  var left = null;
   var node = null;
 
-  var state = _precedence.Precedence[index];
+  var state = _precedence.IFX_PRECEDENCE[index];
 
-  ast = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
+  left = state ? this.parseBinaryExpression(index + 1) : this.parseAtom(this.parseLiteral());
 
   while (this.acceptPrecedence(state)) {
     node = new _nodes2.default.BinaryExpression();
     node.operator = _labels.TokenList[state.op];
     this.next();
-    node.left = ast;
+    node.left = left;
     tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
     node.right = tmp;
-    ast = node;
+    node.isParenthised = this.peek(_labels.TokenList.RPAREN);
+    left = node;
   };
 
-  return ast;
+  return left;
 }
 
-/**
- * @return {Node}
- */
-function parseLiteral() {
-
-  var node = null;
-
-  if (this.eat(_labels.TokenList.LPAREN)) {
-    node = this.parseBinaryExpression(0);
-    this.eat(_labels.TokenList.RPAREN);
-  } else {
-    node = new _nodes2.default.Literal();
-    if (this.eat(_labels.TokenList.BIT_AND)) {
-      node.isPointer = true;
-    }
-    node.type = this.current.name;
-    node.value = this.current.value;
-    node.raw = this.current.value;
-    this.next();
-  }
-
-  if (this.peek(_labels.TokenList.COLON)) {
-    /**
-     * Dirty hack:
-     * Numbers cannot have an colon attached type,
-     * so it seems like its a ternary expression
-     */
-    if (node.type === _labels.Token.NumericLiteral) return node;
-    this.eat(_labels.TokenList.COLON);
-    if (this.eat(_labels.TokenList.INOUT)) {
-      node.isReference = true;
-      this.back();
-    }
-    this.back();
-    var tmp = this.parseStrictType();
-    if (tmp.kind === _labels.Types.TypeAnnotation) {
-      node.type = tmp;
-    } else if (tmp.kind === _labels.Types.Literal) {
-      node.init = tmp;
-    } else {
-      throw new Error("Fatal literal parse error");
-    }
-  }
-
-  return node;
-}
-
-},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":42}],24:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../precedence":44,"../../utils":46}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1794,17 +2246,13 @@ function parseCast(base) {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],25:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseExpressionStatement = parseExpressionStatement;
-exports.parsePrecedenceExpression = parsePrecedenceExpression;
-exports.parseAssociativityExpression = parseAssociativityExpression;
-exports.acceptPrecedence = acceptPrecedence;
-exports.isOperator = isOperator;
 
 var _labels = require("../../labels");
 
@@ -1821,7 +2269,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function parseExpressionStatement() {
 
+  var node = null;
+
   switch (this.current.name) {
+    case _labels.TokenList.LPAREN:
+    case _labels.TokenList.LBRACK:
     case _labels.TokenList.SELF:
     case _labels.TokenList.BIT_AND:
     case _labels.TokenList.UL:
@@ -1832,117 +2284,32 @@ function parseExpressionStatement() {
     case _labels.Token.StringLiteral:
     case _labels.Token.NumericLiteral:
     case _labels.Token.BooleanLiteral:
-      return this.parseAtomicExpression();
-      break;
-    /** Parenthised expression */
-    case _labels.TokenList.LPAREN:
-      return this.parseParenthese();
+      node = this.parseBinaryExpression(0);
       break;
     /** Operator things */
     case _labels.TokenList.ASSOCIATIVITY:
-      return this.parseAssociativityExpression();
+      node = this.parseAssociativityExpression();
       break;
     case _labels.TokenList.PRECEDENCE:
-      return this.parsePrecedenceExpression();
-      break;
-    default:
-      if (this.isNativeType(this.current.name)) {
-        return this.parseBinaryExpression(0);
-      }
+      node = this.parsePrecedenceExpression();
       break;
   };
 
-  return null;
-}
-
-/**
- * @return {Node}
- */
-function parsePrecedenceExpression() {
-
-  var node = new _nodes2.default.PrecedenceExpression();
-
-  this.expect(_labels.TokenList.PRECEDENCE);
-
-  node.level = this.parseLiteral();
-
-  return node;
-}
-
-/**
- * @return {Node}
- */
-function parseAssociativityExpression() {
-
-  var node = new _nodes2.default.AssociativityExpression();
-
-  this.expect(_labels.TokenList.ASSOCIATIVITY);
-
-  node.associativity = this.parseLiteral();
-
-  return node;
-}
-
-/**
- * Accept precedence
- * @param  {Object}  token
- * @param  {Number}  state
- * @return {Boolean}
- */
-function acceptPrecedence(state) {
-  if (state !== void 0 && this.current) {
-    /** Custom operator */
-    if ((0, _utils.getNameByLabel)(this.current.name) === "Identifier") {
-      return _labels.TokenList[state.op] === _labels.TokenList[this.current.value];
-    }
-    return _labels.TokenList[state.op] === this.current.name;
+  if (this.peek(_labels.TokenList.CONDITIONAL)) {
+    node = this.parseTernaryExpression(node);
   }
-  return false;
+
+  return node;
 }
 
-/**
- * @param  {Number}  name
- * @return {Boolean}
- */
-function isOperator(name) {
-  switch (name) {
-    case _labels.TokenList.OR:
-    case _labels.TokenList.AND:
-    case _labels.TokenList.ADD:
-    case _labels.TokenList.SUB:
-    case _labels.TokenList.MUL:
-    case _labels.TokenList.DIV:
-    case _labels.TokenList.MOD:
-    case _labels.TokenList.LT:
-    case _labels.TokenList.LE:
-    case _labels.TokenList.GT:
-    case _labels.TokenList.GE:
-    case _labels.TokenList.EQ:
-    case _labels.TokenList.NEQ:
-    case _labels.TokenList.CMP_ADD:
-    case _labels.TokenList.CMP_SUB:
-    case _labels.TokenList.CMP_MUL:
-    case _labels.TokenList.CMP_DIV:
-    case _labels.TokenList.BIT_XOR:
-    case _labels.TokenList.BIT_NOT:
-    case _labels.TokenList.BIT_OR:
-    case _labels.TokenList.BIT_AND:
-      return true;
-      break;
-    default:
-      return false;
-      break;
-  };
-}
-
-},{"../../labels":38,"../../nodes":39,"../../utils":42}],26:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parseTupleExpression = parseTupleExpression;
-exports.parseTupleType = parseTupleType;
+exports.parseLiteral = parseLiteral;
+exports.parseArrayDeclaration = parseArrayDeclaration;
 
 var _labels = require("../../labels");
 
@@ -1950,23 +2317,56 @@ var _nodes = require("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
+var _utils = require("../../utils");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * @return {Node}
  */
-function parseTupleExpression() {
+function parseLiteral() {
 
-  var node = new _nodes2.default.Tuple();
+  if (this.peek(_labels.TokenList.LPAREN)) {
+    this.expect(_labels.TokenList.LPAREN);
+    var tmp = this.parseExpressionStatement();
+    this.expect(_labels.TokenList.RPAREN);
+    return tmp;
+  }
 
-  while (true) {
-    node.arguments.push(this.parseExpressionStatement());
-    /** Nested tuple */
-    if (this.peek(_labels.TokenList.LPAREN)) {
-      node.arguments.push(this.parseExpressionStatement());
+  var node = new _nodes2.default.Literal();
+  var isExplicit = this.eat(_labels.TokenList.UL);
+
+  if (this.current.value === "&") {
+    node.isPointer = true;
+    this.next();
+  }
+
+  if (isExplicit && this.peek(_labels.TokenList.COLON)) {
+    // explicit only parameter
+  } else {
+    node.type = this.current.name;
+    node.value = this.current.value;
+    node.raw = this.current.value;
+    this.next();
+  }
+
+  /** Labeled literal */
+  if (this.peek(_labels.Token.Identifier)) {
+    if (!this.isOperator(_labels.TokenList[this.current.value])) {
+      var _tmp = this.parseLiteral();
+      _tmp.label = node;
+      node = _tmp;
     }
-    if (this.peek(_labels.TokenList.COMMA)) this.next();else break;
-  };
+  }
+
+  if (!this.inTernary) {
+    if (this.peek(_labels.TokenList.COLON)) {
+      node = this.parseStrictType(node);
+      if (node.argument && node.argument.kind === _labels.Types.TypeAnnotation) {
+        node.argument.isExplicit = isExplicit;
+      }
+    }
+  }
 
   return node;
 }
@@ -1974,24 +2374,18 @@ function parseTupleExpression() {
 /**
  * @return {Node}
  */
-function parseTupleType() {
+function parseArrayDeclaration() {
 
-  var node = new _nodes2.default.TupleType();
+  var node = new _nodes2.default.ArrayDeclaration();
 
-  this.expect(_labels.TokenList.LPAREN);
+  var args = this.parseParenthese(_labels.TokenList.LBRACK, _labels.TokenList.RBRACK);
 
-  while (this.isNativeType(this.current.name)) {
-    node.arguments.push(this.current.name);
-    this.next();
-    if (this.peek(_labels.TokenList.COMMA)) this.next();else break;
-  };
-
-  this.expect(_labels.TokenList.RPAREN);
+  node.argument = this.parseArguments(args);
 
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],27:[function(require,module,exports){
+},{"../../labels":42,"../../nodes":43,"../../utils":46}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2004,6 +2398,10 @@ var _parse = require("./parse");
 
 var parse = _interopRequireWildcard(_parse);
 
+var _args = require("./expression/args");
+
+var args = _interopRequireWildcard(_args);
+
 var _atom = require("./expression/atom");
 
 var atoms = _interopRequireWildcard(_atom);
@@ -2012,13 +2410,13 @@ var _cast = require("./expression/cast");
 
 var casts = _interopRequireWildcard(_cast);
 
-var _tuple = require("./expression/tuple");
-
-var tuples = _interopRequireWildcard(_tuple);
-
 var _binary = require("./expression/binary");
 
 var binaries = _interopRequireWildcard(_binary);
+
+var _literal = require("./expression/literal");
+
+var literals = _interopRequireWildcard(_literal);
 
 var _expression = require("./expression");
 
@@ -2051,10 +2449,6 @@ var loops = _interopRequireWildcard(_loop);
 var _type = require("./type");
 
 var types = _interopRequireWildcard(_type);
-
-var _parameter = require("./parameter");
-
-var parameters = _interopRequireWildcard(_parameter);
 
 var _statement = require("./statement");
 
@@ -2149,6 +2543,12 @@ function Parser() {
    * @type {Object}
    */
   this.current = null;
+
+  /**
+   * Inside ternary expr
+   * @type {Boolean}
+   */
+  this.inTernary = false;
 };
 
 exports.default = Parser;
@@ -2156,9 +2556,11 @@ exports.default = Parser;
 
 (0, _utils.inherit)(Parser, parse);
 
+(0, _utils.inherit)(Parser, args);
 (0, _utils.inherit)(Parser, casts);
 (0, _utils.inherit)(Parser, atoms);
 (0, _utils.inherit)(Parser, binaries);
+(0, _utils.inherit)(Parser, literals);
 (0, _utils.inherit)(Parser, expressions);
 
 (0, _utils.inherit)(Parser, guards);
@@ -2169,9 +2571,7 @@ exports.default = Parser;
 
 (0, _utils.inherit)(Parser, loops);
 (0, _utils.inherit)(Parser, types);
-(0, _utils.inherit)(Parser, tuples);
 (0, _utils.inherit)(Parser, branches);
-(0, _utils.inherit)(Parser, parameters);
 (0, _utils.inherit)(Parser, statements);
 
 (0, _utils.inherit)(Parser, imports);
@@ -2184,7 +2584,7 @@ exports.default = Parser;
 (0, _utils.inherit)(Parser, extensions);
 (0, _utils.inherit)(Parser, declarations);
 
-},{"../utils":42,"./branch":10,"./branch/guard":8,"./branch/if":9,"./branch/pseudo":11,"./branch/switch":12,"./declare":17,"./declare/class":13,"./declare/extension":14,"./declare/function":15,"./declare/import":16,"./declare/operator":18,"./declare/protocol":19,"./declare/struct":20,"./declare/variable":21,"./expression":25,"./expression/atom":22,"./expression/binary":23,"./expression/cast":24,"./expression/tuple":26,"./loop":28,"./parameter":29,"./parse":30,"./statement":31,"./type":32}],28:[function(require,module,exports){
+},{"../utils":46,"./branch":13,"./branch/guard":11,"./branch/if":12,"./branch/pseudo":14,"./branch/switch":15,"./declare":20,"./declare/class":16,"./declare/extension":17,"./declare/function":18,"./declare/import":19,"./declare/operator":21,"./declare/protocol":22,"./declare/struct":23,"./declare/variable":24,"./expression":29,"./expression/args":25,"./expression/atom":26,"./expression/binary":27,"./expression/cast":28,"./expression/literal":30,"./loop":32,"./parse":33,"./statement":34,"./type":35}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2192,6 +2592,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseLoopStatement = parseLoopStatement;
 exports.parseFor = parseFor;
+exports.parseForInLoop = parseForInLoop;
+exports.parseDefaultForLoop = parseDefaultForLoop;
 exports.parseWhile = parseWhile;
 exports.parseRepeat = parseRepeat;
 
@@ -2200,6 +2602,8 @@ var _labels = require("../labels");
 var _nodes = require("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2233,16 +2637,26 @@ function parseFor() {
 
   var node = new _nodes2.default.ForStatement();
 
+  var init = null;
+
   this.expect(_labels.TokenList.FOR);
 
   this.eat(_labels.TokenList.LPAREN);
 
   if (!this.eat(_labels.TokenList.SEMICOLON)) {
-    node.init = this.parseVariable();
+    init = this.parseExpressionStatement();
   }
-  node.test = this.parseExpressionStatement();
-  this.expect(_labels.TokenList.SEMICOLON);
-  node.update = this.parseExpressionStatement();
+
+  /** for ex in ex */
+  if (this.eat(_labels.TokenList.IN)) {
+    node = new _nodes2.default.ForInStatement();
+    this.parseForInLoop(node);
+    /** for ex;ex;ex */
+  } else {
+    this.parseDefaultForLoop(node);
+  }
+
+  node.init = init;
 
   this.eat(_labels.TokenList.RPAREN);
 
@@ -2251,6 +2665,18 @@ function parseFor() {
   this.expect(_labels.TokenList.RBRACE);
 
   return node;
+}
+
+function parseForInLoop(node) {
+
+  node.expression = this.parseExpressionStatement();
+}
+
+function parseDefaultForLoop(node) {
+
+  node.test = this.parseExpressionStatement();
+  this.expect(_labels.TokenList.SEMICOLON);
+  node.update = this.parseExpressionStatement();
 }
 
 /**
@@ -2295,86 +2721,7 @@ function parseRepeat() {
   return node;
 }
 
-},{"../labels":38,"../nodes":39}],29:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.parseParenthese = parseParenthese;
-exports.parseParameter = parseParameter;
-
-var _labels = require("../labels");
-
-var _nodes = require("../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
-  Parse a parenthese, either
-  a expr, tuple, parameter or argument
-  [x] parenthesed bin expr
-  [x] parameter
-  [x] tuple
-  @return {Node}
- */
-function parseParenthese() {
-
-  var node = new _nodes2.default.ParameterExpression();
-  var param = null;
-
-  this.expect(_labels.TokenList.LPAREN);
-
-  param = this.parseStatement();
-
-  /** No parameter, parse as expression */
-  if (!this.peek(_labels.TokenList.COMMA)) {
-    /** Dont forget to skip rparen */
-    this.expect(_labels.TokenList.RPAREN);
-    if (param !== null) {
-      node.arguments.push(param);
-    }
-    return node;
-  }
-
-  while (true) {
-    /** Nested parenthese */
-    if (this.peek(_labels.TokenList.LPAREN)) {
-      param = this.parseStatement();
-    } else if (param === null) {
-      param = new _nodes2.default.Parameter();
-      this.parseParameter(param);
-    } else {
-      var tmp = new _nodes2.default.Parameter();
-      tmp.init = param;
-      param = tmp;
-    }
-    node.arguments.push(param);
-    param = null;
-    if (!this.eat(_labels.TokenList.COMMA)) break;
-  };
-
-  this.expect(_labels.TokenList.RPAREN);
-
-  return node;
-}
-
-function parseParameter(node) {
-
-  node.init = this.parseStatement();
-
-  /** Labeled parameter */
-  if (this.peek(_labels.Token.Identifier)) {
-    if (node.init.kind === _labels.Types.Literal) {
-      node.label = node.init;
-      this.parseParameter(node);
-    }
-  }
-}
-
-},{"../labels":38,"../nodes":39}],30:[function(require,module,exports){
+},{"../labels":42,"../nodes":43,"../utils":46}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2390,6 +2737,8 @@ exports.reset = reset;
 exports.parseProgram = parseProgram;
 exports.parseBlock = parseBlock;
 exports.parse = parse;
+exports.acceptPrecedence = acceptPrecedence;
+exports.isOperator = isOperator;
 
 var _labels = require("../labels");
 
@@ -2531,13 +2880,42 @@ function parse(tokens) {
   return this.parseProgram();
 }
 
-},{"../labels":38,"../nodes":39,"../utils":42}],31:[function(require,module,exports){
+/**
+ * Accept precedence
+ * @param  {Object}  token
+ * @param  {Number}  state
+ * @return {Boolean}
+ */
+function acceptPrecedence(state) {
+  if (state !== void 0 && this.current) {
+    /** Custom operator */
+    if ((0, _utils.getNameByLabel)(this.current.name) === "Identifier") {
+      return _labels.TokenList[state.op] === _labels.TokenList[this.current.value];
+    }
+    return _labels.TokenList[state.op] === this.current.name;
+  }
+  return false;
+}
+
+/**
+ * @param  {Number}  name
+ * @return {Boolean}
+ */
+function isOperator(name) {
+  return (0, _utils.getNameByLabel)(name) in _labels.Operators;
+}
+
+},{"../labels":42,"../nodes":43,"../utils":46}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseStatement = parseStatement;
+exports.parseFinal = parseFinal;
+exports.parseOverride = parseOverride;
+exports.parseStatic = parseStatic;
+exports.parseAccessControl = parseAccessControl;
 exports.parseReturnStatement = parseReturnStatement;
 
 var _labels = require("../labels");
@@ -2545,6 +2923,8 @@ var _labels = require("../labels");
 var _nodes = require("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2593,6 +2973,7 @@ function parseStatement() {
     case _labels.TokenList.ENUM:
     case _labels.TokenList.STRUCT:
     case _labels.TokenList.CLASS:
+    case _labels.TokenList.INIT:
     case _labels.TokenList.PROTOCOL:
     case _labels.TokenList.EXTENSION:
     case _labels.TokenList.OPERATOR:
@@ -2600,6 +2981,23 @@ function parseStatement() {
     case _labels.TokenList.PREFIX:
     case _labels.TokenList.INFIX:
       node = this.parseDeclarationStatement();
+      break;
+    /** Access control */
+    case _labels.TokenList.PUBLIC:
+    case _labels.TokenList.PRIVATE:
+    case _labels.TokenList.INTERNAL:
+      node = this.parseAccessControl();
+      break;
+    /** Override */
+    case _labels.TokenList.OVERRIDE:
+      node = this.parseOverride();
+      break;
+    /** Final */
+    case _labels.TokenList.FINAL:
+      node = this.parseFinal();
+      break;
+    case _labels.TokenList.STATIC:
+      node = this.parseStatic();
       break;
     /** Expression statement */
     default:
@@ -2615,28 +3013,109 @@ function parseStatement() {
 /**
  * @return {Node}
  */
+function parseFinal() {
+
+  this.expect(_labels.TokenList.FINAL);
+
+  var node = this.parseStatement();
+
+  if (!node.hasOwnProperty("isFinal")) {
+    throw new Error("Can't attach final property to node!");
+  }
+
+  node.isFinal = true;
+
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
+function parseOverride() {
+
+  this.expect(_labels.TokenList.OVERRIDE);
+
+  var node = this.parseStatement();
+
+  if (!node.hasOwnProperty("isOverride")) {
+    throw new Error("Can't attach override property to node!");
+  }
+
+  node.isOverride = true;
+
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
+function parseStatic() {
+
+  this.expect(_labels.TokenList.STATIC);
+
+  var node = this.parseStatement();
+
+  if (!node.hasOwnProperty("isStatic")) {
+    throw new Error("Can't attach static property to node!");
+  }
+
+  node.isStatic = true;
+
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
+function parseAccessControl() {
+
+  var access = this.current;
+
+  this.next();
+
+  var node = this.parseStatement();
+
+  if (!node.hasOwnProperty("isPublic") && !node.hasOwnProperty("isPrivate") && !node.hasOwnProperty("isInternal")) {
+    throw new Error("Can't attach access control to node!");
+  }
+
+  switch (access.name) {
+    case _labels.TokenList.PUBLIC:
+      node.isPublic = true;
+      break;
+    case _labels.TokenList.PRIVATE:
+      node.isPrivate = true;
+      break;
+    case _labels.TokenList.INTERNAL:
+      node.isInternal = true;
+      break;
+  };
+
+  return node;
+}
+
+/**
+ * @return {Node}
+ */
 function parseReturnStatement() {
 
   var node = new _nodes2.default.ReturnStatement();
 
   this.expect(_labels.TokenList.RETURN);
 
-  this.eat(_labels.TokenList.LPAREN);
   node.argument = this.parseExpressionStatement();
-  this.eat(_labels.TokenList.RPAREN);
-
-  this.eat(_labels.TokenList.SEMICOLON);
 
   return node;
 }
 
-},{"../labels":38,"../nodes":39}],32:[function(require,module,exports){
+},{"../labels":42,"../nodes":43,"../utils":46}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseStrictType = parseStrictType;
+exports.parseType = parseType;
 exports.isNativeType = isNativeType;
 
 var _labels = require("../labels");
@@ -2645,32 +3124,56 @@ var _nodes = require("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
+var _utils = require("../utils");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
   [x] tuple
   [x] type
 */
-function parseStrictType() {
+function parseStrictType(base) {
+
+  var node = new _nodes2.default.Parameter();
+
+  var isInout = false;
+
+  if (this.eat(_labels.TokenList.COLON)) {
+    isInout = this.eat(_labels.TokenList.INOUT);
+    node.init = base;
+    if (this.isNativeType(this.current.name)) {
+      node.argument = this.parseType();
+    } else {
+      node.argument = this.parseExpressionStatement();
+    }
+  } else if (this.eat(_labels.TokenList.ARROW)) {
+    if (this.peek(_labels.TokenList.LPAREN)) {
+      node = this.parseExpressionStatement();
+    } else {
+      node = this.parseType();
+    }
+  }
+
+  if (node.argument && node.argument.kind === _labels.Types.TypeAnnotation) {
+    node.argument.isReference = isInout;
+  }
+
+  return node;
+}
+
+function parseType() {
 
   var node = new _nodes2.default.TypeAnnotation();
 
-  if (this.eat(_labels.TokenList.COLON)) {
-    this.eat(_labels.TokenList.INOUT);
-    /** id:(type,type) */
-    if (this.peek(_labels.TokenList.LPAREN)) {
-      node.type = this.parseTupleType();
-      /** id:type */
-    } else {
-        if (this.isNativeType(this.current.name)) {
-          node.type = this.current.name;
-          this.next();
-        } else {
-          node = this.parseBinaryExpression(0);
-        }
-      }
-  } else if (this.peek(_labels.TokenList.ASSIGN)) {
-    node.type = -1;
+  node.type = this.current.name;
+
+  this.next();
+
+  if (this.eat(_labels.TokenList.CONDITIONAL)) {
+    node.isOptional = true;
+  } else if (this.current.value === "!") {
+    node.isUnwrap = true;
+    this.next();
   }
 
   return node;
@@ -2702,7 +3205,7 @@ function isNativeType(type) {
   };
 }
 
-},{"../labels":38,"../nodes":39}],33:[function(require,module,exports){
+},{"../labels":42,"../nodes":43,"../utils":46}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2744,7 +3247,7 @@ var Character = exports.Character = {
   }
 };
 
-},{}],34:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2777,7 +3280,7 @@ var Tokenizer = function () {
 
 exports.default = Tokenizer;
 
-},{"./scanner":35}],35:[function(require,module,exports){
+},{"./scanner":38}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3414,6 +3917,7 @@ function scanPunctuator() {
         if (str === '===' || str === '!==' || str === '>>>' || str === '<<=' || str === '>>=') {
           index += 3;
         } else {
+          var org = str;
           // 2-character punctuators.
           str = str.substr(0, 2);
           if (_labels.TokenList[str] !== void 0 && Number.isInteger(_labels.TokenList[str])) {
@@ -3426,7 +3930,7 @@ function scanPunctuator() {
             }
             if (_labels.TokenList[str.trim()] === void 0) {
               token.type = _labels.Token.Identifier;
-              index++;
+              str = org;
             } else {
               str = tmp;
             }
@@ -3987,21 +4491,83 @@ function peek() {
 
 exports.tokenize = tokenize;
 
-},{"../labels":38,"./char":33}],36:[function(require,module,exports){
+},{"../labels":42,"./char":36}],39:[function(require,module,exports){
+"use strict";
+
+var _labels = require("./labels");
+
+var _precedence = require("./precedence");
+
+var PREFIX = _labels.TokenList.PREFIX;
+var INFIX = _labels.TokenList.INFIX;
+var POSTFIX = _labels.TokenList.POSTFIX;
+
+/** PREFIX */
+(0, _precedence.registerOperator)("!", "left", "NOT", PREFIX);
+(0, _precedence.registerOperator)("~", "left", "BIT_NOT", PREFIX);
+(0, _precedence.registerOperator)("+", "left", "UNARY_ADD", PREFIX);
+(0, _precedence.registerOperator)("-", "left", "UNARY_SUB", PREFIX);
+
+/** INFIX */
+(0, _precedence.registerOperator)("*", 150, "left", "MUL", INFIX);
+(0, _precedence.registerOperator)("/", 150, "left", "DIV", INFIX);
+(0, _precedence.registerOperator)("%", 150, "left", "MOD", INFIX);
+(0, _precedence.registerOperator)("&", 150, "left", "BIT_AND", INFIX);
+
+(0, _precedence.registerOperator)("+", 140, "left", "ADD", INFIX);
+(0, _precedence.registerOperator)("-", 140, "left", "SUB", INFIX);
+
+(0, _precedence.registerOperator)("|", 140, "left", "BIT_OR", INFIX);
+(0, _precedence.registerOperator)("^", 140, "left", "BIT_XOR", INFIX);
+
+(0, _precedence.registerOperator)("is", 132, "left", "IS", INFIX);
+(0, _precedence.registerOperator)("as", 132, "left", "AS", INFIX);
+(0, _precedence.registerOperator)("as!", 132, "left", "AS_UNWRAP", INFIX);
+(0, _precedence.registerOperator)("as?", 132, "left", "AS_EXPLICIT", INFIX);
+
+(0, _precedence.registerOperator)("??", 131, "right", "NIL_COA", INFIX);
+
+(0, _precedence.registerOperator)("<", 130, "none", "LT", INFIX);
+(0, _precedence.registerOperator)("<=", 130, "none", "LE", INFIX);
+(0, _precedence.registerOperator)(">", 130, "none", "GT", INFIX);
+(0, _precedence.registerOperator)(">=", 130, "none", "GE", INFIX);
+
+(0, _precedence.registerOperator)("==", 130, "none", "EQ", INFIX);
+(0, _precedence.registerOperator)("!=", 130, "none", "NEQ", INFIX);
+
+(0, _precedence.registerOperator)("===", 130, "none", "IDENT", INFIX);
+(0, _precedence.registerOperator)("!==", 130, "none", "NIDENT", INFIX);
+
+(0, _precedence.registerOperator)("&&", 120, "left", "AND", INFIX);
+(0, _precedence.registerOperator)("||", 110, "left", "OR", INFIX);
+
+(0, _precedence.registerOperator)("=", 90, "right", "ASSIGN", INFIX);
+(0, _precedence.registerOperator)("*=", 90, "right", "CMP_MUL", INFIX);
+(0, _precedence.registerOperator)("/=", 90, "right", "CMP_DIV", INFIX);
+(0, _precedence.registerOperator)("%=", 90, "right", "CMP_MOD", INFIX);
+(0, _precedence.registerOperator)("+=", 90, "right", "CMP_ADD", INFIX);
+(0, _precedence.registerOperator)("-=", 90, "right", "CMP_SUB", INFIX);
+(0, _precedence.registerOperator)("&=", 90, "right", "CMP_AND", INFIX);
+(0, _precedence.registerOperator)("|=", 90, "right", "CMP_OR", INFIX);
+(0, _precedence.registerOperator)("^=", 90, "right", "CMP_XOR", INFIX);
+(0, _precedence.registerOperator)("&&=", 90, "right", "CMP_LAND", INFIX);
+(0, _precedence.registerOperator)("||=", 90, "right", "CMP_LOR", INFIX);
+
+},{"./labels":42,"./precedence":44}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var VERSION = exports.VERSION = "0.0.1";
+var VERSION = exports.VERSION = "0.0.3";
 
-},{}],37:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.VERSION = exports.global = exports.compile = exports.tokenize = exports.parse = undefined;
+exports.VERSION = exports.global = exports.compile = exports.evaluate = exports.generate = exports.tokenize = exports.parse = undefined;
 
 var _Parser = require("./Parser");
 
@@ -4019,9 +4585,11 @@ var _global = require("./Environment/global");
 
 var globals = _interopRequireWildcard(_global);
 
-var _const = require("./const");
+require("./build");
 
 var _utils = require("./utils");
+
+var _const = require("./const");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -4037,7 +4605,7 @@ var tokenize = function tokenize(code, opts) {
   return tokenizer.scan(code, opts);
 };
 
-var compile = function compile(ast, opts) {
+var generate = function generate(ast, opts) {
   var compiler = new _Compiler2.default();
   return compiler.compile(ast, opts);
 };
@@ -4049,10 +4617,33 @@ for (var key in globals) {
   }
 }
 
+var compile = function compile(src) {
+
+  var tokens = null;
+  var ast = null;
+  var code = null;
+
+  console.time("Generated in");
+
+  tokens = tokenize(src);
+  ast = parse(tokens);
+  code = generate(ast, "JS");
+
+  console.timeEnd("Generated in");
+
+  return code;
+};
+
+var evaluate = function evaluate(code) {
+  new Function("__global", code)(global);
+};
+
 (0, _utils.greet)();
 
 exports.parse = parse;
 exports.tokenize = tokenize;
+exports.generate = generate;
+exports.evaluate = evaluate;
 exports.compile = compile;
 exports.global = global;
 exports.VERSION = _const.VERSION;
@@ -4062,19 +4653,21 @@ if (typeof window !== "undefined") {
   window.hevia = {
     parse: parse,
     tokenize: tokenize,
-    compile: compile,
+    generate: generate,
     global: global,
+    evaluate: evaluate,
+    compile: compile,
     VERSION: _const.VERSION
   };
 }
 
-},{"./Compiler":2,"./Environment/global":7,"./Parser":27,"./Tokenizer":34,"./const":36,"./utils":42}],38:[function(require,module,exports){
+},{"./Compiler":5,"./Environment/global":10,"./Parser":31,"./Tokenizer":37,"./build":39,"./const":40,"./utils":46}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TokenList = exports.Token = exports.Types = undefined;
+exports.Operators = exports.TokenList = exports.Token = exports.Types = undefined;
 exports.registerTT = registerTT;
 
 var _precedence = require("./precedence");
@@ -4087,6 +4680,7 @@ var Types = exports.Types = {}; /**
 
 var Token = exports.Token = {};
 var TokenList = exports.TokenList = {};
+var Operators = exports.Operators = {};
 
 var ii = 0;
 
@@ -4106,6 +4700,7 @@ var ii = 0;
   Label[Label["ReturnStatement"] = ++ii] = "ReturnStatement";
   Label[Label["IfStatement"] = ++ii] = "IfStatement";
   Label[Label["ForStatement"] = ++ii] = "ForStatement";
+  Label[Label["ForInStatement"] = ++ii] = "ForInStatement";
   Label[Label["WhileStatement"] = ++ii] = "WhileStatement";
   Label[Label["RepeatStatement"] = ++ii] = "RepeatStatement";
   Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
@@ -4115,6 +4710,8 @@ var ii = 0;
   Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
+  Label[Label["InitializerDeclaration"] = ++ii] = "InitializerDeclaration";
+  Label[Label["ArrayDeclaration"] = ++ii] = "ArrayDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
   Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
@@ -4125,9 +4722,6 @@ var ii = 0;
 
   Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
   Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
-
-  Label[Label["Tuple"] = ++ii] = "Tuple";
-  Label[Label["TupleType"] = ++ii] = "TupleType";
 })(Types);
 
 /** Data types */
@@ -4163,18 +4757,6 @@ var ii = 0;
   Label[Label["_"] = ++ii] = "UL";
   Label[Label["#"] = ++ii] = "HASH";
   Label[Label["->"] = ++ii] = "ARROW";
-  /** Logical operators */
-  Label[Label["!"] = ++ii] = "NOT";
-  /** Bitwise operators */
-  Label[Label["^"] = ++ii] = "BIT_XOR";
-  Label[Label["~"] = ++ii] = "BIT_NOT";
-  Label[Label["|"] = ++ii] = "BIT_OR";
-  /** Bitwise compound operators */
-  Label[Label["<<="] = ++ii] = "CMP_LSHIFT";
-  Label[Label[">>="] = ++ii] = "CMP_RSHIFT";
-  Label[Label["&="] = ++ii] = "CMP_AND";
-  Label[Label["|="] = ++ii] = "CMP_OR";
-  Label[Label["^="] = ++ii] = "CMP_XOR";
   /** Literals */
   Label[Label["nil"] = ++ii] = "NULL";
   Label[Label["true"] = ++ii] = "TRUE";
@@ -4184,18 +4766,23 @@ var ii = 0;
   Label[Label["var"] = ++ii] = "VAR";
   Label[Label["let"] = ++ii] = "CONST";
   Label[Label["class"] = ++ii] = "CLASS";
+  Label[Label["init"] = ++ii] = "INIT";
   Label[Label["enum"] = ++ii] = "ENUM";
   Label[Label["extension"] = ++ii] = "EXTENSION";
   Label[Label["import"] = ++ii] = "IMPORT";
   Label[Label["inout"] = ++ii] = "INOUT";
-  Label[Label["internal"] = ++ii] = "INTERNAL";
   Label[Label["operator"] = ++ii] = "OPERATOR";
-  Label[Label["private"] = ++ii] = "PRIVATE";
-  Label[Label["public"] = ++ii] = "PUBLIC";
   Label[Label["protocol"] = ++ii] = "PROTOCOL";
   Label[Label["static"] = ++ii] = "STATIC";
   Label[Label["struct"] = ++ii] = "STRUCT";
   Label[Label["typealias"] = ++ii] = "TYPEALIAS";
+  /** Access control */
+  Label[Label["private"] = ++ii] = "PRIVATE";
+  Label[Label["public"] = ++ii] = "PUBLIC";
+  Label[Label["internal"] = ++ii] = "INTERNAL";
+  /** Override */
+  Label[Label["override"] = ++ii] = "OVERRIDE";
+  Label[Label["final"] = ++ii] = "FINAL";
   /** Statement keywords */
   Label[Label["break"] = ++ii] = "BREAK";
   Label[Label["case"] = ++ii] = "CASE";
@@ -4212,8 +4799,6 @@ var ii = 0;
   Label[Label["where"] = ++ii] = "WHERE";
   Label[Label["while"] = ++ii] = "WHILE";
   /** Expression keywords */
-  Label[Label["as"] = ++ii] = "AS";
-  Label[Label["is"] = ++ii] = "IS";
   Label[Label["catch"] = ++ii] = "CATCH";
   Label[Label["super"] = ++ii] = "SUPER";
   Label[Label["self"] = ++ii] = "SELF";
@@ -4273,34 +4858,7 @@ function registerTT(name, value) {
   TokenList[TokenList[ii]] = ii;
 }
 
-(0, _precedence.registerOperator)("=", 80, "right", "ASSIGN");
-
-(0, _precedence.registerOperator)("!=", 130, "none", "NEQ");
-(0, _precedence.registerOperator)("==", 130, "none", "EQ");
-(0, _precedence.registerOperator)(">=", 130, "none", "GE");
-(0, _precedence.registerOperator)("<=", 130, "none", "LE");
-(0, _precedence.registerOperator)(">", 130, "none", "GT");
-(0, _precedence.registerOperator)("<", 130, "none", "LT");
-
-(0, _precedence.registerOperator)("&&", 120, "left", "AND");
-(0, _precedence.registerOperator)("||", 110, "left", "OR");
-
-(0, _precedence.registerOperator)("+=", 90, "right", "CMP_ADD");
-(0, _precedence.registerOperator)("-=", 90, "right", "CMP_SUB");
-(0, _precedence.registerOperator)("/=", 90, "right", "CMP_DIV");
-(0, _precedence.registerOperator)("*=", 90, "right", "CMP_MUL");
-(0, _precedence.registerOperator)("%=", 90, "right", "CMP_MOD");
-
-(0, _precedence.registerOperator)("/", 150, "left", "DIV");
-(0, _precedence.registerOperator)("*", 150, "left", "MUL");
-(0, _precedence.registerOperator)("%", 150, "left", "MOD");
-
-(0, _precedence.registerOperator)("-", 140, "left", "SUB");
-(0, _precedence.registerOperator)("+", 140, "left", "ADD");
-
-(0, _precedence.registerOperator)("&", 150, "left", "BIT_AND");
-
-},{"./precedence":40}],39:[function(require,module,exports){
+},{"./precedence":44}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4311,12 +4869,31 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _labels = require("./labels");
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @class AccessControl
+ * @private
+ */
+
+var AccessControl = function AccessControl() {
+  _classCallCheck(this, AccessControl);
+
+  this.isFinal = false;
+  this.isPublic = false;
+  this.isPrivate = false;
+  this.isInternal = false;
+};
 
 /**
  * @class Node
  * @export
  */
+
 
 var Node = function () {
   function Node() {
@@ -4354,6 +4931,17 @@ var Node = function () {
       };
     }
   }, {
+    key: "InitializerDeclaration",
+    get: function get() {
+      return function InitializerDeclaration() {
+        _classCallCheck(this, InitializerDeclaration);
+
+        this.kind = _labels.Types.InitializerDeclaration;
+        this.arguments = [];
+        this.body = [];
+      };
+    }
+  }, {
     key: "OperatorDeclaration",
     get: function get() {
       return function OperatorDeclaration() {
@@ -4367,14 +4955,23 @@ var Node = function () {
   }, {
     key: "ClassDeclaration",
     get: function get() {
-      return function ClassDeclaration() {
-        _classCallCheck(this, ClassDeclaration);
+      return function (_AccessControl) {
+        _inherits(ClassDeclaration, _AccessControl);
 
-        this.kind = _labels.Types.ClassDeclaration;
-        this.name = null;
-        this.extend = null;
-        this.body = [];
-      };
+        function ClassDeclaration() {
+          _classCallCheck(this, ClassDeclaration);
+
+          var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ClassDeclaration).call(this, null));
+
+          _this.kind = _labels.Types.ClassDeclaration;
+          _this.name = null;
+          _this.extend = [];
+          _this.body = [];
+          return _this;
+        }
+
+        return ClassDeclaration;
+      }(AccessControl);
     }
   }, {
     key: "ExtensionDeclaration",
@@ -4410,6 +5007,18 @@ var Node = function () {
       };
     }
   }, {
+    key: "ForInStatement",
+    get: function get() {
+      return function ForInStatement() {
+        _classCallCheck(this, ForInStatement);
+
+        this.kind = _labels.Types.ForInStatement;
+        this.init = null;
+        this.expression = null;
+        this.body = [];
+      };
+    }
+  }, {
     key: "ForStatement",
     get: function get() {
       return function ForStatement() {
@@ -4439,6 +5048,8 @@ var Node = function () {
         _classCallCheck(this, Parameter);
 
         this.kind = _labels.Types.Parameter;
+        this.label = null;
+        this.argument = null;
         this.init = null;
       };
     }
@@ -4489,17 +5100,26 @@ var Node = function () {
   }, {
     key: "FunctionDeclaration",
     get: function get() {
-      return function FunctionDeclaration() {
-        _classCallCheck(this, FunctionDeclaration);
+      return function (_AccessControl2) {
+        _inherits(FunctionDeclaration, _AccessControl2);
 
-        this.kind = _labels.Types.FunctionDeclaration;
-        this.name = null;
-        this.type = null;
-        this.arguments = [];
-        this.returnTuple = [];
-        this.body = [];
-        this.isStatic = false;
-      };
+        function FunctionDeclaration() {
+          _classCallCheck(this, FunctionDeclaration);
+
+          var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(FunctionDeclaration).call(this, null));
+
+          _this2.kind = _labels.Types.FunctionDeclaration;
+          _this2.name = null;
+          _this2.type = null;
+          _this2.arguments = [];
+          _this2.body = [];
+          _this2.isStatic = false;
+          _this2.isOverride = false;
+          return _this2;
+        }
+
+        return FunctionDeclaration;
+      }(AccessControl);
     }
   }, {
     key: "TypeCast",
@@ -4547,26 +5167,7 @@ var Node = function () {
         this.kind = _labels.Types.MemberExpression;
         this.object = null;
         this.property = null;
-      };
-    }
-  }, {
-    key: "Tuple",
-    get: function get() {
-      return function Tuple() {
-        _classCallCheck(this, Tuple);
-
-        this.kind = _labels.Types.Tuple;
-        this.arguments = [];
-      };
-    }
-  }, {
-    key: "TupleType",
-    get: function get() {
-      return function TupleType() {
-        _classCallCheck(this, TupleType);
-
-        this.kind = _labels.Types.TupleType;
-        this.arguments = [];
+        this.isComputed = false;
       };
     }
   }, {
@@ -4577,30 +5178,44 @@ var Node = function () {
 
         this.kind = _labels.Types.TypeAnnotation;
         this.type = null;
+        this.isExplicit = false;
+        this.isOptional = false;
+        this.isReference = false;
+        this.isUnwrap = false;
+      };
+    }
+  }, {
+    key: "ArrayDeclaration",
+    get: function get() {
+      return function ArrayDeclaration() {
+        _classCallCheck(this, ArrayDeclaration);
+
+        this.kind = _labels.Types.ArrayDeclaration;
+        this.argument = [];
       };
     }
   }, {
     key: "VariableDeclaration",
     get: function get() {
-      return function VariableDeclaration() {
-        _classCallCheck(this, VariableDeclaration);
+      return function (_AccessControl3) {
+        _inherits(VariableDeclaration, _AccessControl3);
 
-        this.kind = _labels.Types.VariableDeclaration;
-        this.symbol = null;
-        this.declarations = [];
-        this.init = null;
-      };
-    }
-  }, {
-    key: "VariableDeclarement",
-    get: function get() {
-      return function VariableDeclarement() {
-        _classCallCheck(this, VariableDeclarement);
+        function VariableDeclaration() {
+          _classCallCheck(this, VariableDeclaration);
 
-        this.kind = _labels.Types.VariableDeclarement;
-        this.name = null;
-        this.type = null;
-      };
+          var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(VariableDeclaration).call(this, null));
+
+          _this3.kind = _labels.Types.VariableDeclaration;
+          _this3.symbol = null;
+          _this3.declarations = [];
+          _this3.init = null;
+          _this3.isStatic = false;
+          _this3.isOverride = false;
+          return _this3;
+        }
+
+        return VariableDeclaration;
+      }(AccessControl);
     }
   }, {
     key: "AssignmentExpression",
@@ -4624,6 +5239,7 @@ var Node = function () {
         this.operator = null;
         this.left = null;
         this.right = null;
+        this.isParenthised = false;
       };
     }
   }, {
@@ -4664,36 +5280,55 @@ var Node = function () {
 
 exports.default = Node;
 
-},{"./labels":38}],40:[function(require,module,exports){
+},{"./labels":42}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Precedence = undefined;
+exports.POX_PRECEDENCE = exports.PEX_PRECEDENCE = exports.IFX_PRECEDENCE = undefined;
 exports.registerOperator = registerOperator;
 
 var _labels = require("./labels");
 
-var Precedence = exports.Precedence = []; /**
-                                           * Operator precedence
-                                           */
+var IFX_PRECEDENCE = exports.IFX_PRECEDENCE = [];
+var PEX_PRECEDENCE = exports.PEX_PRECEDENCE = [];
+var POX_PRECEDENCE = exports.POX_PRECEDENCE = [];
 
-function registerOperator(op, lvl, assoc, name) {
-  Precedence.push({
+/**
+ * @param {String} op
+ * @param {Number} lvl
+ * @param {String} assoc
+ * @param {String} name
+ * @param {Number} type
+ */
+function registerOperator(op, lvl, assoc, name, type) {
+
+  var obj = {
     op: op,
     level: lvl,
     associativity: assoc
-  });
-  Precedence.sort(function (a, b) {
-    if (a.level > b.level) return 1;
-    if (a.level < b.level) return -1;
-    return 0;
-  });
+  };
+
+  switch (type) {
+    case _labels.TokenList.PREFIX:
+      PEX_PRECEDENCE.push(obj);
+      break;
+    case _labels.TokenList.INFIX:
+      IFX_PRECEDENCE.push(obj);
+      IFX_PRECEDENCE.sort(function (a, b) {
+        if (a.level > b.level) return 1;
+        if (a.level < b.level) return -1;
+        return 0;
+      });
+      break;
+  };
+
   (0, _labels.registerTT)(name, op);
+  _labels.Operators[name] = obj;
 }
 
-},{"./labels":38}],41:[function(require,module,exports){
+},{"./labels":42}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4795,7 +5430,7 @@ var Scope = function () {
   }, {
     key: "getName",
     value: function getName(node) {
-      return node.value || node.name || node.id;
+      return node.value || node.name || node.id || (node.init ? node.init.value : void 0);
     }
 
     /**
@@ -4821,7 +5456,7 @@ var Scope = function () {
 
 exports.default = Scope;
 
-},{"./labels":38,"./nodes":39,"./utils":42}],42:[function(require,module,exports){
+},{"./labels":42,"./nodes":43,"./utils":46}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4832,6 +5467,7 @@ exports.uHash = uHash;
 exports.getNameByLabel = getNameByLabel;
 exports.getLabelByNumber = getLabelByNumber;
 exports.isNumericType = isNumericType;
+exports.isBoolean = isBoolean;
 exports.getNumericType = getNumericType;
 exports.greet = greet;
 
@@ -4915,6 +5551,14 @@ function isNumericType(type) {
 }
 
 /**
+ * @param  {Node} node
+ * @return {Boolean}
+ */
+function isBoolean(node) {
+  return node.kind === _labels.Types.Literal && (node.type === _labels.TokenList.TRUE || node.type === _labels.TokenList.FALSE);
+}
+
+/**
  * @param  {Number} n
  * @return {String}
  */
@@ -4947,13 +5591,7 @@ function getNumericType(n) {
     return "Uint32";
   }
   if (+n === n) {
-    return "Float";
-  }
-  if (+n === n && Math.abs(n) <= 3.4028234e+38) {
-    return "Float32";
-  }
-  if (+n === n && Math.abs(n) <= 1.7976931348623157e+308) {
-    return "Float64";
+    return "Double";
   }
 }
 
@@ -4963,9 +5601,9 @@ function greet() {
     var args = ["\n%c Hevia.js " + _const.VERSION + " %c %chttp://www.heviajs.com/ %c\n\n", "color: #fff; background: #030307; padding:5px 0;", "color: #9598b9; background: #2d316b; padding:5px 0;", "color: #9598b9; background: #2d316b; padding:5px 0;", "color: #9598b9; background: #2d316b; padding:5px 0;"];
     console.log.apply(console, args);
   } else {
-    console.log("Hevia.js - " + _const.VERSION + " - http://www.heviajs.com/");
+    console.log("Hevia.js - " + _const.VERSION + " - http://www.heviajs.com/\n");
   }
 }
 
-},{"./const":36,"./labels":38,"./nodes":39}]},{},[37])(37)
+},{"./const":40,"./labels":42,"./nodes":43}]},{},[41])(41)
 });
