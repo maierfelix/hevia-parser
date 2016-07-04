@@ -242,6 +242,7 @@ export default class Node {
           this.body = [];
           this.isStatic = false;
           this.isOverride = false;
+          this.isClassed = false;
         }
       }
     );
@@ -337,6 +338,7 @@ export default class Node {
           this.init = null;
           this.isStatic = false;
           this.isOverride = false;
+          this.isClassed = false;
         }
       }
     );

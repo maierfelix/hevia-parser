@@ -54,7 +54,6 @@ export function parseStatement() {
     case TT.FUNCTION:
     case TT.ENUM:
     case TT.STRUCT:
-    case TT.CLASS:
     case TT.INIT:
     case TT.PROTOCOL:
     case TT.EXTENSION:
@@ -63,6 +62,10 @@ export function parseStatement() {
     case TT.PREFIX:
     case TT.INFIX:
       node = this.parseDeclarationStatement();
+    break;
+    /** Class */
+    case TT.CLASS:
+      node = this.parseClass();
     break;
     /** Access control */
     case TT.PUBLIC:

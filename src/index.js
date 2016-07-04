@@ -37,13 +37,9 @@ const compile = (src) => {
   var ast = null;
   var code = null;
 
-  console.time("Generated in");
-
   tokens = tokenize(src);
   ast = parse(tokens);
   code = generate(ast, "JS");
-
-  console.timeEnd("Generated in");
 
   return (code);
 

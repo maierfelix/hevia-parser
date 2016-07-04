@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * @return {Node}
  */
@@ -15,7 +19,14 @@ export function parseClass() {
 
   this.expect(TT.CLASS);
 
-  node.name = this.extract(Token.Identifier).value;
+  if (this.peek(Token.Identifier)) {
+    node.name = this.extract(Token.Identifier).value;
+  /** Fake class for a func or var */
+  } else {
+    if (!this.peek(TT.LBRACE)) {
+      return (this.parseSpecialClass(node));
+    }
+  }
 
   if (this.eat(TT.COLON)) {
     node.extend = this.parseCommaSeperatedValues() || [];
@@ -24,6 +35,20 @@ export function parseClass() {
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
   this.expect(TT.RBRACE);
+
+  return (node);
+
+}
+
+/**
+ * @param  {Node} base
+ * @return {Node}
+ */
+export function parseSpecialClass(base) {
+
+  let node = this.parseStatement();
+
+  node.isClassed = true;
 
   return (node);
 
