@@ -74,6 +74,10 @@ export function parseStatement() {
     case TT.OVERRIDE:
       node = this.parseOverride();
     break;
+    /** Final */
+    case TT.FINAL:
+      node = this.parseFinal();
+    break;
     case TT.STATIC:
       node = this.parseStatic();
     break;
@@ -84,6 +88,27 @@ export function parseStatement() {
   };
 
   this.eat(TT.SEMICOLON);
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseFinal() {
+
+  this.expect(TT.FINAL);
+
+  let node = this.parseStatement();
+
+  if (
+    !node.hasOwnProperty("isFinal")
+  ) {
+    throw new Error("Can't attach final property to node!");
+  }
+
+  node.isFinal = true;
 
   return (node);
 

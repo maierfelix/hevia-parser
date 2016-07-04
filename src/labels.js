@@ -115,6 +115,7 @@ let ii = 0;
   Label[Label["internal"] = ++ii] = "INTERNAL";
   /** Override */
   Label[Label["override"] = ++ii] = "OVERRIDE";
+  Label[Label["final"] = ++ii] = "FINAL";
   /** Statement keywords */
   Label[Label["break"] = ++ii] = "BREAK";
   Label[Label["case"] = ++ii] = "CASE";

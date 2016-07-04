@@ -4,6 +4,19 @@ import {
 } from "./labels";
 
 /**
+ * @class AccessControl
+ * @private
+ */
+class AccessControl {
+  constructor() {
+    this.isFinal = false;
+    this.isPublic = false;
+    this.isPrivate = false;
+    this.isInternal = false;
+  }
+}
+
+/**
  * @class Node
  * @export
  */
@@ -70,15 +83,13 @@ export default class Node {
 
   static get ClassDeclaration() {
     return (
-      class ClassDeclaration {
+      class ClassDeclaration extends AccessControl {
         constructor() {
+          super(null);
           this.kind = Type.ClassDeclaration;
           this.name = null;
           this.extend = [];
           this.body = [];
-          this.isPublic = false;
-          this.isPrivate = false;
-          this.isInternal = false;
         }
       }
     );
@@ -221,8 +232,9 @@ export default class Node {
 
   static get FunctionDeclaration() {
     return (
-      class FunctionDeclaration {
+      class FunctionDeclaration extends AccessControl {
         constructor() {
+          super(null);
           this.kind = Type.FunctionDeclaration;
           this.name = null;
           this.type = null;
@@ -230,9 +242,6 @@ export default class Node {
           this.body = [];
           this.isStatic = false;
           this.isOverride = false;
-          this.isPublic = false;
-          this.isPrivate = false;
-          this.isInternal = false;
         }
       }
     );
@@ -319,12 +328,15 @@ export default class Node {
 
   static get VariableDeclaration() {
     return (
-      class VariableDeclaration {
+      class VariableDeclaration extends AccessControl {
         constructor() {
+          super(null);
           this.kind = Type.VariableDeclaration;
           this.symbol = null;
           this.declarations = [];
           this.init = null;
+          this.isStatic = false;
+          this.isOverride = false;
         }
       }
     );
