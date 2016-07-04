@@ -31,13 +31,7 @@ export function parseOperatorDeclaration() {
   let associativity = this.getOperatorAssociativity(node.body.body);
   let precedence = this.getOperatorPrecedence(node.body.body);
 
-  let symbol = (
-    node.name === TT.INFIX ? "IFX" :
-    node.name === TT.PREFIX ? "PEX" :
-    node.name === TT.POSTFIX ? "POX" : ""
-  ) + `::${node.operator.raw}`;
-
-  registerOperator(node.operator.raw, precedence, associativity, symbol);
+  registerOperator(node.operator.raw, precedence, associativity, node.name);
 
   return (node);
 

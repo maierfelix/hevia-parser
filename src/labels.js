@@ -3,6 +3,7 @@
  * provide a clean & fast way, to compare
  * nodes and tokens in later steps
  */
+
 import {
   registerOperator
 } from "./precedence";
@@ -106,14 +107,17 @@ let ii = 0;
   Label[Label["extension"] = ++ii] = "EXTENSION";
   Label[Label["import"] = ++ii] = "IMPORT";
   Label[Label["inout"] = ++ii] = "INOUT";
-  Label[Label["internal"] = ++ii] = "INTERNAL";
   Label[Label["operator"] = ++ii] = "OPERATOR";
-  Label[Label["private"] = ++ii] = "PRIVATE";
-  Label[Label["public"] = ++ii] = "PUBLIC";
   Label[Label["protocol"] = ++ii] = "PROTOCOL";
   Label[Label["static"] = ++ii] = "STATIC";
   Label[Label["struct"] = ++ii] = "STRUCT";
   Label[Label["typealias"] = ++ii] = "TYPEALIAS";
+  /** Access control */
+  Label[Label["private"] = ++ii] = "PRIVATE";
+  Label[Label["public"] = ++ii] = "PUBLIC";
+  Label[Label["internal"] = ++ii] = "INTERNAL";
+  /** Override */
+  Label[Label["override"] = ++ii] = "OVERRIDE";
   /** Statement keywords */
   Label[Label["break"] = ++ii] = "BREAK";
   Label[Label["case"] = ++ii] = "CASE";
@@ -130,8 +134,6 @@ let ii = 0;
   Label[Label["where"] = ++ii] = "WHERE";
   Label[Label["while"] = ++ii] = "WHILE";
   /** Expression keywords */
-  Label[Label["as"] = ++ii] = "AS";
-  Label[Label["is"] = ++ii] = "IS";
   Label[Label["catch"] = ++ii] = "CATCH";
   Label[Label["super"] = ++ii] = "SUPER";
   Label[Label["self"] = ++ii] = "SELF";
@@ -191,30 +193,3 @@ export function registerTT(name, value) {
   TokenList[TokenList[value] = ++ii] = name;
   TokenList[TokenList[ii]] = ii;
 }
-
-registerOperator("=", 80, "right", "ASSIGN");
-
-registerOperator("!=", 130, "none", "NEQ");
-registerOperator("==", 130, "none", "EQ");
-registerOperator(">=", 130, "none", "GE");
-registerOperator("<=", 130, "none", "LE");
-registerOperator(">", 130, "none", "GT");
-registerOperator("<", 130, "none", "LT");
-
-registerOperator("&&", 120, "left", "AND");
-registerOperator("||", 110, "left", "OR");
-
-registerOperator("+=", 90, "right", "CMP_ADD");
-registerOperator("-=", 90, "right", "CMP_SUB");
-registerOperator("/=", 90, "right", "CMP_DIV");
-registerOperator("*=", 90, "right", "CMP_MUL");
-registerOperator("%=", 90, "right", "CMP_MOD");
-
-registerOperator("/", 150, "left", "DIV");
-registerOperator("*", 150, "left", "MUL");
-registerOperator("%", 150, "left", "MOD");
-
-registerOperator("-", 140, "left", "SUB");
-registerOperator("+", 140, "left", "ADD");
-
-registerOperator("&", 150, "left", "BIT_AND");

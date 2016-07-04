@@ -25,17 +25,14 @@ export function parseLiteral() {
   }
 
   let node = new Node.Literal();
-
-  if (this.eat(TT.UL)) {
-    node.isExplicit = true;
-  }
+  let isExplicit = this.eat(TT.UL);
 
   if (this.current.value === "&") {
     node.isPointer = true;
     this.next();
   }
 
-  if (node.isExplicit && this.peek(TT.COLON)) {
+  if (isExplicit && this.peek(TT.COLON)) {
     // explicit only parameter
   } else {
     node.type = this.current.name;
@@ -54,13 +51,14 @@ export function parseLiteral() {
   }
 
   if (!this.inTernary) {
-    if (this.eat(TT.COLON)) {
-      if (this.eat(TT.INOUT)) {
-        node.isReference = true;
-        this.back();
-      }
-      this.back();
+    if (this.peek(TT.COLON)) {
       node = this.parseStrictType(node);
+      if (
+        node.argument &&
+        node.argument.kind === Type.TypeAnnotation
+      ) {
+        node.argument.isExplicit = isExplicit;
+      }
     }
   }
 

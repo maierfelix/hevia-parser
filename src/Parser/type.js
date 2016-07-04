@@ -18,8 +18,10 @@ export function parseStrictType(base) {
 
   let node = new Node.Parameter();
 
+  let isInout = false;
+
   if (this.eat(TT.COLON)) {
-    this.eat(TT.INOUT);
+    isInout = this.eat(TT.INOUT);
     node.init = base;
     if (this.isNativeType(this.current.name)) {
       node.argument = this.parseType();
@@ -35,6 +37,13 @@ export function parseStrictType(base) {
     }
   }
 
+  if (
+    node.argument &&
+    node.argument.kind === Type.TypeAnnotation
+  ) {
+    node.argument.isReference = isInout;
+  }
+
   return (node);
 
 }
@@ -47,7 +56,13 @@ export function parseType() {
 
   this.next();
 
-  node.isOptional = this.eat(TT.CONDITIONAL);
+  if (this.eat(TT.CONDITIONAL)) {
+    node.isOptional = true;
+  }
+  else if (this.current.value === "!") {
+    node.isUnwrap = true;
+    this.next();
+  }
 
   return (node);
 

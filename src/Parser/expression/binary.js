@@ -6,14 +6,14 @@ import {
 
 import Node from "../../nodes";
 
-import { Precedence } from "../../precedence";
+import { IFX_PRECEDENCE as Infix } from "../../precedence";
 
 import {
   getNameByLabel
 } from "../../utils";
 
 /**
- * @param  {Number} index Precedence
+ * @param  {Number} index
  * @return {Node}
  */
 export function parseBinaryExpression(index) {
@@ -22,7 +22,7 @@ export function parseBinaryExpression(index) {
   let left = null;
   let node = null;
 
-  let state = Precedence[index];
+  let state = Infix[index];
 
   left = state ? this.parseBinaryExpression(index + 1) : this.parseAtom(this.parseLiteral());
 

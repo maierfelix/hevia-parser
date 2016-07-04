@@ -4,13 +4,10 @@ import Tokenizer from "./Tokenizer";
 
 import * as globals from "./Environment/global";
 
-import {
-  VERSION
-} from "./const";
+import "./build";
 
-import {
-  greet
-} from "./utils";
+import { greet } from "./utils";
+import { VERSION } from "./const";
 
 const parse = (tokens) => {
   let parser = new Parser();

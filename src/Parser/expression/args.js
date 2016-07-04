@@ -6,8 +6,6 @@ import {
 
 import Node from "../../nodes";
 
-import { Precedence } from "../../precedence";
-
 import {
   getNameByLabel
 } from "../../utils";
@@ -28,7 +26,7 @@ export function parseParenthese(left, right) {
   this.expect(left);
   if (this.eat(right)) return (null);
 
-  base = this.parseExpressionStatement();
+  base = this.parseStatement();
 
   if (this.eat(TT.COMMA)) {
     node = this.parseCommaSeperatedValues();
@@ -51,7 +49,7 @@ export function parseCommaSeperatedValues() {
   let args = [];
 
   while (true) {
-    args.push(this.parseExpressionStatement());
+    args.push(this.parseStatement());
     if (!this.eat(TT.COMMA)) break;
   };
 

@@ -60,6 +60,16 @@ export function parseStatement() {
     case TT.INFIX:
       node = this.parseDeclarationStatement();
     break;
+    /** Access control */
+    case TT.PUBLIC:
+    case TT.PRIVATE:
+    case TT.INTERNAL:
+      node = this.parseAccessControl();
+    break;
+    /** Override */
+    case TT.OVERRIDE:
+      node = this.parseOverride();
+    break;
     /** Expression statement */
     default:
       node = this.parseExpressionStatement();
@@ -67,6 +77,48 @@ export function parseStatement() {
   };
 
   this.eat(TT.SEMICOLON);
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseOverride() {
+
+  this.expect(TT.OVERRIDE);
+
+  let node = this.parseStatement();
+
+  node.isOverride = true;
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseAccessControl() {
+
+  let access = this.current;
+
+  this.next();
+
+  let node = this.parseStatement();
+
+  switch (access.name) {
+    case TT.PUBLIC:
+      node.isPublic = true;
+    break;
+    case TT.PRIVATE:
+      node.isPrivate = true;
+    break;
+    case TT.INTERNAL:
+      node.isInternal = true;
+    break;
+  };
 
   return (node);
 

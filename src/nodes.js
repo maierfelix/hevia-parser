@@ -312,7 +312,10 @@ export default class Node {
         constructor() {
           this.kind = Type.TypeAnnotation;
           this.type = null;
+          this.isExplicit = false;
           this.isOptional = false;
+          this.isReference = false;
+          this.isUnwrap = false;
         }
       }
     );
