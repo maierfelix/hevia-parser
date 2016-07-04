@@ -4,9 +4,11 @@
 
   function generate() {
 
-    document.querySelectorAll(".star").forEach(function(item) {
-      item.parentNode.removeChild(item);
-    });
+    var stars = document.getElementsByClassName("star");
+
+    while(stars[0]) {
+      stars[0].parentNode.removeChild(stars[0]);
+    };
 
     var amount = 200;
     var ii = amount - 1;
@@ -31,8 +33,8 @@
 
       var timer = parseFloat(((Math.random() * 8) + 4).toFixed(1));
 
-      star.style.webkitAnimation = "pulsate " + timer + "s" + " ease-out";
-      star.style.webkitAnimationDuration = timer + "s";
+      star.style.animation = "pulsate " + timer + "s" + " ease-out";
+      star.style.animationDuration = timer + "s";
       star.style.animationIterationCount = "infinite";
 
       document.body.appendChild(star);

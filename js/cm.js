@@ -8,6 +8,7 @@ var editor_swift = CodeMirror.fromTextArea(document.getElementById("swift"), {
 editor_swift.on("change", function() {
   compile();
 });
+
 /** JS */
 var editor_js = CodeMirror.fromTextArea(document.getElementById("out"), {
   lineNumbers: false,
@@ -15,3 +16,11 @@ var editor_js = CodeMirror.fromTextArea(document.getElementById("out"), {
   matchBrackets: true,
   theme: "seti"
 });
+
+/** Styling */
+var nodes = document.getElementsByClassName("CodeMirror");
+for (let key in nodes) {
+  if (nodes[key] instanceof HTMLElement) {
+    nodes[key].classList.add("txt");
+  }
+};
