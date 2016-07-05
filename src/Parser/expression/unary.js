@@ -19,9 +19,9 @@ import {
  */
 export function isPrefixOperator() {
 
-  if (this.current.name === Token.Identifier) {
+  if (this.isOperator(this.current.name)) {
     for (let key of Prefix) {
-      if (key.op === this.current.value) return (true);
+      if (key.op === getLabelByNumber(this.current.name)) return (true);
     }
   }
 
@@ -36,7 +36,8 @@ export function parseUnaryExpression() {
 
   let node = new Node.UnaryExpression();
 
-  node.operator = TT[this.extract(Token.Identifier).value];
+  node.operator = this.current.name;
+  this.next();
   node.argument = this.parseLiteral();
   node.isPrefix = true;
 

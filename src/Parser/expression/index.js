@@ -39,6 +39,12 @@ export function parseExpressionStatement() {
     case TT.PRECEDENCE:
       node = this.parsePrecedenceExpression();
     break;
+    default:
+      /** Ups, expr starts with pex op */
+      if (this.isOperator(this.current.name)) {
+        node = this.parseBinaryExpression(0);
+      }
+    break;
   };
 
   if (this.peek(TT.CONDITIONAL)) {
