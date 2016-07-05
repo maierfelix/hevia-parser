@@ -20,10 +20,10 @@ let ii = 0;
 
   Label[Label["Program"] = ++ii] = "Program";
 
-  Label[Label["UnaryExpression"] = ++ii] = "UnaryExpression";
   Label[Label["MemberExpression"] = ++ii] = "MemberExpression";
   Label[Label["TernaryExpression"] = ++ii] = "TernaryExpression";
   Label[Label["BinaryExpression"] = ++ii] = "BinaryExpression";
+  Label[Label["UnaryExpression"] = ++ii] = "UnaryExpression";
   Label[Label["CallExpression"] = ++ii] = "CallExpression";
   Label[Label["ParameterExpression"] = ++ii] = "ParameterExpression";
 

@@ -13,10 +13,10 @@ let INFIX = TT.INFIX;
 let POSTFIX = TT.POSTFIX;
 
 /** PREFIX */
-registerOperator("!", "left", "NOT", PREFIX);
-registerOperator("~", "left", "BIT_NOT", PREFIX);
-registerOperator("+", "left", "UNARY_ADD", PREFIX);
-registerOperator("-", "left", "UNARY_SUB", PREFIX);
+registerOperator("!", -1, "none", "NOT", PREFIX);
+registerOperator("~", -1, "none", "BIT_NOT", PREFIX);
+registerOperator("+", -1, "none", "UNARY_ADD", PREFIX);
+registerOperator("-", -1, "none", "UNARY_SUB", PREFIX);
 
 /** INFIX */
 registerOperator("*", 150, "left", "MUL", INFIX);

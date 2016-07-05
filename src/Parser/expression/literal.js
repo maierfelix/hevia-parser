@@ -17,6 +17,11 @@ import {
  */
 export function parseLiteral() {
 
+  /** Unary pex expression */
+  if (this.isPrefixOperator()) {
+    return this.parseUnaryExpression();
+  }
+
   if (this.peek(TT.LPAREN)) {
     this.expect(TT.LPAREN);
     let tmp = this.parseExpressionStatement();

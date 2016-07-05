@@ -357,6 +357,19 @@ export default class Node {
     );
   }
 
+  static get UnaryExpression() {
+    return (
+      class UnaryExpression {
+        constructor() {
+          this.kind = Type.UnaryExpression;
+          this.operator = null;
+          this.argument = null;
+          this.isPrefix = false;
+        }
+      }
+    );
+  }
+
   static get BinaryExpression() {
     return (
       class BinaryExpression {
