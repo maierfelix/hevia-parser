@@ -1,87 +1,6 @@
 import { Character } from './char';
 import { Token, TokenList as TT } from "../labels";
 
-export class Scanner {
-
-  /** @constructor */
-  constructor(code, config) {}
-
-  assert(condition, message) {
-    if (!condition) {
-      throw new Error('ASSERT: ' + message);
-    }
-  }
-
-  isDecimalDigit(ch) {
-    return (ch >= 0x30 && ch <= 0x39 || ch === 0x5f); // 0._.9
-  }
-
-  isHexDigit(ch) {
-    return '0123456789abcdefABCDEF'.indexOf(ch) >= 0;
-  }
-
-  isOctalDigit(ch) {
-    return '01234567'.indexOf(ch) >= 0;
-  }
-
-  octalToDecimal(ch) {
-
-    var octal = (ch !== '0'),
-      code = '01234567'.indexOf(ch);
-
-    if (index < length && this.isOctalDigit(source[index])) {
-      octal = true;
-      code = code * 8 + '01234567'.indexOf(source[index++]);
-
-      if ('0123'.indexOf(ch) >= 0 &&
-        index < length &&
-        this.isOctalDigit(source[index])) {
-        code = code * 8 + '01234567'.indexOf(source[index++]);
-      }
-    }
-
-    return ({
-      code: code,
-      octal: octal
-    });
-  }
-
-  isWhiteSpace(ch) {
-    return (ch === 0x20) || (ch === 0x09) || (ch === 0x0B) || (ch === 0x0C) || (ch === 0xA0) ||
-      (ch >= 0x1680 && [0x1680, 0x180E, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x202F, 0x205F, 0x3000, 0xFEFF].indexOf(ch) >= 0);
-  }
-
-  isLineTerminator(ch) {
-    return (ch === 0x0A) || (ch === 0x0D) || (ch === 0x2028) || (ch === 0x2029);
-  }
-
-  fromCodePoint(cp) {
-    return (cp < 0x10000) ? String.fromCharCode(cp) :
-      String.fromCharCode(0xD800 + ((cp - 0x10000) >> 10)) +
-      String.fromCharCode(0xDC00 + ((cp - 0x10000) & 1023));
-  }
-
-  isIdentifierStart(ch) {
-    return (ch === 0x24) || (ch === 0x5F) || // $ (dollar) and _ (underscore)
-      (ch >= 0x41 && ch <= 0x5A) || // A..Z
-      (ch >= 0x61 && ch <= 0x7A) || // a..z
-      (ch === 0x5C)
-  }
-
-  isIdentifierPart(ch) {
-    return (ch === 0x24) || (ch === 0x5F) || // $ (dollar) and _ (underscore)
-      (ch >= 0x41 && ch <= 0x5A) || // A..Z
-      (ch >= 0x61 && ch <= 0x7A) || // a..z
-      (ch >= 0x30 && ch <= 0x39) || // 0..9
-      (ch === 0x5C)
-  }
-
-  isKeyword(id) {
-    return (TT[id] !== void 0);
-  }
-
-}
-
 var PlaceHolders,
   Messages,
   Regex,
@@ -562,9 +481,7 @@ function scanIdentifier() {
   };
 }
 
-
 // ECMA-262 11.7 Punctuators
-
 function scanPunctuator() {
   var token, str;
 
@@ -621,34 +538,28 @@ function scanPunctuator() {
       break;
 
     default:
-      // 4-character punctuator.
-      str = source.substr(index, 4);
-      if (str === '>>>=') {
-        index += 4;
+      var tmp = "";
+      var cp = source.charCodeAt(index);
+      var res = null;
+      while (!isDecimalDigit(cp) && !isWhiteSpace(cp)) {
+        tmp += source[index];
+        if (TT[tmp] !== void 0) {
+          res = tmp;
+        }
+        index++;
+        cp = source.charCodeAt(index);
+        if (isNaN(cp)) break;
+      };
+      if (TT[res] !== void 0 && str !== res) {
+        index -= tmp.length - res.length;
+        str = res;
       } else {
-        // 3-character punctuators.
-        str = str.substr(0, 3);
-        if (str === '===' || str === '!==' || str === '>>>' ||
-          str === '<<=' || str === '>>=') {
-          index += 3;
+        if (TT[str] === void 0) {
+          token.type = Token.Identifier;
         } else {
-          let org = str;
-          // 2-character punctuators.
-          str = str.substr(0, 2);
-          if (TT[str] !== void 0 && Number.isInteger(TT[str])) {
-            index += 2;
-          } else {
-            // 1-character punctuators.
-            let tmp = source[index];
-            if ('<>=!+-*%&|^/'.indexOf(tmp) >= 0) {
-              ++index;
-            }
-            if (TT[str.trim()] === void 0) {
-              token.type = Token.Identifier;
-              str = org;
-            } else {
-              str = tmp;
-            }
+          str = res;
+          if (tmp.length > str.length) {
+            index -= tmp.length - res.length;
           }
         }
       }
@@ -872,8 +783,6 @@ function scanStringLiteral() {
     quote, start, ch, unescaped, octToDec, octal = false;
 
   quote = source[index];
-  assert((quote === '\'' || quote === '"'),
-    'String literal must starts with a quote');
 
   start = index;
   ++index;
@@ -950,11 +859,6 @@ function scanStringLiteral() {
     }
   }
 
-  if (quote !== '') {
-    index = start;
-    throwUnexpectedToken();
-  }
-
   return {
     type: Token.StringLiteral,
     value: str,
@@ -1024,6 +928,7 @@ function advance() {
     }
   }
 
+  //return scanStringLiteral(); // allows any character!!
   return scanPunctuator();
 }
 
