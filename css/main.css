@@ -120,7 +120,7 @@ body {
   width: auto;
   min-height: 300px;
   background: rgba(255, 255, 255, 0.0) !important;
-  border: 1px solid rgba(255, 255, 255, .35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.0) !important;
   border-radius: 4px !important;
   padding: 10px 15px !important;
   color: rgba(255, 255, 255, .75) !important;

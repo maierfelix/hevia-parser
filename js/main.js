@@ -1,28 +1,6 @@
 var src = 
-`// **
-infix operator ** {
-  associativity left
-  precedence 160
-}
-func ** (left: Double, right: Double) -> Double {
-  return pow(left, right);
-}
-
-// %%
-infix operator %% {
-  associativity left
-  precedence 2
-}
-func %%(a: Int, b: Int) -> Int {
-  return (a * b);
-}
-
-var res1 = 2 ** 8;
-expect(res1 == 256.0);
-
-var res2 = 4 % 2 + 27 %% 123;
-expect(res2 == 3321);
-print(SomeClass.workaroundClassVariable);
+`
+var a = ~2 * !1 ** 7 && 1 != 2;
 `;
 
 swift.innerHTML = src;
@@ -33,6 +11,7 @@ function execute() {
 
 function build(value) {
   let tokens = hevia.tokenize(value);
+  console.log(tokens);
   let ast = hevia.parse(tokens);
   console.log(ast);
   return (hevia.generate(ast, "JS"));

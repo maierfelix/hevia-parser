@@ -1,9 +1,10 @@
 /** SWIFT */
 var editor_swift = CodeMirror.fromTextArea(document.getElementById("swift"), {
-  lineNumbers: false,
+  lineNumbers: true,
   mode: "text/x-swift",
   matchBrackets: true,
-  theme: "seti"
+  theme: "seti",
+  autofocus: true
 });
 editor_swift.on("change", function() {
   compile();
@@ -11,10 +12,11 @@ editor_swift.on("change", function() {
 
 /** JS */
 var editor_js = CodeMirror.fromTextArea(document.getElementById("out"), {
-  lineNumbers: false,
+  lineNumbers: true,
   mode: "text/javascript",
   matchBrackets: true,
-  theme: "seti"
+  theme: "seti",
+  readOnly: true
 });
 
 /** Styling */
