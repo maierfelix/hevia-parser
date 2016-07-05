@@ -10,6 +10,10 @@ import Node from "../../nodes";
 
 import { registerOperator } from "../../precedence";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * @return {Node}
  */
@@ -31,7 +35,17 @@ export function parseOperatorDeclaration() {
   let associativity = this.getOperatorAssociativity(node.body.body);
   let precedence = this.getOperatorPrecedence(node.body.body);
 
-  registerOperator(node.operator.raw, precedence, associativity, node.name);
+  if (node.operator.raw !== void 0) {
+    registerOperator(
+      node.operator.raw,
+      precedence,
+      associativity,
+      node.operator.raw,
+      node.name
+    );
+  } else {
+    // Seems already registered
+  }
 
   return (node);
 

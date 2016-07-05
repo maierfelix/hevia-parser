@@ -25,6 +25,10 @@ export function parseLiteral() {
   if (this.peek(TT.LPAREN)) {
     this.expect(TT.LPAREN);
     let tmp = this.parseExpressionStatement();
+    /** Seems like a standalone operator */
+    if (tmp === null) {
+      tmp = this.parseLiteral();
+    }
     this.expect(TT.RPAREN);
     return (tmp);
   }

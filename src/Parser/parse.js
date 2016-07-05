@@ -143,6 +143,9 @@ export function parseBlock() {
  */
 export function parse(tokens) {
   this.reset(tokens);
+  for (let key of tokens) {
+    //console.log(getNameByLabel(key.name), key.value);
+  };
   return (this.parseProgram());
 }
 
