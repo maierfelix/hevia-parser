@@ -1,11 +1,27 @@
-#Hevia
-<a href="https://travis-ci.org/maierfelix/Hevia"><img src="https://travis-ci.org/maierfelix/Hevia.svg?branch=master" alt="Build Status"></a>
-[![npm version](https://img.shields.io/npm/v/hevia.svg)](https://www.npmjs.com/package/hevia)
+<h1 align="center">Hevia</h1>
 
-A Swift to ES6 Compiler.
+<div align="center">
+  <strong>A Swift to ES6 Compiler.</strong>
+</div>
 
-Compiles latest Swift 3.0 code into optimized ES6 code, running inside the Browser.<br>
+<div align="center">
+  Compiles latest Swift 3.0 code into optimized ES6 code, running inside the Browser.<br>
 In near future, the compiler will be rewritten into Swift, to get self-hosted (compiles itself).
+</div>
+
+<br/>
+
+<div align="center">
+  <a href="https://travis-ci.org/maierfelix/Hevia">
+    <img src="https://img.shields.io/travis/maierfelix/Hevia/master.svg?style=flat-square" alt="Build Status" />
+  </a>
+  <a href="https://www.npmjs.com/package/hevia">
+    <img src="https://img.shields.io/npm/v/hevia.svg?style=flat-square" alt="NPM Version" />
+  </a>
+  <a href="https://nodejs.org/api/documentation.html#documentation_stability_index">
+    <img src="https://img.shields.io/badge/stability-experimental-orange.svg?style=flat-square" alt="API Stability" />
+  </a>
+</div>
 
 ##Example
 
