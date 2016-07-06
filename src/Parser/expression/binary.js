@@ -6,7 +6,10 @@ import {
 
 import Node from "../../nodes";
 
-import { IFX_PRECEDENCE as Infix } from "../../precedence";
+import {
+  IFX_PRECEDENCE as Infix,
+  POX_PRECEDENCE as Postfix
+} from "../../precedence";
 
 import {
   getNameByLabel
@@ -36,6 +39,12 @@ export function parseBinaryExpression(index) {
     node.isParenthised = this.peek(TT.RPAREN);
     left = node;
   };
+
+  if (state === void 0) {
+    if (this.isPostfixOperator()) {
+      return (this.parseUnaryExpression(left));
+    }
+  }
 
   return (left);
 

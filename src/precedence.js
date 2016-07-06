@@ -23,6 +23,13 @@ export function registerOperator(op, lvl, assoc, name, type) {
     associativity: assoc
   };
 
+  /** Operator already registered */
+  if (name in Operators) {
+    /** Just update its settings */
+    Operators[name] = obj;
+    return void 0;
+  }
+
   switch (type) {
     case TT.PREFIX:
       PEX_PRECEDENCE.push(obj);
@@ -34,6 +41,9 @@ export function registerOperator(op, lvl, assoc, name, type) {
         if (a.level < b.level) return -1;
         return 0;
       });
+    break;
+    case TT.POSTFIX:
+      POX_PRECEDENCE.push(obj);
     break;
   };
 

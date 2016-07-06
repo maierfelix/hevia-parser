@@ -60,10 +60,10 @@ export function parseDeclarationStatement() {
     case TT.EXTENSION:
       node = this.parseExtension();
     break;
+    case TT.INFIX:
     case TT.POSTFIX:
     case TT.PREFIX:
-    case TT.INFIX:
-      node = this.parseOperatorDeclaration();
+      node = this.parseOperator();
     break;
     case TT.INIT:
       node = this.parseInitializerDeclaration();

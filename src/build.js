@@ -18,6 +18,9 @@ registerOperator("~", -1, "none", "BIT_NOT", PREFIX);
 registerOperator("+", -1, "none", "UNARY_ADD", PREFIX);
 registerOperator("-", -1, "none", "UNARY_SUB", PREFIX);
 
+registerOperator("++", -1, "none", "PRE_ADD", PREFIX); // removed in swift 3
+registerOperator("--", -1, "none", "PRE_SUB", PREFIX); // removed in swift 3
+
 /** INFIX */
 registerOperator("*", 150, "left", "MUL", INFIX);
 registerOperator("/", 150, "left", "DIV", INFIX);
@@ -62,3 +65,7 @@ registerOperator("|=", 90, "right", "CMP_OR", INFIX);
 registerOperator("^=", 90, "right", "CMP_XOR", INFIX);
 registerOperator("&&=", 90, "right", "CMP_LAND", INFIX);
 registerOperator("||=", 90, "right", "CMP_LOR", INFIX);
+
+/** POSTFIX */
+registerOperator("--", -1, "none", "POST_SUB", POSTFIX); // removed in swift 3
+registerOperator("++", -1, "none", "POST_ADD", POSTFIX); // removed in swift 3

@@ -19,7 +19,7 @@ export function parseLiteral() {
 
   /** Unary pex expression */
   if (this.isPrefixOperator()) {
-    return this.parseUnaryExpression();
+    return this.parseUnaryExpression(void 0);
   }
 
   if (this.peek(TT.LPAREN)) {
@@ -79,23 +79,20 @@ export function parseLiteral() {
  * Parse a literal head,
  * supports functions names
  * which are operators
- * @return {Node}
+ * @return {String}
  */
 export function parseLiteralHead() {
 
+  let str = TT[this.current.name];
+
   /** Custom operator */
-  if (TT[this.current.name]) {
-    let name = TT[this.current.name];
-    let tmp = new Node.Literal();
-    tmp.raw = name;
-    tmp.value = name;
-    tmp.type = Token.Identifier;
+  if (str) {
     this.next();
-    return (tmp);
+    return str;
   }
 
   /** Default literal */
-  return this.parseLiteral();
+  return this.extract(Token.Identifier).value;
 
 }
 

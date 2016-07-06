@@ -17,16 +17,49 @@ import {
 /**
  * @return {Node}
  */
-export function parseOperatorDeclaration() {
+export function parseOperator() {
+
+  let node = null;
+
+  let type = TT[this.parseLiteralHead()];
+
+  if (this.peek(TT.FUNCTION)) {
+    node = this.parseFunction();
+    if (type === TT.PREFIX) {
+      node.isPrefix = true;
+    }
+    else if (type === TT.POSTFIX) {
+      node.isPostfix = true;
+    }
+    else {
+      throw new Error(`Operator parse error`);
+    }
+    registerOperator(
+      node.name,
+      -1,
+      "none",
+      node.name,
+      type
+    );
+  } else {
+    node = this.parseOperatorDeclaration(type);
+  }
+
+  return (node);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseOperatorDeclaration(type) {
 
   let node = new Node.OperatorDeclaration();
 
-  node.name = this.current.name;
-
-  this.next();
   this.expect(TT.OPERATOR);
 
-  node.operator = this.parseExpressionStatement();
+  node.name = type;
+  node.operator = this.parseLiteralHead();
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
@@ -35,12 +68,12 @@ export function parseOperatorDeclaration() {
   let associativity = this.getOperatorAssociativity(node.body.body);
   let precedence = this.getOperatorPrecedence(node.body.body);
 
-  if (node.operator.raw !== void 0) {
+  if (node.operator) {
     registerOperator(
-      node.operator.raw,
+      node.operator,
       precedence,
       associativity,
-      node.operator.raw,
+      node.operator,
       node.name
     );
   } else {

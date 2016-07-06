@@ -21,6 +21,7 @@ export function parseFunction() {
   this.eat(TT.FUNCTION);
 
   node.name = this.parseLiteralHead();
+
   node.arguments = this.parseArguments();
 
   if (this.peek(TT.ARROW)) {
