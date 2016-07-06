@@ -1,7 +1,17 @@
 var src = 
-`
-var a = ~2 * !1 ** 7 && 1 != 2;
-`;
+`var a = (*)(2, 3);
+
+var y = a || b && c || d > e && f == g < h >= i + j * k;
+
+infix operator °°°° {
+  associativity left
+  precedence 160
+}
+func °°°°(c:Int)->Int{
+  return 1;
+}
+
+var a = (2°°°°7*7*(2/3));`;
 
 swift.innerHTML = src;
 
@@ -11,10 +21,10 @@ function execute() {
 
 function build(value) {
   let tokens = hevia.tokenize(value);
-  console.log(tokens);
   let ast = hevia.parse(tokens);
   console.log(ast);
   return (hevia.generate(ast, "JS"));
+  //return (JSON.stringify(ast));
 }
 
 function compile() {
