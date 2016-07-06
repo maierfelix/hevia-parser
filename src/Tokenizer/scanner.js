@@ -1,5 +1,9 @@
 import { Character } from './char';
-import { Token, TokenList as TT } from "../labels";
+import {
+  Token,
+  TokenList as TT,
+  Operators as OP
+} from "../labels";
 
 var PlaceHolders,
   Messages,
@@ -481,6 +485,21 @@ function scanIdentifier() {
   };
 }
 
+function isPunctuator(cp) {
+  return (
+    cp === 40 ||
+    cp === 123 ||
+    cp === 46 ||
+    cp === 41 ||
+    cp === 59 ||
+    cp === 44 ||
+    cp === 91 ||
+    cp === 93 ||
+    cp === 58 ||
+    cp === 63
+  );
+}
+
 // ECMA-262 11.7 Punctuators
 function scanPunctuator() {
   var token, str;
@@ -538,31 +557,25 @@ function scanPunctuator() {
       break;
 
     default:
-      var tmp = "";
+      var buf = "";
       var cp = source.charCodeAt(index);
-      var res = null;
-      while (!isDecimalDigit(cp) && !isWhiteSpace(cp)) {
-        tmp += source[index];
-        if (TT[tmp] !== void 0) {
-          res = tmp;
-        }
+      var res = "";
+      while (!isDecimalDigit(cp) && !isWhiteSpace(cp) && !isPunctuator(cp) && !isIdentifierStart(cp)) {
+        buf += source[index];
         index++;
         cp = source.charCodeAt(index);
+        if (isKeyword(buf)) {
+          res = buf;
+        }
         if (isNaN(cp)) break;
       };
-      if (TT[res] !== void 0 && str !== res) {
-        index -= tmp.length - res.length;
-        str = res;
-      } else {
-        if (TT[str] === void 0) {
-          token.type = Token.Identifier;
-        } else {
-          str = res;
-          if (tmp.length > str.length) {
-            index -= tmp.length - res.length;
-          }
-        }
+      let org = res;
+      res = res.trim();
+      /** Unknown token, so turn into identifier */
+      if (TT[buf] === void 0) {
+        token.type = Token.Identifier;
       }
+      str = buf.trim();
     break;
 
   };

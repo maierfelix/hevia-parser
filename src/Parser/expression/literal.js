@@ -76,6 +76,30 @@ export function parseLiteral() {
 }
 
 /**
+ * Parse a literal head,
+ * supports functions names
+ * which are operators
+ * @return {Node}
+ */
+export function parseLiteralHead() {
+
+  /** Custom operator */
+  if (TT[this.current.name]) {
+    let name = TT[this.current.name];
+    let tmp = new Node.Literal();
+    tmp.raw = name;
+    tmp.value = name;
+    tmp.type = Token.Identifier;
+    this.next();
+    return (tmp);
+  }
+
+  /** Default literal */
+  return this.parseLiteral();
+
+}
+
+/**
  * @return {Node}
  */
 export function parseArrayDeclaration() {

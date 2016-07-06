@@ -26,7 +26,7 @@ export function parseOperatorDeclaration() {
   this.next();
   this.expect(TT.OPERATOR);
 
-  node.operator = this.parseLiteral();
+  node.operator = this.parseExpressionStatement();
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();

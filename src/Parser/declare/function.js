@@ -20,14 +20,7 @@ export function parseFunction() {
   /** Optional, so dont expect */
   this.eat(TT.FUNCTION);
 
-  /** Custom operator */
-  if (TT[this.current.name]) {
-    node.name = TT[this.current.name];
-    this.next();
-  } else {
-    node.name = this.extract(Token.Identifier).value;
-  }
-
+  node.name = this.parseLiteralHead();
   node.arguments = this.parseArguments();
 
   if (this.peek(TT.ARROW)) {
