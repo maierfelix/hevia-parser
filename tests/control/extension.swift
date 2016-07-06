@@ -9,6 +9,13 @@ extension Double {
   var double: Double { return self * 2 }
 }
 
+extension °°°°° {
+  var double: Int { return self * 2 }
+  func square() -> Int {
+    return (self * self);
+  }
+}
+
 var a:Int = 8.double.square();
 var oneInch = 25.75.double;
 
