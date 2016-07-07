@@ -7,20 +7,26 @@
   <meta content="origin-when-cross-origin" name="referrer" />
   <title>Hevia Playground</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="main.css">
-  <link rel="stylesheet" type="text/css" href="pure.min.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="css/pure.min.css">
+  <link rel="stylesheet" type="text/css" href="codemirror/main.css">
+  <link rel="stylesheet" href="codemirror/theme/seti.css">
+  <script src="codemirror/main.js"></script>
+  <script src="codemirror/mode/javascript/javascript.js"></script>
+  <script src="codemirror/mode/swift/swift.js"></script>
 </head>
 <body class="body">
 
   <div class="title">
     <p>Hevia.js</p>
+    <p id="version" class="version"> </p>
     <p><a class="btn color-1 view" href="https://github.com/maierfelix/hevia">View on Github</a></p>
   </div>
 
   <div class="pure-g centered">
     <div class="pure-u-1-2">
       <div class="l-box">
-        <p><div class="btn color-1 noselect" id="compile">Compile</div></p>
+        <p><div class="btn color-1 noselect" id="com">Compile</div></p>
         <p><textarea class="txt" id="swift" spellcheck="false" placeholder="Swift code..."></textarea></p>
       </div>
     </div>
@@ -32,9 +38,11 @@
     </div>
   </div>
 
-  <script type="text/javascript" src="./stars.js"></script>
-  <script type="text/javascript" src="./dist/hevia.js"></script>
-  <script type="text/javascript" src="./main.js"></script>
+  <script type="text/javascript" src="dist/hevia.js"></script>
+
+  <script type="text/javascript" src="js/stars.js"></script>
+  <script type="text/javascript" src="js/main.js"></script>
+  <script type="text/javascript" src="js/cm.js"></script>
 
 </body>
 </html>
