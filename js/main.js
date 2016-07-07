@@ -1,17 +1,28 @@
+version.innerHTML = "v" + hevia.VERSION;
 var src = 
-`var a = (*)(2, 3);
-
-var y = a || b && c || d > e && f == g < h >= i + j * k;
-
-infix operator °°°° {
-  associativity left
-  precedence 160
-}
-func °°°°(c:Int)->Int{
-  return 1;
+`
+for ;true; {
+  print(a)
 }
 
-var a = (2°°°°7*7*(2/3));`;
+for var a:Int = 5; a < 10; {
+  print(a)
+}
+
+for (var a:Int = 5; a < 10; a += 1) {
+  print(a)
+}
+
+while 10 < 20 {
+  print(1337)
+}
+
+repeat {
+  print(1337)
+  print(1338)
+} while 10 < 20
+
+`;
 
 swift.innerHTML = src;
 
