@@ -2,7 +2,7 @@
   "name": "Hevia",
   "version": "0.0.5",
   "description": "Hevia Compiler",
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/maierfelix/hevia.git"
