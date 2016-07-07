@@ -30,8 +30,10 @@ export function parseStrictType(base) {
     }
   }
   else if (this.eat(TT.ARROW)) {
+    // func () -> ()
     if (this.peek(TT.LPAREN)) {
       node = this.parseExpressionStatement();
+    // func () -> Type
     } else {
       node = this.parseType();
     }

@@ -21,7 +21,7 @@ export function parseClass() {
 
   if (this.peek(Token.Identifier)) {
     node.name = this.extract(Token.Identifier).value;
-  /** Fake class for a func or var */
+  // Fake class for a func or var
   } else {
     if (!this.peek(TT.LBRACE)) {
       return (this.parseSpecialClass(node));

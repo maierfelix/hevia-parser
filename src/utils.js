@@ -63,16 +63,17 @@ export function getNameByLabel(name) {
   return (null);
 }
 
+/**
+ * @param {Number} n
+ * @return {String}
+ */
 export function getLabelByNumber(n) {
-
   for (let key in TT) {
     if (TT[key] === n) {
       return (key);
     }
   };
-
   return (null);
-
 }
 
 /**

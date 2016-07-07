@@ -23,9 +23,9 @@ export function registerOperator(op, lvl, assoc, name, type) {
     associativity: assoc
   };
 
-  /** Operator already registered */
+  // Operator already registered
   if (name in Operators) {
-    /** Just update its settings */
+    // Just update its settings
     Operators[name] = obj;
     return void 0;
   }

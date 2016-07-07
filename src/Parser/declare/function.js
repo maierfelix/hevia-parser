@@ -17,7 +17,7 @@ export function parseFunction() {
 
   let node = new Node.FunctionDeclaration();
 
-  /** Optional, so dont expect */
+  // Optional, so dont expect
   this.eat(TT.FUNCTION);
 
   node.name = this.parseLiteralHead();

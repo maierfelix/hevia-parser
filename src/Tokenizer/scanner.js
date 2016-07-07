@@ -466,6 +466,14 @@ function scanIdentifier() {
   if (id.length === 1) {
     type = Token.Identifier;
   } else if (isKeyword(id)) {
+    let tmp = source[index];
+    // Dirty as? as! hack
+    if (tmp === "?" || tmp === "!") {
+      if (id.trim() === "as") {
+        id += tmp;
+        index++;
+      }
+    }
     type = Token.Keyword;
   } else if (id === 'null') {
     type = Token.NullLiteral;
@@ -569,7 +577,6 @@ function scanPunctuator() {
         }
         if (isNaN(cp)) break;
       };
-      let org = res;
       res = res.trim();
       /** Unknown token, so turn into identifier */
       if (TT[buf] === void 0) {

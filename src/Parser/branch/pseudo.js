@@ -11,7 +11,7 @@ import Node from "../../nodes";
  */
 export function parsePseudoProperty() {
 
-  /** willSet, didSet, set can have parameters */
+  // WillSet, didSet, set can have parameters
   let allowParameters = (
     this.peek(TT.SET) ||
     this.peek(TT.WILLSET) ||

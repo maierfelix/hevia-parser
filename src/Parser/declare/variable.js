@@ -38,15 +38,18 @@ export function parseVariableDeclaration() {
 
 }
 
+/**
+ * @return {Node}
+ */
 export function parseVariable(node) {
 
   node.declarations = this.parseVariableDeclarement();
 
-  /** block */
+  // Block
   if (this.eat(TT.LBRACE)) {
     node.init = this.parseBlock();
     this.expect(TT.RBRACE);
-  /** expression */
+  // Expression
   } else {
     if (this.eat(TT.ASSIGN)) {
       if (this.peek(TT.LPAREN) && node.declarations.length > 1) {
@@ -73,6 +76,9 @@ export function parseVariable(node) {
 
 }
 
+/**
+ * @return {Array}
+ */
 export function parseVariableDeclarement() {
 
   let args = null;

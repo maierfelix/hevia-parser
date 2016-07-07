@@ -22,7 +22,7 @@ export function parseParenthese(left, right) {
   let node = null;
   let base = null;
 
-  /** Empty parenthese */
+  // Empty parenthese
   this.expect(left);
   if (this.eat(right)) return (null);
 

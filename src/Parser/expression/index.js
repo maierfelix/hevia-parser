@@ -40,7 +40,8 @@ export function parseExpressionStatement() {
       node = this.parsePrecedenceExpression();
     break;
     default:
-      /** Ups, expr starts with pex op */
+      // Ups, expression starts with prefix operator
+      // FIXME
       if (this.isOperator(this.current.name)) {
         node = this.parseBinaryExpression(0);
       }

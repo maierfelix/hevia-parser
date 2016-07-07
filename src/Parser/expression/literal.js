@@ -8,8 +8,7 @@ import {
 import Node from "../../nodes";
 
 import {
-  getNameByLabel,
-  getLabelByNumber
+  getNameByLabel
 } from "../../utils";
 
 /**
@@ -17,17 +16,24 @@ import {
  */
 export function parseLiteral() {
 
-  /** Unary pex expression */
-  if (this.isPrefixOperator()) {
+  // Unary pex expression
+  if (this.isPrefixOperator(this.current)) {
     return this.parseUnaryExpression(void 0);
   }
 
   if (this.peek(TT.LPAREN)) {
     this.expect(TT.LPAREN);
     let tmp = this.parseExpressionStatement();
-    /** Seems like a standalone operator */
+    // Seems like a standalone operator
     if (tmp === null) {
       tmp = this.parseLiteral();
+    }
+    // Seems like a tuple o.O
+    if (this.eat(TT.COMMA)) {
+      // Parse all folowing tuple parameters
+      let args = this.parseCommaSeperatedValues();
+      args.unshift(tmp);
+      tmp = args;
     }
     this.expect(TT.RPAREN);
     return (tmp);
@@ -36,13 +42,13 @@ export function parseLiteral() {
   let node = new Node.Literal();
   let isExplicit = this.eat(TT.UL);
 
-  if (this.current.value === "&") {
+  // Literal passed as pointer
+  if (this.eat(TT.BIT_AND)) {
     node.isPointer = true;
-    this.next();
   }
 
   if (isExplicit && this.peek(TT.COLON)) {
-    // explicit only parameter
+    // Explicit only parameter
   } else {
     node.type = this.current.name;
     node.value = this.current.value;
@@ -50,7 +56,7 @@ export function parseLiteral() {
     this.next();
   }
 
-  /** Labeled literal */
+  // Labeled literal
   if (this.peek(Token.Identifier)) {
     if (!this.isOperator(TT[this.current.value])) {
       let tmp = this.parseLiteral();
@@ -59,6 +65,7 @@ export function parseLiteral() {
     }
   }
 
+  // Dont parse colon as argument, if in ternary expression
   if (!this.inTernary) {
     if (this.peek(TT.COLON)) {
       node = this.parseStrictType(node);
@@ -85,13 +92,13 @@ export function parseLiteralHead() {
 
   let str = TT[this.current.name];
 
-  /** Custom operator */
+  // Custom operator
   if (str) {
     this.next();
     return str;
   }
 
-  /** Default literal */
+  // Default literal
   return this.extract(Token.Identifier).value;
 
 }

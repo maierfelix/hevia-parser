@@ -33,13 +33,6 @@ export function parseAtom(base) {
     else if (this.peek(TT.LPAREN)) {
       base = this.parseCallExpression(base);
     }
-    /** Type casting */
-    else if (
-      this.peek(TT.AS) ||
-      this.peek(TT.IS)
-    ) {
-      base = this.parseCast(base);
-    }
     else {
       break;
     }

@@ -48,14 +48,14 @@ export function parseFor() {
   this.eat(TT.LPAREN);
 
   if (!this.eat(TT.SEMICOLON)) {
-    init = this.parseExpressionStatement();
+    init = this.parseStatement();
   }
 
-  /** for ex in ex */
+  // for (expr) in (expr)
   if (this.eat(TT.IN)) {
     node = new Node.ForInStatement();
     this.parseForInLoop(node);
-  /** for ex;ex;ex */
+  // for (expr);(expr);(expr)
   } else {
     this.parseDefaultForLoop(node);
   }

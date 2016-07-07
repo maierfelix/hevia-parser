@@ -23,6 +23,7 @@ export function parseOperator() {
 
   let type = TT[this.parseLiteralHead()];
 
+  // Operator declaration followed by function
   if (this.peek(TT.FUNCTION)) {
     node = this.parseFunction();
     if (type === TT.PREFIX) {
@@ -41,6 +42,7 @@ export function parseOperator() {
       node.name,
       type
     );
+  // Standard operator declaration
   } else {
     node = this.parseOperatorDeclaration(type);
   }

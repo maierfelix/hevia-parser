@@ -6,7 +6,6 @@ import * as parse from "./parse";
 /** Expressions */
 import * as args from "./expression/args";
 import * as atoms from "./expression/atom";
-import * as casts from "./expression/cast";
 import * as unaries from "./expression/unary";
 import * as binaries from "./expression/binary";
 import * as literals from "./expression/literal";
@@ -81,7 +80,6 @@ export default class Parser {
 inherit(Parser, parse);
 
 inherit(Parser, args);
-inherit(Parser, casts);
 inherit(Parser, atoms);
 inherit(Parser, unaries);
 inherit(Parser, binaries);
