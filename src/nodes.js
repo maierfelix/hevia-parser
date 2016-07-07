@@ -95,6 +95,32 @@ export default class Node {
     );
   }
 
+  static get StructureDeclaration() {
+    return (
+      class StructureDeclaration {
+        constructor() {
+          this.kind = Type.StructureDeclaration;
+          this.name = null;
+          this.extend = [];
+          this.body = [];
+        }
+      }
+    );
+  }
+
+  static get ProtocolDeclaration() {
+    return (
+      class ProtocolDeclaration {
+        constructor() {
+          this.kind = Type.ProtocolDeclaration;
+          this.name = null;
+          this.extend = [];
+          this.body = [];
+        }
+      }
+    );
+  }
+
   static get ExtensionDeclaration() {
     return (
       class ExtensionDeclaration {

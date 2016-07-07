@@ -39,6 +39,8 @@ let ii = 0;
 
   Label[Label["ExtensionDeclaration"] = ++ii] = "ExtensionDeclaration";
   Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
+  Label[Label["StructureDeclaration"] = ++ii] = "StructureDeclaration";
+  Label[Label["ProtocolDeclaration"] = ++ii] = "ProtocolDeclaration";
   Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";

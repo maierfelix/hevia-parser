@@ -57,7 +57,7 @@ export function parseMemberExpression(base) {
 
   // Be careful with []
   if (node.isComputed) {
-    node.property = this.parseAtom(this.parseLiteral());
+    node.property = this.parseExpressionStatement();
     if (this.eat(TT.COMMA)) {
       let args = this.parseCommaSeperatedValues();
       args.unshift(node.property);
@@ -66,7 +66,7 @@ export function parseMemberExpression(base) {
       node.property = tmp;
     }
   } else {
-    node.property = this.parseAtom(this.parseLiteral());
+    node.property = this.parseExpressionStatement();
   }
 
   if (node.isComputed) {

@@ -47,9 +47,19 @@ export function parseParenthese(left, right) {
 export function parseCommaSeperatedValues() {
 
   let args = [];
+  let stmt = null;
 
   while (true) {
-    args.push(this.parseStatement());
+    stmt = this.parseStatement();
+    // Labeled literal
+    if (this.peek(Token.Identifier)) {
+      if (!this.isOperator(TT[this.current.value])) {
+        let tmp = this.parseLiteral();
+        tmp.label = stmt;
+        stmt = tmp;
+      }
+    }
+    args.push(stmt);
     if (!this.eat(TT.COMMA)) break;
   };
 

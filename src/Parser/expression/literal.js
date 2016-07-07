@@ -56,15 +56,6 @@ export function parseLiteral() {
     this.next();
   }
 
-  // Labeled literal
-  if (this.peek(Token.Identifier)) {
-    if (!this.isOperator(TT[this.current.value])) {
-      let tmp = this.parseLiteral();
-      tmp.label = node;
-      node = tmp;
-    }
-  }
-
   // Dont parse colon as argument, if in ternary expression
   if (!this.inTernary) {
     if (this.peek(TT.COLON)) {
