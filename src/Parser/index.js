@@ -6,6 +6,7 @@ import * as parse from "./parse";
 /** Expressions */
 import * as args from "./expression/args";
 import * as atoms from "./expression/atom";
+import * as arrays from "./expression/array";
 import * as unaries from "./expression/unary";
 import * as binaries from "./expression/binary";
 import * as literals from "./expression/literal";
@@ -81,6 +82,7 @@ inherit(Parser, parse);
 
 inherit(Parser, args);
 inherit(Parser, atoms);
+inherit(Parser, arrays);
 inherit(Parser, unaries);
 inherit(Parser, binaries);
 inherit(Parser, literals);
