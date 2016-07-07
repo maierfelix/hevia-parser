@@ -106,13 +106,24 @@ export function parseLiteralHead() {
 /**
  * @return {Node}
  */
-export function parseArrayDeclaration() {
+export function parseArrayExpression() {
 
-  let node = new Node.ArrayDeclaration();
+  let node = new Node.ArrayExpression();
 
-  let args = this.parseParenthese(TT.LBRACK, TT.RBRACK);
+  let args = [];
 
-  node.argument = this.parseArguments(args);
+  this.expect(TT.LBRACK);
+
+  while (true) {
+    if (!this.peek(TT.RBRACK)) {
+      args.push(this.parseBinaryExpression(0));
+    }
+    if (!this.eat(TT.COMMA)) break;
+  };
+
+  this.expect(TT.RBRACK);
+
+  node.argument = args;
 
   return (node);
 

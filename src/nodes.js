@@ -316,11 +316,11 @@ export default class Node {
     );
   }
 
-  static get ArrayDeclaration() {
+  static get ArrayExpression() {
     return (
-      class ArrayDeclaration {
+      class ArrayExpression {
         constructor() {
-          this.kind = Type.ArrayDeclaration;
+          this.kind = Type.ArrayExpression;
           this.argument = [];
         }
       }

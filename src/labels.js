@@ -35,6 +35,7 @@ let ii = 0;
   Label[Label["WhileStatement"] = ++ii] = "WhileStatement";
   Label[Label["RepeatStatement"] = ++ii] = "RepeatStatement";
   Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
+  Label[Label["ArrayExpression"] = ++ii] = "ArrayExpression";
 
   Label[Label["ExtensionDeclaration"] = ++ii] = "ExtensionDeclaration";
   Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
@@ -42,7 +43,6 @@ let ii = 0;
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
   Label[Label["InitializerDeclaration"] = ++ii] = "InitializerDeclaration";
-  Label[Label["ArrayDeclaration"] = ++ii] = "ArrayDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
   Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";

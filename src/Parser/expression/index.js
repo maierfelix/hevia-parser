@@ -19,7 +19,6 @@ export function parseExpressionStatement() {
 
   switch (this.current.name) {
     case TT.LPAREN:
-    case TT.LBRACK:
     case TT.SELF:
     case TT.BIT_AND:
     case TT.UL:
@@ -38,6 +37,9 @@ export function parseExpressionStatement() {
     break;
     case TT.PRECEDENCE:
       node = this.parsePrecedenceExpression();
+    break;
+    case TT.LBRACK:
+      node = this.parseAtom(this.parseArrayExpression());
     break;
     default:
       // Ups, expression starts with prefix operator
