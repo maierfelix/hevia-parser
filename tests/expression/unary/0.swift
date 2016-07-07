@@ -1,6 +1,6 @@
 var a = !true;
 var b = !a;
-var c = !!a;
+var c = !(!a);
 
 expect(a == false);
 expect(b == true);
