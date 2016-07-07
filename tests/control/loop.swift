@@ -9,6 +9,7 @@ for var a:Int = 5; a < 10; {
 for (var a:Int = 5; a < 10; a += 1) {
   print(a)
 }
+
 while 10 < 20 {
   print(1337)
 }

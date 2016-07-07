@@ -1,15 +1,15 @@
 // #1
-func swap(c: inout Int, d: inout Int) {
-  let tmp:Int = c;
-  c = d;
-  d = tmp;
+func swap(a: inout Int, _ b: inout Int) {
+  let tmp:Int = a;
+  a = b;
+  b = tmp;
 }
 
 var a1 = 22;
 var b1 = 33;
 
 expect(a1 == 22); expect(b1 == 33);
-swap(&a1, &b1);
+swap(a: &a1, &b1);
 expect(a1 == 33); expect(b1 == 22);
 
 // #2
