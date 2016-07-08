@@ -17,6 +17,9 @@ In near future, the compiler will be rewritten into Swift, to get self-hosted (c
   <a href="https://travis-ci.org/maierfelix/Hevia">
     <img src="https://img.shields.io/travis/maierfelix/Hevia/master.svg?style=flat-square" alt="Build Status" />
   </a>
+  <a href="https://swift.org/blog/swift-3-0-release-process/">
+    <img src="https://img.shields.io/badge/Swift-3.0-blue.svg?style=flat-square" alt="Swift Version" />
+  </a>
   <a href="https://www.npmjs.com/package/hevia">
     <img src="https://img.shields.io/npm/v/hevia.svg?style=flat-square" alt="NPM Version" />
   </a>
