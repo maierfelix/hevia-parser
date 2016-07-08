@@ -11,9 +11,8 @@ import {
 } from "../utils";
 
 /*
-  [x] tuple
-  [x] type
-*/
+ * @return {Node}
+ */
 export function parseStrictType(base) {
 
   let node = new Node.Parameter();
@@ -50,6 +49,9 @@ export function parseStrictType(base) {
 
 }
 
+/**
+ * @return {Node}
+ */
 export function parseType() {
 
   let node = new Node.TypeAnnotation();
@@ -61,7 +63,10 @@ export function parseType() {
   if (this.eat(TT.CONDITIONAL)) {
     node.isOptional = true;
   }
-  else if (this.current.value === "!") {
+  else if (
+    this.current !== void 0 &&
+    this.current.value === "!"
+  ) {
     node.isUnwrap = true;
     this.next();
   }
@@ -71,7 +76,7 @@ export function parseType() {
 }
 
 /**
- * @param  {Number}  type
+ * @param {Number}  type
  * @return {Boolean}
  */
 export function isNativeType(type) {

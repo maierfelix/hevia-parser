@@ -54,10 +54,12 @@ export function parseFor() {
   // for (expr) in (expr)
   if (this.eat(TT.IN)) {
     node = new Node.ForInStatement();
-    this.parseForInLoop(node);
+    node.expression = this.parseExpressionStatement();
   // for (expr);(expr);(expr)
   } else {
-    this.parseDefaultForLoop(node);
+    node.test = this.parseExpressionStatement();
+    this.expect(TT.SEMICOLON);
+    node.update = this.parseExpressionStatement();
   }
 
   node.init = init;
@@ -69,20 +71,6 @@ export function parseFor() {
   this.expect(TT.RBRACE);
 
   return (node);
-
-}
-
-export function parseForInLoop(node) {
-
-  node.expression = this.parseExpressionStatement();
-
-}
-
-export function parseDefaultForLoop(node) {
-
-  node.test = this.parseExpressionStatement();
-  this.expect(TT.SEMICOLON);
-  node.update = this.parseExpressionStatement();
 
 }
 

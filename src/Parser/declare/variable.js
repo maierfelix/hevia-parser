@@ -11,14 +11,7 @@ import {
 } from "../../utils";
 
 /**
-  [x] name
-  [x] pattern
-  [x] block
-  [x] getter-setter
-  [x] willset-didset
-  [x] expression
-  [x] type annotation (opt)
-  @return {Node}
+ * @return {Node}
  */
 export function parseVariableDeclaration() {
 
@@ -69,7 +62,10 @@ export function parseVariable(node) {
       let tmp = this.parseVariableDeclaration();
       tmp.symbol = node.symbol;
       node.declarations = node.declarations.concat(tmp.declarations);
-      node.init = node.init.concat(tmp.init);
+      // Dont join if no assignment found
+      if (node.init !== null && tmp.init !== null) {
+        node.init = node.init.concat(tmp.init);
+      }
       if (!this.peek(TT.COMMA)) break;
     };
   }

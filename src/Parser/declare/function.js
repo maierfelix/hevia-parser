@@ -28,9 +28,11 @@ export function parseFunction() {
     node.type = this.parseStrictType();
   }
 
-  this.expect(TT.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(TT.RBRACE);
+  // Functions dont explicit need a body
+  if (this.eat(TT.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(TT.RBRACE);
+  }
 
   return (node);
 

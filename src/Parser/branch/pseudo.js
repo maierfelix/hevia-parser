@@ -28,9 +28,11 @@ export function parsePseudoProperty() {
     node.arguments = this.parseArguments();
   }
 
-  this.expect(TT.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(TT.RBRACE);
+  // Pseudos dont explicit need a body
+  if (this.eat(TT.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(TT.RBRACE);
+  }
 
   return (node);
 

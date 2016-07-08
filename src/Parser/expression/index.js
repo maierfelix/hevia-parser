@@ -18,6 +18,7 @@ export function parseExpressionStatement() {
   let node = null;
 
   switch (this.current.name) {
+    case TT.NULL:
     case TT.LPAREN:
     case TT.SELF:
     case TT.BIT_AND:
