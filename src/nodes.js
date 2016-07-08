@@ -35,6 +35,17 @@ export default class Node {
     );
   }
 
+  static get ImportDeclaration() {
+    return (
+      class ImportDeclaration {
+        constructor() {
+          this.kind = Type.ImportDeclaration;
+          this.specifiers = [];
+        }
+      }
+    );
+  }
+
   static get AssociativityExpression() {
     return (
       class AssociativityExpression {

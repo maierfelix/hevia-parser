@@ -10,5 +10,13 @@ import Node from "../../nodes";
  * @return {Node}
  */
 export function parseImport() {
-  return (null);
+
+  let node = new Node.ImportDeclaration();
+
+  this.expect(TT.IMPORT);
+
+  node.specifiers = this.parseCommaSeperatedValues();
+
+  return (node);
+
 }

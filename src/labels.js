@@ -45,6 +45,7 @@ let ii = 0;
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
   Label[Label["InitializerDeclaration"] = ++ii] = "InitializerDeclaration";
+  Label[Label["ImportDeclaration"] = ++ii] = "ImportDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
   Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
