@@ -135,6 +135,22 @@ export default class Compiler {
 
   }
 
+  /**
+   * Check if the passed in string
+   * can be used as a variable head
+   * @param  {String} str
+   * @return {Boolean}
+   */
+  validName(str) {
+    if (typeof str !== "string") return (false);
+    try {
+      new Function("var " + str)();
+    } catch (e) {
+      return (false);
+    }
+    return (true);
+  }
+
 }
 
 inherit(Compiler, inference);
