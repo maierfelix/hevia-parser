@@ -1,3 +1,3 @@
 var window: String?
 
-expect(window == null);
+expect(window == nil);

@@ -5,7 +5,7 @@ struct Mercedes : Vehicle {
   init(a:Int) {}
 }
 
-struct TimeEvent : Event {
+struct Time : Event {
 
   var ts: Int64
   var time: Int64
