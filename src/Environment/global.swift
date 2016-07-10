@@ -1,19 +1,29 @@
-export function print() {
+module.exports = `
+
+/**
+ * #BIND_JS_CTX
+ */
+
+func pow(_ a:Double, _ b:Double) -> Double {
+  return (
+    Math.pow(a, b)
+  );
+}
+
+func print() -> Void {
   console.log.apply(console, arguments);
 }
 
-export function expect(truth) {
+func expect(truth:Bool) -> Void {
   if (!truth) {
-    throw new Error("Expection error!");
+    console.error("Expection error!");
   }
 }
 
-func print() {
-  console.log.apply(console, arguments);
+func test() -> Void {
+  return (
+    window.Math.pow()
+  );
 }
 
-func expect(truth:Bool)->Void {
-  if (!truth) {
-    throw new Error("Expection error!");
-  }
-}
+`;

@@ -1,4 +1,4 @@
-func pow(_ a:Double, _ b:Double)->Double {
+func pow(_ a:Double, _ b:Double) -> Double {
   return (
     Math.pow(a, b)
   );
