@@ -80,25 +80,25 @@ export default class Scope {
    */
   getName(node) {
     return (
-      node.value || node.name || node.id || (node.init ? node.init.value : void 0)
+      node.value || node.raw || node.name || node.id || (node.init ? this.getName(node.init) : void 0)
     );
   }
 
   /**
    * Set sth into table
    * @param {Node} node
+   * @return {Boolean}
    */
   register(node) {
     let name = this.getName(node);
-    if (
-      name !== void 0 &&
-      name !== null
-    ) {
+    if (name) {
       if (this.parent !== void 0) {
         //console.log(`Registered ${name}->${this.getName(this.scope)}:${getNameByLabel(this.scope.kind)}`);
       }
       this.table[name] = node;
+      return (true);
     }
+    return (false);
   }
 
 }

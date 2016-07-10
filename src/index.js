@@ -2,12 +2,14 @@ import Parser from "./Parser";
 import Compiler from "./Compiler";
 import Tokenizer from "./Tokenizer";
 
-import * as globals from "./Environment/global";
-
 import "./build";
 
 import { greet } from "./utils";
 import { VERSION } from "./const";
+
+let global = require("./Environment/global.swift");
+
+let compiler = new Compiler();
 
 const parse = (tokens) => {
   let parser = new Parser();
@@ -20,22 +22,14 @@ const tokenize = (code, opts) => {
 };
 
 const generate = (ast, opts) => {
-  let compiler = new Compiler();
   return (compiler.compile(ast, opts));
 };
 
-let global = {};
-for (let key in globals) {
-  if (globals.hasOwnProperty(key)) {
-    global[key] = globals[key];
-  }
-}
-
 const compile = (src) => {
 
-  var tokens = null;
-  var ast = null;
-  var code = null;
+  let tokens = null;
+  let ast = null;
+  let code = null;
 
   tokens = tokenize(src);
   ast = parse(tokens);
@@ -46,9 +40,21 @@ const compile = (src) => {
 };
 
 const evaluate = (code) => {
-  new Function("__global", code)(global);
+  code = global + code;
+  new Function("__global", code)();
 };
 
+const setup = () => {
+
+  let tokens = tokenize(global);
+  let ast = parse(tokens);
+  console.log(ast);
+
+  return (compiler.compile(ast, "JS"));
+
+};
+
+global = setup();
 greet();
 
 export {

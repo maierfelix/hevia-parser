@@ -22,6 +22,7 @@ import * as switches from "./branch/switch";
 /** Globals */
 import * as loops from "./loop";
 import * as types from "./type";
+import * as comments from "./comment";
 import * as statements from "./statement";
 
 /** Declarations */
@@ -97,6 +98,7 @@ inherit(Parser, branches);
 inherit(Parser, loops);
 inherit(Parser, types);
 inherit(Parser, branches);
+inherit(Parser, comments);
 inherit(Parser, statements);
 
 inherit(Parser, imports);

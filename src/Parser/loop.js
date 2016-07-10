@@ -11,11 +11,8 @@ import {
 } from "../utils";
 
 /*
-  [ ] for
-  [ ] while
-  [ ] repeat
-  @return {Node}
-*/
+ * @return {Node}
+ */
 export function parseLoopStatement() {
 
   switch (this.current.name) {

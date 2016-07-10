@@ -35,6 +35,17 @@ export default class Node {
     );
   }
 
+  static get Comment() {
+    return (
+      class Comment {
+        constructor() {
+          this.kind = Type.Comment;
+          this.arguments = [];
+        }
+      }
+    );
+  }
+
   static get ImportDeclaration() {
     return (
       class ImportDeclaration {

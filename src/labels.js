@@ -57,6 +57,8 @@ let ii = 0;
   Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
   Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
 
+  Label[Label["Comment"] = ++ii] = "Comment";
+
 })(Types);
 
 /** Data types */

@@ -18,6 +18,11 @@ export function parseStatement() {
   let node = null;
 
   switch (this.current.name) {
+    /** Comment */
+    case Token.BlockComment:
+    case Token.LineComment:
+      node = this.parseComment();
+    break;
     /** Loop statement */
     case TT.FOR:
     case TT.WHILE:
