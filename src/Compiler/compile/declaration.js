@@ -20,6 +20,9 @@ export function compileDeclaration(node) {
     case Type.VariableDeclaration:
       this.compileVariableDeclaration(node);
     break;
+    case Type.FunctionDeclaration:
+      this.compileFunctionDeclaration(node);
+    break;
   };
 
 }
@@ -44,6 +47,34 @@ export function compileVariableDeclaration(node) {
     } else {
       label.resolvedType = key.argument.type;
     }
+  };
+
+}
+
+/**
+ * @param {Node} node
+ */
+export function compileFunctionDeclaration(node) {
+
+  this.scope.register(node);
+
+  this.pushScope(node.body);
+
+  this.compileArguments(node.arguments);
+
+  this.compileBlock(node.body);
+
+  this.popScope();
+
+}
+
+/**
+ * @param {Node} node
+ */
+export function compileArguments(args) {
+
+  for (let key in args) {
+    this.scope.register(args[key]);
   };
 
 }

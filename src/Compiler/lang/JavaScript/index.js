@@ -12,76 +12,62 @@ import {
   getNumericType
 } from "../../../utils";
 
-export function emitProgram(ast) {
+/**
+ * @param {Node} node
+ */
+export function emitProgram(node) {
+  this.scope = node.context;
   this.write(`"use strict";\n`);
-  this.emitOperatorDefinitions();
-  for (let node of ast.body) {
-    this.emitStatement(node);
+  for (let key of node.body) {
+    this.emitStatement(key);
     this.write("\n");
   };
   this.write("\n");
 }
 
-export function emitStartHeader() {
-  this.write("(function(__global) {\n");
-}
-
-export function emitEndHeader() {
-  this.write("})(hevia.global)\n");
-}
-
-export function emitOperatorDefinitions() {
-
-  if (!Object.keys(this.operators).length) return void 0;
-
-  this.write("var __OP = {\n");
-
-  for (let key in this.operators) {
-    this.write(`"${key}"`);
-    this.write(":");
-    this.emitFunction(this.operators[key].func, true);
-  };
-
-  this.write("\n}");
-
-}
-
-export function emitBlock(ast) {
+/**
+ * @param {Node} node
+ */
+export function emitBlock(node) {
+  this.scope = node.context;
   this.write(" {");
-  for (let node of ast.body) {
+  for (let key of node.body) {
     this.write("\n");
-    this.emitStatement(node);
+    this.emitStatement(key);
     this.write(";");
   };
   this.write("\n}\n");
 }
 
-export function emitStatement(ast) {
+/**
+ * @param {Node} node
+ */
+export function emitStatement(node) {
 
-  switch (ast.kind) {
+  switch (node.kind) {
     /** Loop statement */
     case Type.ForStatement:
     case Type.WhileStatement:
     case Type.RepeatStatement:
-      //console.log(ast);
+      //console.log(node);
     break;
     /** Branch statement */
     case Type.GuardStatement:
     case Type.SwitchStatement:
     case Type.PseudoProperty:
-      //console.log(ast);
+      //console.log(node);
     break;
     /** Defer statement */
     case Type.DeferStatement:
-      //console.log(ast);
+      //console.log(node);
     break;
     /** Return statement */
     case Type.ReturnStatement:
-      this.emitReturn(ast);
+      this.emitReturn(node);
     break;
     /** Do statement */
     case Type.DoStatement:
-      //console.log(ast);
+      //console.log(node);
     break;
     /** Declaration statement */
     case Type.ImportStatement:
@@ -93,305 +79,55 @@ export function emitStatement(ast) {
     case Type.ProtocolDeclaration:
     case Type.ExtensionDeclaration:
     case Type.OperatorDeclaration:
-      this.emitDeclaration(ast);
+      this.emitDeclaration(node);
     break;
     case Type.CallExpression:
-      this.emitCall(ast);
+      this.emitCall(node);
     break;
     case Type.BinaryExpression:
-      this.emitBinary(ast);
+      this.emitBinary(node);
+    break;
+    case Type.UnaryExpression:
+      this.emitUnary(node);
     break;
     case Type.MemberExpression:
-      this.emitMember(ast);
+      this.emitMember(node);
     break;
     case Type.Parameter:
-      this.emitParameter(ast);
+      this.emitParameter(node);
     break;
     case Type.ParameterExpression:
       this.write("(");
-      this.emitArguments(ast);
+      this.emitArguments(node);
       this.write(")");
     break;
     case Type.TernaryExpression:
-      this.emitTernary(ast);
+      this.emitTernary(node);
     break;
     case Type.IfStatement:
-      this.emitIf(ast);
+      this.emitIf(node);
     break;
     default:
-      this.emitBinary(ast);
+      this.emitBinary(node);
     break;
   };
 
 }
 
-export function emitIf(ast) {
+/**
+ * @param {Node} node
+ */
+export function emitIf(node) {
 
-  if (ast.condition) {
+  if (node.condition) {
     this.write("if (");
-    this.emitStatement(ast.condition);
+    this.emitStatement(node.condition);
     this.write(")");
   }
-  this.emitBlock(ast.consequent);
-  if (ast.alternate && ast.alternate.kind === Type.IfStatement) {
+  this.emitBlock(node.consequent);
+  if (node.alternate && node.alternate.kind === Type.IfStatement) {
     this.write(" else ");
-    this.emitStatement(ast.alternate);
+    this.emitStatement(node.alternate);
   }
-
-}
-
-export function emitTernary(ast) {
-
-  this.emitStatement(ast.condition);
-  this.write("?");
-  this.emitStatement(ast.consequent);
-  this.write(":");
-  this.emitStatement(ast.alternate);
-
-}
-
-export function emitParameter(ast) {
-  /** Labeled call parameter */
-  if (ast.init.init !== void 0) {
-    this.emitStatement(ast.init.init);
-  } else {
-    this.emitStatement(ast.init);
-  }
-}
-
-export function emitMember(ast) {
-
-  if (ast.object.kind === Type.Literal) {
-    this.emitLiteral(ast.object);
-  } else {
-    this.emitStatement(ast.object);
-  }
-
-  if (ast.isComputed) {
-    this.write("[");
-  } else {
-    this.write(".");
-  }
-
-  if (ast.property.kind === Type.Literal) {
-    this.emitLiteral(ast.property);
-  } else {
-    this.emitStatement(ast.property);
-  }
-
-  if (ast.isComputed) {
-    this.write("]");
-  }
-
-}
-
-export function emitCall(ast) {
-
-  this.emitStatement(ast.callee);
-
-  this.write("(");
-  this.emitArguments(ast.arguments);
-  this.write(")");
-
-}
-
-export function emitArguments(ast) {
-
-  let param = ast.arguments;
-
-  let ii = 0;
-  let length = param.length;
-
-  for (; ii < length; ++ii) {
-    this.emitStatement(param[ii]);
-    if (ii + 1 < length) this.write(", ");
-  };
-
-}
-
-export function emitDeclaration(ast) {
-
-  switch (ast.kind) {
-    case Type.FunctionDeclaration:
-      this.emitFunction(ast, false);
-    break;
-    case Type.ExtensionDeclaration:
-      this.emitExtension(ast);
-    break;
-    case Type.VariableDeclaration:
-      this.emitVariableDeclaration(ast);
-    break;
-  }
-
-}
-
-export function emitExtension(ast) {
-
-  this.write("class ");
-
-  this.write("__");
-
-  this.emitLiteral(ast.argument);
-
-  this.write(" {\n");
-
-  for (let node of ast.body.body) {
-    if (node.kind === Type.FunctionDeclaration) {
-      node.isStatic = true;
-      this.emitFunction(node, false, true);
-    }
-  };
-
-  this.write("}");
-
-}
-
-export function emitVariableDeclaration(ast) {
-
-  let index = 0;
-  for (let node of ast.declarations) {
-    let init = ast.init[index] || ast.init;
-    let symbol = getNameByLabel(ast.symbol).toLowerCase() + " ";
-    if (node.kind === Type.ParameterExpression) {
-      this.emitMultipleVariable(node, init, symbol);
-    } else {
-      this.write(symbol);
-      this.emitVariable(node, init);
-    }
-    index++;
-  };
-
-}
-
-export function emitVariable(ast, init) {
-
-  this.write(ast.name || ast.value);
-  this.write(" = ");
-
-  if (ast.isLaterPointer) this.write("{\nvalue: ");
-
-  this.emitStatement(init);
-
-  if (ast.isLaterPointer) this.write("\n}");
-
-  this.write(";\n");
-
-}
-
-export function emitMultipleVariable(ast, init, symbol) {
-
-  let index = 0;
-  for (let node of ast.arguments) {
-    this.write(symbol);
-    this.emitVariable(node.init, init.arguments[index]);
-    index++;
-  };
-
-}
-
-export function emitBinary(ast) {
-
-  if (ast.kind === Type.BinaryExpression) {
-    let op = getLabelByNumber(ast.operator);
-    /** Custom operator call */
-    if (op in this.operators) {
-      this.emitCustomOperator(ast, op);
-    /** Default binary expr */
-    } else {
-      if (ast.isParenthised) this.write("(");
-      this.emitStatement(ast.left);
-      op = op === "==" ? "===" : op === "!=" ? "!==" : op;
-      this.write(` ${op} `);
-      this.emitStatement(ast.right);
-      if (ast.isParenthised) this.write(")");
-    }
-  }
-  else if (ast.kind === Type.Literal) {
-    this.emitLiteral(ast);
-  }
-
-}
-
-export function emitCustomOperator(ast, op) {
-
-  this.write(`__OP["${op}"]`);
-  this.write("(");
-  this.emitStatement(ast.left);
-  this.write(", ");
-  this.emitStatement(ast.right);
-  this.write(")");
-
-}
-
-export function emitLiteral(ast) {
-
-  if (ast.init) ast = ast.init;
-
-  if (ast.isGlobal) {
-    this.write("__global.");
-  }
-
-  let name = this.isPureType(ast) ? getNameByLabel(ast.type) : ast.value || ast.name;
-
-  let resolve = this.scope.get(ast.value);
-
-  if (this.isPureType(ast)) {
-    if (ast.type === TT.SELF) {
-      this.write("this");
-    } else {
-      this.write(getLabelByNumber(TT[name]));
-    }
-  } else {
-    this.write(ast.value || ast.name);
-  }
-
-  if (resolve && resolve.isLaterPointer) {
-    if (ast.isPointer === void 0) {
-      this.write(".value");
-    }
-  } else {
-    resolve = this.scope.get(ast.value);
-    if (!ast.isReference && resolve && resolve.isReference) {
-      this.write(".value");
-    }
-  }
-
-}
-
-export function emitFunction(ast, allowOP, noKeyword) {
-
-  if (!allowOP && ast.name in this.operators) {
-    return void 0;
-  }
-
-  this.scope = ast.context;
-
-  if (!noKeyword) {
-    this.write("function ");
-  }
-
-  if (ast.isStatic) {
-    this.write("static ");
-  }
-
-  if (!allowOP) {
-    this.write(ast.name);
-  }
-
-  this.write("(");
-  this.emitArguments(ast.arguments);
-  this.write(")");
-
-  this.emitBlock(ast.body);
-
-  this.popScope();
-
-}
-
-export function emitReturn(ast) {
-
-  this.write("return ");
-
-  this.emitStatement(ast.argument);
 
 }

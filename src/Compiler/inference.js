@@ -7,10 +7,10 @@ import {
 import Node from "../nodes";
 
 import {
+  isBoolean,
   getNameByLabel,
   getLabelByNumber,
-  getNumericType,
-  isBoolean
+  getNumericType
 } from "../utils";
 
 /**
@@ -79,7 +79,7 @@ export function inferenceTernaryExpression(node) {
     throw new Error(`Ternary expression has mismatching types ${a} and ${b}`);
   }
 
-  return (consequent || alternate);
+  return (consequent);
 
 }
 
@@ -103,7 +103,7 @@ export function inferenceMemberExpression(node) {
   let left = this.inferenceExpression(node.object);
   let right = this.inferenceExpression(node.property);
 
-  return (left || right);
+  return (right);
 
 }
 
@@ -113,9 +113,21 @@ export function inferenceMemberExpression(node) {
  */
 export function inferenceCallExpression(node) {
 
-  let type = this.inferenceExpression(node.callee);
+  let func = null;
+  let type = null;
 
-  this.inferenceExpression(node.arguments);
+  // Resolve function type
+  if (func = this.scope.get(node.callee.raw)) {
+    if (func.type.kind === Type.TypeAnnotation) {
+      type = func.type.type;
+    } else {
+      throw new Error(`Function ${func.name} resolves invalid type!`);
+    }
+  } else {
+    //console.error(node);
+  }
+
+  this.inferenceLiteral(node.callee);
 
   return (type);
 
@@ -127,25 +139,28 @@ export function inferenceCallExpression(node) {
  */
 export function inferenceBinaryExpression(node) {
 
+  // Binary expression
   if (node.left && node.right) {
     let left = this.inferenceExpression(node.left);
     let right = this.inferenceExpression(node.right);
     return (left || right);
-  } else {
-    if (node.kind === Type.Literal) {
-      if (node.type === Token.NumericLiteral) {
-        return (
-          TT[getNumericType(Number(node.raw))]
-        );
-      }
-      if (node.type === Token.Identifier) {
-        return (
-          this.inferenceExpression(node)
-        );
-      }
-    }
-    return (node);
   }
+
+  // Literal
+  if (node.kind === Type.Literal) {
+    if (node.type === Token.NumericLiteral) {
+      return (
+        TT[getNumericType(Number(node.raw))]
+      );
+    }
+    if (node.type === Token.Identifier) {
+      return (
+        this.inferenceExpression(node)
+      );
+    }
+  }
+
+  return (node);
 
 }
 
@@ -165,30 +180,14 @@ export function inferenceLiteral(node) {
     if (resolved && resolved.kind === Type.VariableDeclarement) {
       resolved.isLaterPointer = true;
     } else {
-      throw new Error(`Can't resolve ${node.value} declarement!`);
+      throw new Error(`Can't resolve ${node.value} declaration!`);
     }
   }
 
   if (resolved && resolved.type) {
     return (resolved.type);
   } else {
-    this.globalCheck(node);
     return (TT[getNumericType(Number(node.raw))]);
-  }
-
-}
-
-export function globalCheck(node) {
-
-  if (node.kind === Type.MemberExpression) {
-    if (this.global.hasOwnProperty(node.object.value)) {
-      node.object.isGlobal = true;
-    }
-  }
-  else if (node.kind === Type.Literal) {
-    if (this.global.hasOwnProperty(node.value)) {
-      node.isGlobal = true;
-    }
   }
 
 }

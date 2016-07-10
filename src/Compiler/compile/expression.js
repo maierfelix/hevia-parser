@@ -27,6 +27,17 @@ export function compileExpression(node) {
 /**
  * @param {Node} node
  */
+export function compileMemberExpression(node) {
+
+  this.inferenceExpression(node);
+
+}
+
+/**
+ * @param {Node} node
+ */
 export function compileCallExpression(node) {
+
+  this.inferenceExpression(node);
 
 }

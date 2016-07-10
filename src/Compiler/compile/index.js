@@ -17,6 +17,7 @@ import {
 export function compileProgram(node) {
   this.pushScope(node);
   this.compileBlock(node);
+  this.popScope();
 }
 
 /**
@@ -36,6 +37,10 @@ export function compileBlock(node) {
 export function compileStatement(node) {
 
   switch (node.kind) {
+    /** Comment */
+    case Type.Comment:
+      this.compileComment(node);
+    break;
     /** Loop statement */
     case Type.ForStatement:
     case Type.WhileStatement:
@@ -44,10 +49,7 @@ export function compileStatement(node) {
     break;
     /** Branch statement */
     case Type.IfStatement:
-    case Type.GuardStatement:
-    case Type.SwitchStatement:
-    case Type.PseudoProperty:
-      //console.log(node);
+      this.compileIfStatement(node);
     break;
     /** Defer statement */
     case Type.DeferStatement:
@@ -55,7 +57,7 @@ export function compileStatement(node) {
     break;
     /** Return statement */
     case Type.ReturnStatement:
-      //console.log(node);
+      this.compileStatement(node.argument);
     break;
     /** Do statement */
     case Type.DoStatement:
@@ -76,10 +78,29 @@ export function compileStatement(node) {
     case Type.CallExpression:
       this.compileExpression(node);
     break;
+    case Type.MemberExpression:
+      this.compileMemberExpression(node);
+    break;
     /** Expression statement */
     default:
       //console.log(node);
     break;
+  };
+
+}
+
+/**
+ * @param {Node} node
+ */
+export function compileComment(node) {
+
+  let arg = null;
+
+  for (let key in node.arguments) {
+    arg = node.arguments[key];
+    if (arg in this.settings) {
+      this.settings[arg] = true;
+    }
   };
 
 }

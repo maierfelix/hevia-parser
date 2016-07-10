@@ -6,7 +6,6 @@ import Scope from "../scope";
 
 import * as pack from "./lang";
 import * as inference from "./inference";
-import * as globals from "../Environment/global";
 
 import * as compile from "./compile";
 import * as statement from "./compile/statement";
@@ -26,7 +25,7 @@ export default class Compiler {
      * Scope
      * @type {Scope}
      */
-    this.scope = null;
+    this.scope = void 0;
 
     /**
      * Extensions
@@ -41,24 +40,28 @@ export default class Compiler {
     this.operators = {};
 
     /**
-     * Global objects
-     * @type {Object}
-     */
-    this.global = globals;
-
-    /**
      * Compiled output
      * @type {String}
      */
     this.output = "";
 
+    /**
+     * Compilation settings
+     * @type {Object}
+     */
+    this.settings = {
+      /**
+       * Global ctx =^ window, so
+       * things like Math.pow work
+       * @type {Boolean}
+       */
+      BIND_JS_CTX: false
+    };
+
   }
 
   reset() {
-    this.scope = void 0;
     this.output = "";
-    this.operators = {};
-    this.extensions = {};
   }
 
   /** 
@@ -103,12 +106,15 @@ export default class Compiler {
    * @return {String}
    */
   compile(ast, lang) {
+    // Save default settings
+    let bckp = JSON.stringify(this.settings);
     this.reset();
-    this.scope = void 0;
     this.pushScope(ast.body);
     this.compileProgram(ast.body);
     this.initLanguage(lang);
     this.emitProgram(ast.body);
+    // Restore default settings
+    this.settings = JSON.parse(bckp);
     return (this.output);
   }
 
@@ -117,13 +123,17 @@ export default class Compiler {
    */
   initLanguage(lang) {
 
+    let lng = void 0;
+
     switch (lang) {
       case "JS":
-        lang = "JavaScript";
-        inherit(Compiler, pack.JavaScript);
+        lng = "JavaScript";
+        for (let key in pack.JavaScript) {
+          inherit(Compiler, pack.JavaScript[key]);
+        };
       break;
       case "JAVA":
-        lang = "Java";
+        lng = "Java";
         inherit(Compiler, pack.Java);
       break;
       default:
@@ -131,7 +141,7 @@ export default class Compiler {
       break;
     }
 
-    //console.log(`Compiling to ${lang}`);
+    //console.log(`Compiling to ${lng}`);
 
   }
 
