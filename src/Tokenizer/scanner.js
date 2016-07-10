@@ -83,14 +83,14 @@ function octalToDecimal(ch) {
 
 // ECMA-262 11.2 White Space
 
-function isWhiteSpace(ch) {
+export function isWhiteSpace(ch) {
   return (ch === 0x20) || (ch === 0x09) || (ch === 0x0B) || (ch === 0x0C) || (ch === 0xA0) ||
     (ch >= 0x1680 && [0x1680, 0x180E, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x202F, 0x205F, 0x3000, 0xFEFF].indexOf(ch) >= 0);
 }
 
 // ECMA-262 11.3 Line Terminators
 
-function isLineTerminator(ch) {
+export function isLineTerminator(ch) {
   return (ch === 0x0A) || (ch === 0x0D) || (ch === 0x2028) || (ch === 0x2029);
 }
 
@@ -1064,6 +1064,8 @@ function tokenize(code, options, delegate) {
   extra.tokenValues = [];
   extra.tokenize = true;
   extra.delegate = delegate;
+
+  options.comment = true;
 
   // The following two fields are necessary to compute the Regex tokens.
   extra.openParenToken = -1;
