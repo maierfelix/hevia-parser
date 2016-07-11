@@ -26,4 +26,8 @@ func test() -> Void {
   );
 }
 
+func clone(obj) {
+  return (JSON.parse(JSON.stringify(obj)));
+}
+
 `;
