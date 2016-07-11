@@ -50,7 +50,7 @@ const setup = () => {
   let ast = parse(tokens);
   console.log(ast);
 
-  return (compiler.compile(ast, "JS"));
+  return (generate(ast, "JS"));
 
 };
 

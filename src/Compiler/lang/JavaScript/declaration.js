@@ -37,18 +37,33 @@ export function emitVariableDeclaration(node) {
 
   let index = 0;
   for (let key of node.declarations) {
-    let init = node.init[index] || node.init;
+    let init = node.init ? node.init[index] : node.init;
     let symbol = getNameByLabel(node.symbol).toLowerCase() + " ";
     if (key.kind === Type.ParameterExpression) {
       this.emitMultipleVariable(key, init, symbol);
     } else {
-      this.write(symbol);
+      if (init) {
+        this.write(symbol);
+      } else {
+        this.write("let ");
+      }
       if (key.kind === Type.Parameter) {
         this.emitStatement(key);
-        this.write("=");
-        this.emitStatement(init);
+        if (init) {
+          this.write("=");
+          this.emitStatement(init);
+        }
         this.write(";");
       } else {
+        if (
+          node.declarations.length <= 1 &&
+          node.init.length > node.declarations.length
+        ) {
+          this.write(key.name || key.value);
+          this.write("=");
+          this.emitTuple(node.init);
+          break;
+        }
         this.emitVariable(key, init);
       }
     }
@@ -95,7 +110,9 @@ export function emitFunction(node) {
   this.emitArguments(node.arguments);
   this.write(")");
 
+  this.returnTuple = node.type instanceof Array;
   this.emitBlock(node.body);
+  this.returnTuple = false;
 
   this.popScope();
 
@@ -108,6 +125,28 @@ export function emitReturn(node) {
 
   this.write("return ");
 
-  this.emitStatement(node.argument);
+  if (this.returnTuple && node.argument instanceof Array) {
+    this.emitTuple(node.argument);
+  } else {
+    this.emitStatement(node.argument);
+  }
+
+}
+
+/**
+ * @param {Array} node
+ */
+export function emitTuple(args) {
+
+  let ii = 0;
+  let length = args.length;
+
+  this.write("({\n");
+  for (;ii < length; ++ii) {
+    this.write(`\t${ii}:`);
+    this.emitStatement(args[ii]);
+    if (ii + 1 < length) this.write(",\n");
+  };
+  this.write("\n})");
 
 }

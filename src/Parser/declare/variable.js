@@ -45,7 +45,7 @@ export function parseVariable(node) {
   // Expression
   } else {
     if (this.eat(TT.ASSIGN)) {
-      if (this.peek(TT.LPAREN) && node.declarations.length > 1) {
+      if (this.peek(TT.LPAREN)) {
         node.init = this.parseArguments();
       } else {
         node.init = this.parseStatement();

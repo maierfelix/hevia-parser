@@ -76,25 +76,25 @@ export function emitOperator(operator) {
  */
 export function emitMember(node) {
 
-  if (node.object.kind === Type.Literal) {
-    this.emitLiteral(node.object);
-  } else {
-    this.emitStatement(node.object);
+  let isComputed = node.isComputed;
+
+  this.emitStatement(node.object);
+
+  // Period followed by number is invalid in js,
+  // but write [] instead of . is valid
+  if (node.property.type === Token.NumericLiteral) {
+    isComputed = true;
   }
 
-  if (node.isComputed) {
+  if (isComputed) {
     this.write("[");
   } else {
     this.write(".");
   }
 
-  if (node.property.kind === Type.Literal) {
-    this.emitLiteral(node.property);
-  } else {
-    this.emitStatement(node.property);
-  }
+  this.emitStatement(node.property);
 
-  if (node.isComputed) {
+  if (isComputed) {
     this.write("]");
   }
 

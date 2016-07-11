@@ -87,10 +87,11 @@ export default class Scope {
   /**
    * Set sth into table
    * @param {Node} node
+   * @param {String} name
    * @return {Boolean}
    */
-  register(node) {
-    let name = this.getName(node);
+  register(node, name) {
+    name = name || this.getName(node);
     if (name) {
       if (this.parent !== void 0) {
         //console.log(`Registered ${name}->${this.getName(this.scope)}:${getNameByLabel(this.scope.kind)}`);

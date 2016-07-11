@@ -72,6 +72,7 @@ let ii = 0;
   Label[Label["NullLiteral"] = ++ii] = "NullLiteral";
   Label[Label["StringLiteral"] = ++ii] = "StringLiteral";
   Label[Label["NumericLiteral"] = ++ii] = "NumericLiteral";
+  Label[Label["Tuple"] = ++ii] = "Tuple";
 
 })(Token);
 

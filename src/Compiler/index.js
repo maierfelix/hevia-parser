@@ -148,7 +148,7 @@ export default class Compiler {
   /**
    * Check if the passed in string
    * can be used as a variable head
-   * @param  {String} str
+   * @param {String} str
    * @return {Boolean}
    */
   validName(str) {
@@ -159,6 +159,37 @@ export default class Compiler {
       return (false);
     }
     return (true);
+  }
+
+  /**
+   * @param {String} str
+   * @return {Boolean}
+   */
+  isJSOperator(str) {
+    switch (type) {
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+      case "%":
+      case "=":
+      case "+=":
+      case "-=":
+      case "*=":
+      case "/=":
+      case "%=":
+      case "===":
+      case "!==":
+      case "==":
+      case "!=":
+      case ">":
+      case "<":
+      case ">=":
+      case "<=":
+        return (true);
+      break;
+    };
+    return (false);
   }
 
 }

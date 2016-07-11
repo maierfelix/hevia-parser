@@ -120,7 +120,12 @@ export function inferenceCallExpression(node) {
   if (func = this.scope.get(node.callee.raw)) {
     if (func.type.kind === Type.TypeAnnotation) {
       type = func.type.type;
-    } else {
+    }
+    // Returns tuple
+    else if (func.type instanceof Array) {
+      type = Token.Tuple;
+    }
+    else {
       throw new Error(`Function ${func.name} resolves invalid type!`);
     }
   } else {
@@ -176,8 +181,21 @@ export function inferenceLiteral(node) {
 
   let resolved = this.scope.get(node.value);
 
+  if (resolved) {
+    if (resolved.kind === Type.VariableDeclaration) {
+      // Tuple
+      if (
+        resolved.declarations.length <= 1 &&
+        resolved.init.length > resolved.declarations.length
+      ) {
+        node.isTupleReference = true;
+        return (Token.Tuple);
+      }
+    }
+  }
+
   if (node.isPointer) {
-    if (resolved && resolved.kind === Type.VariableDeclarement) {
+    if (resolved && resolved.kind === Type.VariableDeclaration) {
       resolved.isLaterPointer = true;
     } else {
       throw new Error(`Can't resolve ${node.value} declaration!`);

@@ -914,6 +914,12 @@ function advance() {
 
   if (isIdentifierStart(cp)) {
     token = scanIdentifier();
+    // Tuple period subscript
+    /*if (source.charCodeAt(index) === 0x2E) {
+      if (isDecimalDigit(source.charCodeAt(index + 1))) {
+        console.log(token);
+      }
+    }*/
     return token;
   }
 
@@ -931,6 +937,10 @@ function advance() {
   // to check the next character.
   if (cp === 0x2E) {
     if (isDecimalDigit(source.charCodeAt(index + 1))) {
+      // Example: a.1
+      if (extra.tokens[extra.tokens.length - 1].name === Token.Identifier) {
+        return scanPunctuator();
+      }
       return scanNumericLiteral();
     }
     return scanPunctuator();

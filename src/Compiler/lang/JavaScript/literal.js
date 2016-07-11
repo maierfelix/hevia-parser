@@ -26,6 +26,10 @@ export function emitLiteral(node) {
 
   let resolve = this.scope.get(node.value);
 
+  if (node.isTupleReference) {
+    this.write("clone(");
+  }
+
   if (this.isPureType(node)) {
     if (node.type === TT.SELF) {
       this.write("this");
@@ -49,6 +53,10 @@ export function emitLiteral(node) {
     if (!node.isReference && resolve && resolve.isReference) {
       this.write(".value");
     }
+  }
+
+  if (node.isTupleReference) {
+    this.write(")");
   }
 
 }
