@@ -53,6 +53,7 @@ export function parseVariable(node) {
     }
   }
 
+  // Unify, if variable is block expr
   if (node.init && !node.init.length) {
     node.init = [node.init];
   }

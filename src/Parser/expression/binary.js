@@ -36,7 +36,7 @@ export function parseBinaryExpression(index) {
     node.operator = TT[state.op];
     this.next();
     node.left = left;
-    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseAtom(this.parseLiteral());
+    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
     node.right = tmp;
     node.isParenthised = this.peek(TT.RPAREN);
     left = node;
@@ -46,6 +46,12 @@ export function parseBinaryExpression(index) {
   if (state === void 0 && this.current !== void 0) {
     if (this.isPostfixOperator(this.current)) {
       return (this.parseUnaryExpression(left));
+    }
+    else if (this.eat(TT.CONDITIONAL)) {
+      left.isOptional = true;
+    }
+    else if (this.eat(TT.NOT)) {
+      left.isUnwrap = true;
     }
   }
 

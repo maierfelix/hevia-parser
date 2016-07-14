@@ -48,12 +48,12 @@ export default class Scope {
    * @param  {String} name
    * @return {Node}
    */
-  get(name) {
+  getLocal(name) {
     if (this.table[name] !== void 0) {
       return (this.table[name]);
     } else {
       if (this.parent !== void 0) {
-        return (this.parent.get(name));
+        return (this.parent.getLocal(name));
       }
     }
   }

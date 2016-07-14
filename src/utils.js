@@ -110,6 +110,32 @@ export function isBoolean(node) {
 }
 
 /**
+ * @param {String} value
+ * @return {Boolean}
+ */
+export function isNativeType(value) {
+  switch (value) {
+    case "Void":
+    case "Int":
+    case "Int8":
+    case "Uint8":
+    case "Int32":
+    case "Int64":
+    case "Uint64":
+    case "Double":
+    case "Float":
+    case "Boolean":
+    case "String":
+    case "Character":
+      return (true);
+    break;
+    default:
+      return (false);
+    break;
+  };
+}
+
+/**
  * @param  {Number} n
  * @return {String}
  */

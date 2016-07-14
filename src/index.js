@@ -48,7 +48,6 @@ const setup = () => {
 
   let tokens = tokenize(global);
   let ast = parse(tokens);
-  console.log(ast);
 
   return (generate(ast, "JS"));
 

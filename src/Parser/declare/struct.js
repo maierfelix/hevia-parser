@@ -23,9 +23,10 @@ export function parseStruct() {
     node.extend = this.parseCommaSeperatedValues() || [];
   }
 
-  this.expect(TT.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(TT.RBRACE);
+  if (this.eat(TT.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(TT.RBRACE);
+  }
 
   return (node);
 

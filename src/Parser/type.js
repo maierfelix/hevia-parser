@@ -22,14 +22,10 @@ export function parseStrictType(base) {
   if (this.eat(TT.COLON)) {
     isInout = this.eat(TT.INOUT);
     node.init = base;
-    if (this.isNativeType(this.current.name)) {
-      node.argument = this.parseType();
-    } else {
-      node.argument = this.parseExpressionStatement();
-    }
+    node.argument = this.parseType();
   }
   else if (this.eat(TT.ARROW)) {
-    // func () -> ()
+    // func () -> (Tuple)
     if (this.peek(TT.LPAREN)) {
       node = this.parseExpressionStatement();
     // func () -> Type
@@ -54,49 +50,15 @@ export function parseStrictType(base) {
  */
 export function parseType() {
 
-  let node = new Node.TypeAnnotation();
-
-  node.type = this.current.name;
-
-  this.next();
+  let node = this.parseLiteral();
 
   if (this.eat(TT.CONDITIONAL)) {
     node.isOptional = true;
   }
-  else if (
-    this.current !== void 0 &&
-    this.current.value === "!"
-  ) {
+  else if (this.eat(TT.NOT)) {
     node.isUnwrap = true;
-    this.next();
   }
 
   return (node);
 
-}
-
-/**
- * @param {Number}  type
- * @return {Boolean}
- */
-export function isNativeType(type) {
-  switch (type) {
-    case TT.VOID:
-    case TT.INT:
-    case TT.INT8:
-    case TT.UINT8:
-    case TT.INT32:
-    case TT.INT64:
-    case TT.UINT64:
-    case TT.DOUBLE:
-    case TT.FLOAT:
-    case TT.BOOLEAN:
-    case TT.STRING:
-    case TT.CHARACTER:
-      return (true);
-    break;
-    default:
-      return (false);
-    break;
-  };
 }

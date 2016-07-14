@@ -54,19 +54,15 @@ export function parseMemberExpression(base) {
   this.next();
 
   node.object = base;
+  node.property = node.isComputed ? this.parseExpressionStatement() : this.parseLiteral();
 
   // Be careful with []
-  if (node.isComputed) {
-    node.property = this.parseExpressionStatement();
-    if (this.eat(TT.COMMA)) {
-      let args = this.parseCommaSeperatedValues();
-      args.unshift(node.property);
-      let tmp = new Node.ArrayExpression();
-      tmp.argument = args;
-      node.property = tmp;
-    }
-  } else {
-    node.property = this.parseExpressionStatement();
+  if (node.isComputed && this.eat(TT.COMMA)) {
+    let args = this.parseCommaSeperatedValues();
+    args.unshift(node.property);
+    let tmp = new Node.ArrayExpression();
+    tmp.argument = args;
+    node.property = tmp;
   }
 
   if (node.isComputed) {

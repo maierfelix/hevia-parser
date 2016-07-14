@@ -35,12 +35,35 @@ export default class Node {
     );
   }
 
+  static get Closure() {
+    return (
+      class Closure {
+        constructor() {
+          this.kind = Type.Closure;
+          this.body = [];
+        }
+      }
+    );
+  }
+
   static get Comment() {
     return (
       class Comment {
         constructor() {
           this.kind = Type.Comment;
           this.arguments = [];
+        }
+      }
+    );
+  }
+
+  static get TypeAliasDeclaration() {
+    return (
+      class TypeAliasDeclaration extends AccessControl {
+        constructor() {
+          super(null);
+          this.kind = Type.TypeAliasDeclaration;
+          this.argument = null;
         }
       }
     );
@@ -119,8 +142,9 @@ export default class Node {
 
   static get StructureDeclaration() {
     return (
-      class StructureDeclaration {
+      class StructureDeclaration extends AccessControl {
         constructor() {
+          super(null);
           this.kind = Type.StructureDeclaration;
           this.name = null;
           this.extend = [];
@@ -132,8 +156,9 @@ export default class Node {
 
   static get ProtocolDeclaration() {
     return (
-      class ProtocolDeclaration {
+      class ProtocolDeclaration extends AccessControl {
         constructor() {
+          super(null);
           this.kind = Type.ProtocolDeclaration;
           this.name = null;
           this.extend = [];
@@ -145,8 +170,9 @@ export default class Node {
 
   static get ExtensionDeclaration() {
     return (
-      class ExtensionDeclaration {
+      class ExtensionDeclaration extends AccessControl {
         constructor() {
+          super(null);
           this.kind = Type.ExtensionDeclaration;
           this.argument = null;
           this.body = [];

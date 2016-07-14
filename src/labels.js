@@ -45,6 +45,7 @@ let ii = 0;
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
   Label[Label["InitializerDeclaration"] = ++ii] = "InitializerDeclaration";
+  Label[Label["TypeAliasDeclaration"] = ++ii] = "TypeAliasDeclaration";
   Label[Label["ImportDeclaration"] = ++ii] = "ImportDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
@@ -53,6 +54,8 @@ let ii = 0;
   Label[Label["TypeCast"] = ++ii] = "TypeCast";
   Label[Label["Identifier"] = ++ii] = "Identifier";
   Label[Label["Literal"] = ++ii] = "Literal";
+
+  Label[Label["Closure"] = ++ii] = "Closure";
 
   Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
   Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
@@ -156,19 +159,6 @@ let ii = 0;
   Label[Label["associativity"] = ++ii] = "ASSOCIATIVITY";
   /** Precedence clause */
   Label[Label["precedence"] = ++ii] = "PRECEDENCE";
-  /** Types */
-  Label[Label["Void"] = ++ii] = "VOID";
-  Label[Label["Int"] = ++ii] = "INT";
-  Label[Label["Int8"] = ++ii] = "INT8";
-  Label[Label["UInt8"] = ++ii] = "UINT8";
-  Label[Label["Int32"] = ++ii] = "INT32";
-  Label[Label["Int64"] = ++ii] = "INT64";
-  Label[Label["UInt64"] = ++ii] = "UINT64";
-  Label[Label["Double"] = ++ii] = "DOUBLE";
-  Label[Label["Float"] = ++ii] = "FLOAT";
-  Label[Label["Bool"] = ++ii] = "BOOLEAN";
-  Label[Label["String"] = ++ii] = "STRING";
-  Label[Label["Character"] = ++ii] = "CHARACTER";
 
 })(TokenList);
 

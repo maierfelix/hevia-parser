@@ -22,6 +22,8 @@ import * as switches from "./branch/switch";
 /** Globals */
 import * as loops from "./loop";
 import * as types from "./type";
+import * as accesses from "./access";
+import * as closures from "./closure";
 import * as comments from "./comment";
 import * as statements from "./statement";
 
@@ -34,6 +36,7 @@ import * as protocols from "./declare/protocol";
 import * as variables from "./declare/variable";
 import * as operators from "./declare/operator";
 import * as extensions from "./declare/extension";
+import * as typealiases from "./declare/typealias";
 import * as declarations from "./declare";
 
 /**
@@ -99,6 +102,8 @@ inherit(Parser, loops);
 inherit(Parser, types);
 inherit(Parser, branches);
 inherit(Parser, comments);
+inherit(Parser, accesses);
+inherit(Parser, closures);
 inherit(Parser, statements);
 
 inherit(Parser, imports);
@@ -109,4 +114,5 @@ inherit(Parser, functions);
 inherit(Parser, variables);
 inherit(Parser, operators);
 inherit(Parser, extensions);
+inherit(Parser, typealiases);
 inherit(Parser, declarations);

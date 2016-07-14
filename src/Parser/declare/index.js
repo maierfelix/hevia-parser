@@ -40,7 +40,7 @@ export function parseDeclarationStatement() {
       node = this.parseVariableDeclaration();
     break;
     case TT.TYPEALIAS:
-      //
+      node = this.parseTypeAlias();
     break;
     case TT.FUNCTION:
       node = this.parseFunction();
@@ -66,7 +66,7 @@ export function parseDeclarationStatement() {
       node = this.parseOperator();
     break;
     case TT.INIT:
-      node = this.parseInitializerDeclaration();
+      node = this.parseInitializer();
     break;
   };
 
@@ -79,17 +79,25 @@ export function parseDeclarationStatement() {
 /*
  * @return {Node}
  */
-export function parseInitializerDeclaration() {
+export function parseInitializer() {
 
   let node = new Node.InitializerDeclaration();
 
   this.expect(TT.INIT);
 
+  if (this.eat(TT.CONDITIONAL)) {
+    node.isOptional = true;
+  }
+  else if (this.eat(TT.NOT)) {
+    node.isUnwrap = true;
+  }
+
   node.arguments = this.parseArguments();
 
-  this.expect(TT.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(TT.RBRACE);
+  if (this.eat(TT.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(TT.RBRACE);
+  }
 
   return (node);
 

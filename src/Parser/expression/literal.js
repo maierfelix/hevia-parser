@@ -21,8 +21,7 @@ export function parseLiteral() {
     return this.parseUnaryExpression(void 0);
   }
 
-  if (this.peek(TT.LPAREN)) {
-    this.expect(TT.LPAREN);
+  if (this.eat(TT.LPAREN)) {
     let tmp = this.parseExpressionStatement();
     // Seems like a standalone operator
     if (tmp === null) {
@@ -66,6 +65,16 @@ export function parseLiteral() {
       ) {
         node.argument.isExplicit = isExplicit;
       }
+    }
+  }
+
+  // Shorthand
+  if (
+    node.value !== void 0 &&
+    node.value !== null
+  ) {
+    if (node.value[0] === "$") {
+      node.isShorthand = true;
     }
   }
 
