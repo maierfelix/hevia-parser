@@ -15,7 +15,7 @@ export function parseIfStatement() {
 
   if (this.eat(TT.IF)) {
     this.eat(TT.LPAREN);
-    node.condition = this.parseExpressionStatement();
+    node.condition = this.parseStatement();
     this.eat(TT.RPAREN);
   }
 

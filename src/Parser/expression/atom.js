@@ -33,6 +33,10 @@ export function parseAtom(base) {
     else if (this.peek(TT.LPAREN)) {
       base = this.parseCallExpression(base);
     }
+    /** Closure expression */
+    else if (this.peek(TT.LBRACE)) {
+      base = this.parseClosureExpression(base);
+    }
     else {
       break;
     }

@@ -51,12 +51,6 @@ export function parseExpressionStatement() {
     break;
   };
 
-  // Enum access?
-  if (this.eat(TT.PERIOD)) {
-    node = this.parseLiteral();
-    node.isEnumLink = true;
-  }
-
   if (this.peek(TT.CONDITIONAL)) {
     node = this.parseTernaryExpression(node);
   }

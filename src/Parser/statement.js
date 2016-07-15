@@ -72,15 +72,15 @@ export function parseStatement() {
     case TT.CLASS:
       node = this.parseClass();
     break;
+    /** Closure */
+    case TT.LBRACE:
+      node = this.parseClosureExpression(null);
+    break;
     /** Access control */
     case TT.PUBLIC:
     case TT.PRIVATE:
     case TT.INTERNAL:
       node = this.parseAccessControl();
-    break;
-    /** Override */
-    case TT.OVERRIDE:
-      node = this.parseOverride();
     break;
     /** Final */
     case TT.FINAL:
@@ -89,9 +89,9 @@ export function parseStatement() {
     case TT.STATIC:
       node = this.parseStatic();
     break;
-    /** Closure */
-    case TT.LBRACE:
-    node = this.parseClosure();
+    /** Override */
+    case TT.OVERRIDE:
+      node = this.parseOverride();
     break;
     /** Expression statement */
     default:

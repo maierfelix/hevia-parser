@@ -10,6 +10,7 @@ import * as arrays from "./expression/array";
 import * as unaries from "./expression/unary";
 import * as binaries from "./expression/binary";
 import * as literals from "./expression/literal";
+import * as closures from "./expression/closure";
 import * as expressions from "./expression";
 
 /** Branches */
@@ -23,7 +24,6 @@ import * as switches from "./branch/switch";
 import * as loops from "./loop";
 import * as types from "./type";
 import * as accesses from "./access";
-import * as closures from "./closure";
 import * as comments from "./comment";
 import * as statements from "./statement";
 
@@ -90,6 +90,7 @@ inherit(Parser, arrays);
 inherit(Parser, unaries);
 inherit(Parser, binaries);
 inherit(Parser, literals);
+inherit(Parser, closures);
 inherit(Parser, expressions);
 
 inherit(Parser, guards);
@@ -103,7 +104,6 @@ inherit(Parser, types);
 inherit(Parser, branches);
 inherit(Parser, comments);
 inherit(Parser, accesses);
-inherit(Parser, closures);
 inherit(Parser, statements);
 
 inherit(Parser, imports);

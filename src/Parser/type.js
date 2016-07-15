@@ -50,7 +50,13 @@ export function parseStrictType(base) {
  */
 export function parseType() {
 
-  let node = this.parseLiteral();
+  let node = null;
+
+  if (this.peek(TT.LBRACK)) {
+    node = this.parseArrayExpression();
+  } else {
+    node = this.parseLiteral();
+  }
 
   if (this.eat(TT.CONDITIONAL)) {
     node.isOptional = true;

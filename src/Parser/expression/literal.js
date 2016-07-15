@@ -16,11 +16,19 @@ import {
  */
 export function parseLiteral() {
 
+  // Enum access
+  if (this.eat(TT.PERIOD)) {
+    node = this.parseLiteral();
+    node.isEnumLink = true;
+    return (node);
+  }
+
   // Unary pex expression
   if (this.isPrefixOperator(this.current)) {
     return this.parseUnaryExpression(void 0);
   }
 
+  // Call expression
   if (this.eat(TT.LPAREN)) {
     let tmp = this.parseExpressionStatement();
     // Seems like a standalone operator
@@ -75,6 +83,8 @@ export function parseLiteral() {
   ) {
     if (node.value[0] === "$") {
       node.isShorthand = true;
+      // Delete $ sign
+      node.value = node.value.slice(1);
     }
   }
 

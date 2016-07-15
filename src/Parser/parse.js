@@ -127,10 +127,16 @@ export function parseProgram() {
 export function parseBlock() {
 
   let node = new Node.BlockStatement();
+
+  let index = 0;
   let statement = null;
 
-  while ((statement = this.parseStatement()) !== null) {
-    node.body.push(statement);
+  for (;(statement = this.parseStatement()) !== null;++index) {
+    // Only allow parsing very first comment
+    if (
+      statement.kind !== Type.Comment ||
+      statement.kind === Type.Comment && index <= 0
+    ) node.body.push(statement);
     if (this.current === void 0) break;
   };
 

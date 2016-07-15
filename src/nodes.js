@@ -35,12 +35,15 @@ export default class Node {
     );
   }
 
-  static get Closure() {
+  static get ClosureExpression() {
     return (
-      class Closure {
+      class ClosureExpression {
         constructor() {
-          this.kind = Type.Closure;
+          this.kind = Type.ClosureExpression;
           this.body = [];
+          this.arguments = [];
+          this.type = null;
+          this.callee = null;
         }
       }
     );
@@ -59,9 +62,8 @@ export default class Node {
 
   static get TypeAliasDeclaration() {
     return (
-      class TypeAliasDeclaration extends AccessControl {
+      class TypeAliasDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.TypeAliasDeclaration;
           this.argument = null;
         }
@@ -128,9 +130,8 @@ export default class Node {
 
   static get ClassDeclaration() {
     return (
-      class ClassDeclaration extends AccessControl {
+      class ClassDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.ClassDeclaration;
           this.name = null;
           this.extend = [];
@@ -142,9 +143,8 @@ export default class Node {
 
   static get StructureDeclaration() {
     return (
-      class StructureDeclaration extends AccessControl {
+      class StructureDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.StructureDeclaration;
           this.name = null;
           this.extend = [];
@@ -156,9 +156,8 @@ export default class Node {
 
   static get ProtocolDeclaration() {
     return (
-      class ProtocolDeclaration extends AccessControl {
+      class ProtocolDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.ProtocolDeclaration;
           this.name = null;
           this.extend = [];
@@ -170,9 +169,8 @@ export default class Node {
 
   static get ExtensionDeclaration() {
     return (
-      class ExtensionDeclaration extends AccessControl {
+      class ExtensionDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.ExtensionDeclaration;
           this.argument = null;
           this.body = [];
@@ -306,9 +304,8 @@ export default class Node {
 
   static get FunctionDeclaration() {
     return (
-      class FunctionDeclaration extends AccessControl {
+      class FunctionDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.FunctionDeclaration;
           this.name = null;
           this.type = null;
@@ -403,9 +400,8 @@ export default class Node {
 
   static get VariableDeclaration() {
     return (
-      class VariableDeclaration extends AccessControl {
+      class VariableDeclaration {
         constructor() {
-          super(null);
           this.kind = Type.VariableDeclaration;
           this.symbol = null;
           this.declarations = [];

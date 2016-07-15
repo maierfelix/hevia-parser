@@ -36,6 +36,7 @@ let ii = 0;
   Label[Label["RepeatStatement"] = ++ii] = "RepeatStatement";
   Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
   Label[Label["ArrayExpression"] = ++ii] = "ArrayExpression";
+  Label[Label["ClosureExpression"] = ++ii] = "ClosureExpression";
 
   Label[Label["ExtensionDeclaration"] = ++ii] = "ExtensionDeclaration";
   Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
@@ -54,8 +55,6 @@ let ii = 0;
   Label[Label["TypeCast"] = ++ii] = "TypeCast";
   Label[Label["Identifier"] = ++ii] = "Identifier";
   Label[Label["Literal"] = ++ii] = "Literal";
-
-  Label[Label["Closure"] = ++ii] = "Closure";
 
   Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
   Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
