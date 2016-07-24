@@ -6,6 +6,10 @@ import {
 
 import Node from "../../nodes";
 
+import {
+  getNameByLabel
+} from "../../utils";
+
 /**
  * @return {Node}
  */
@@ -21,7 +25,7 @@ export function parseTypeAlias() {
 
   this.expect(TT.ASSIGN);
 
-  node.argument = this.parseExpressionStatement();
+  node.argument = this.parseStatement();
 
   return (node);
 

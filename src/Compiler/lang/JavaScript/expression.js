@@ -23,12 +23,21 @@ export function emitBinary(node) {
       this.emitCustomOperator(node, op);
     /** Default binary expr */
     } else {
-      if (node.isParenthised) this.write("(");
-      this.emitStatement(node.left);
+      // Turn into explicit comparison op
       op = op === "==" ? "===" : op === "!=" ? "!==" : op;
+      if (node.isNumericMember) {
+        this.write("[");
+        this.emitStatement(node.left);
+        this.write("]");
+      } else {
+        if (node.isParenthised) this.write("(");
+        this.emitStatement(node.left);
+      }
       this.write(op);
       this.emitStatement(node.right);
-      if (node.isParenthised) this.write(")");
+      if (!node.isNumericMember) {
+        if (node.isParenthised) this.write(")");
+      }
     }
   }
   else if (node.kind === Type.Literal) {
@@ -86,10 +95,18 @@ export function emitMember(node) {
     isComputed = true;
   }
 
-  if (isComputed) {
-    this.write("[");
+  if (
+    node.property.kind === Type.BinaryExpression &&
+    node.property.left.type === Token.NumericLiteral
+  ) {
+    // Node has a numeric member, example: a.0
+    node.property.isNumericMember = true;
   } else {
-    this.write(".");
+    if (isComputed) {
+      this.write("[");
+    } else {
+      this.write(".");
+    }
   }
 
   this.emitStatement(node.property);

@@ -7,6 +7,7 @@ import {
 import Node from "../../nodes";
 
 import {
+  isLiteral,
   getNameByLabel
 } from "../../utils";
 
@@ -18,20 +19,6 @@ export function parseExpressionStatement() {
   let node = null;
 
   switch (this.current.name) {
-    case TT.NULL:
-    case TT.LPAREN:
-    case TT.SELF:
-    case TT.BIT_AND:
-    case TT.UL:
-    case TT.TRUE:
-    case TT.FALSE:
-    case Token.Identifier:
-    case Token.NullLiteral:
-    case Token.StringLiteral:
-    case Token.NumericLiteral:
-    case Token.BooleanLiteral:
-      node = this.parseBinaryExpression(0);
-    break;
     /** Operator things */
     case TT.ASSOCIATIVITY:
       node = this.parseAssociativityExpression();
@@ -43,16 +30,27 @@ export function parseExpressionStatement() {
       node = this.parseAtom(this.parseArrayExpression());
     break;
     default:
+      if (isLiteral(this.current.name)) {
+        node = this.parseBinaryExpression(0);
+      }
       // Ups, expression starts with prefix operator
       // FIXME
-      if (this.isOperator(this.current.name)) {
+      else if (this.isOperator(this.current.name)) {
         node = this.parseBinaryExpression(0);
       }
     break;
   };
 
   if (this.peek(TT.CONDITIONAL)) {
-    node = this.parseTernaryExpression(node);
+    if (this.current.isTernary) {
+      node = this.parseTernaryExpression(node);
+    }
+    else {
+      if (node !== null) {
+        node.isOptional = true;
+        this.next();
+      }
+    }
   }
 
   return (node);

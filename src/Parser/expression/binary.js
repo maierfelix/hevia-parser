@@ -47,12 +47,6 @@ export function parseBinaryExpression(index) {
     if (this.isPostfixOperator(this.current)) {
       return (this.parseUnaryExpression(left));
     }
-    else if (this.eat(TT.CONDITIONAL)) {
-      left.isOptional = true;
-    }
-    else if (this.eat(TT.NOT)) {
-      left.isUnwrap = true;
-    }
   }
 
   return (left);

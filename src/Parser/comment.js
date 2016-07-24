@@ -76,14 +76,3 @@ export function parseBlockComment(str) {
   return (args);
 
 }
-
-/**
- * @return {Array}
- */
-export function parseLineComment(str) {
-
-  let args = [];
-
-  return (args);
-
-}

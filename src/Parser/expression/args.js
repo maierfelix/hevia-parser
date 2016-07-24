@@ -85,3 +85,23 @@ export function parseArguments(args) {
   return (argz);
 
 }
+
+/**
+ * @return {Array}
+ */
+export function parseMaybeArguments() {
+
+  let args = this.parseExpressionStatement();
+
+  // Turn non-parenthised args into array
+  if (!(args instanceof Array)) {
+    if (args !== null) {
+      args = [args];
+    } else {
+      args = [];
+    }
+  }
+
+  return (args);
+
+}

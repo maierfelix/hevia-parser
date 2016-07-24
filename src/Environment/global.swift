@@ -20,12 +20,6 @@ func expect(truth:Bool) -> Void {
   }
 }
 
-func test() -> Void {
-  return (
-    window.Math.pow()
-  );
-}
-
 func clone(obj) {
   return (JSON.parse(JSON.stringify(obj)));
 }

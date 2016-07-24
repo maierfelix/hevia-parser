@@ -37,15 +37,6 @@ export function compileVariableDeclaration(node) {
   let init = null;
   let label = null;
 
-  // Tuple
-  if (
-    node.declarations.length <= 1 &&
-    node.init.length > node.declarations.length
-  ) {
-    this.scope.register(node, node.declarations[0].value);
-    return void 0;
-  }
-
   for (let key of node.declarations) {
     label = key.kind === Type.Parameter ? key.init : key;
     init = node.init ? node.init[index] : null;
@@ -55,6 +46,13 @@ export function compileVariableDeclaration(node) {
       label.resolvedType = this.inferenceExpression(init);
     } else {
       label.resolvedType = key.argument.type;
+    }
+    // Tuple
+    if (
+      node.declarations.length <= 1 &&
+      node.init.length > node.declarations.length
+    ) {
+      label.resolvedType = Token.Tuple;
     }
   };
 

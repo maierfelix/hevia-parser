@@ -33,10 +33,6 @@ export function parseAtom(base) {
     else if (this.peek(TT.LPAREN)) {
       base = this.parseCallExpression(base);
     }
-    /** Closure expression */
-    else if (this.peek(TT.LBRACE)) {
-      base = this.parseClosureExpression(base);
-    }
     else {
       break;
     }
@@ -87,6 +83,11 @@ export function parseCallExpression(base) {
   node.callee = base;
   node.arguments = this.parseArguments();
 
+  // Trailing closure
+  if (this.peek(TT.LBRACE) && !this.inIfCondition) {
+    node.arguments.push(this.parseStatement());
+  }
+
   return (node);
 
 }
@@ -98,9 +99,9 @@ export function parseTernaryExpression(base) {
 
   let node  = new Node.TernaryExpression();
 
-  this.inTernary = true;
-
   node.condition = base;
+
+  this.inTernary = true;
 
   this.expect(TT.CONDITIONAL);
   node.consequent = this.parseExpressionStatement();

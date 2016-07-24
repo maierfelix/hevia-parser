@@ -27,18 +27,24 @@ export function parseStrictType(base) {
   else if (this.eat(TT.ARROW)) {
     // func () -> (Tuple)
     if (this.peek(TT.LPAREN)) {
-      node = this.parseExpressionStatement();
+      node = this.parseStatement();
     // func () -> Type
     } else {
       node = this.parseType();
     }
   }
 
-  if (
-    node.argument &&
-    node.argument.kind === Type.TypeAnnotation
-  ) {
-    node.argument.isReference = isInout;
+  // Catched a wild function parameter
+  // TODO: Support deepness
+  if (this.eat(TT.ARROW)) {
+    let tmp = new Node.FunctionExpression();
+    tmp.arguments = node.argument;
+    tmp.type = this.parseType();
+    node.argument = tmp;
+  }
+
+  if (isInout && node.kind === Type.Parameter) {
+    node.isReference = true;
   }
 
   return (node);
@@ -54,15 +60,12 @@ export function parseType() {
 
   if (this.peek(TT.LBRACK)) {
     node = this.parseArrayExpression();
-  } else {
+  }
+  else if (this.peek(TT.LPAREN)) {
+    node = this.parseArguments();
+  }
+  else {
     node = this.parseLiteral();
-  }
-
-  if (this.eat(TT.CONDITIONAL)) {
-    node.isOptional = true;
-  }
-  else if (this.eat(TT.NOT)) {
-    node.isUnwrap = true;
   }
 
   return (node);

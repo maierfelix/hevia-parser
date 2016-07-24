@@ -46,6 +46,12 @@ export default class Compiler {
     this.output = "";
 
     /**
+     * Last processed node
+     * @type {Node}
+     */
+    this.last = null;
+
+    /**
      * Compilation settings
      * @type {Object}
      */

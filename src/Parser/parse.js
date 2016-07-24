@@ -89,6 +89,8 @@ export function expect(kind) {
     if (this.current !== void 0) {
       let loc = this.current.loc;
       throw new Error(`Expected ${getNameByLabel(kind)} but got ${getNameByLabel(this.current.name)} in ${loc.start.line}:${loc.end.column}`);
+    } else {
+      throw new Error("Reached end!");
     }
     return (false);
   }
@@ -116,6 +118,20 @@ export function parseProgram() {
   if (this.current === void 0) return (node);
 
   node.body = this.parseBlock();
+
+  /**
+   * If very first comment
+   * doesn't contain compiler
+   * instructions -> delete it
+   */
+  if (node.body.body.length) {
+    let tmp = node.body.body[0];
+    if (tmp.kind === Type.Comment) {
+      if (!tmp.arguments.length) {
+        node.body.body.shift();
+      }
+    }
+  }
 
   return (node);
 

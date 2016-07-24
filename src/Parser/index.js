@@ -78,6 +78,12 @@ export default class Parser {
      */
     this.inTernary = false;
 
+    /**
+     * Inside if condition
+     * @type {Boolean}
+     */
+    this.inIfCondition = false;
+
   }
 
 }

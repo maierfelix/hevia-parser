@@ -72,10 +72,6 @@ export function parseStatement() {
     case TT.CLASS:
       node = this.parseClass();
     break;
-    /** Closure */
-    case TT.LBRACE:
-      node = this.parseClosureExpression(null);
-    break;
     /** Access control */
     case TT.PUBLIC:
     case TT.PRIVATE:
@@ -93,9 +89,13 @@ export function parseStatement() {
     case TT.OVERRIDE:
       node = this.parseOverride();
     break;
+    /** Closure */
+    case TT.LBRACE:
+      node = this.parseAtom(this.parseClosureExpression());
+    break;
     /** Expression statement */
     default:
-      node = this.parseExpressionStatement();
+      node = this.parseAtom(this.parseExpressionStatement());
     break;
   };
 

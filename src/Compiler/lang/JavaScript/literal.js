@@ -24,10 +24,12 @@ export function emitLiteral(node) {
 
   let name = this.isPureType(node) ? getNameByLabel(node.type) : node.value || node.name;
 
-  let resolve = this.scope.get(node.value);
+  let resolve = this.scope.getLocal(node.value);
 
-  if (node.isTupleReference) {
-    this.write("clone(");
+  let clone = resolve && resolve.cloneTuple;
+
+  if (resolve) {
+    //this.write("clone(");
   }
 
   if (this.isPureType(node)) {
@@ -49,13 +51,13 @@ export function emitLiteral(node) {
       this.write(".value");
     }
   } else {
-    resolve = this.scope.get(node.value);
+    resolve = this.scope.getLocal(node.value);
     if (!node.isReference && resolve && resolve.isReference) {
       this.write(".value");
     }
   }
 
-  if (node.isTupleReference) {
+  if (clone) {
     this.write(")");
   }
 

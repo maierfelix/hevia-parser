@@ -13,6 +13,7 @@ import {
 } from "../../utils";
 
 /**
+ * @param  {Node} base
  * @return {Node}
  */
 export function parseUnaryExpression(base) {

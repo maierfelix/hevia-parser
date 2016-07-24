@@ -43,14 +43,8 @@ export function parseVariable(node) {
     node.init = this.parseBlock();
     this.expect(TT.RBRACE);
   // Expression
-  } else {
-    if (this.eat(TT.ASSIGN)) {
-      if (this.peek(TT.LPAREN)) {
-        node.init = this.parseArguments();
-      } else {
-        node.init = this.parseStatement();
-      }
-    }
+  } else if (this.eat(TT.ASSIGN)) {
+    node.init = this.parseStatement();
   }
 
   // Unify, if variable is block expr

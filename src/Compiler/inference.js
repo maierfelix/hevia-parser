@@ -35,32 +35,44 @@ export function inferenceBlock(node) {
  */
 export function inferenceExpression(node) {
 
+  let result = null;
+
   switch (node.kind) {
     case Type.Literal:
-      return this.inferenceLiteral(node);
+      result = this.inferenceLiteral(node);
     break;
     case Type.BinaryExpression:
-      return this.inferenceBinaryExpression(node);
+      result = this.inferenceBinaryExpression(node);
     break;
     case Type.CallExpression:
-      return this.inferenceCallExpression(node);
+      result = this.inferenceCallExpression(node);
     break;
     case Type.MemberExpression:
-      return this.inferenceMemberExpression(node);
+      result = this.inferenceMemberExpression(node);
     break;
     case Type.ParameterExpression:
-      return this.inferenceParameterExpression(node);
+      result = this.inferenceParameterExpression(node);
     break;
     case Type.TernaryExpression:
-      return this.inferenceTernaryExpression(node);
+      result = this.inferenceTernaryExpression(node);
     break;
     case Type.Parameter:
-      return this.inferenceExpression(node.init);
+      result = this.inferenceExpression(node.init);
     break;
     case Type.ReturnStatement:
-      return this.inferenceExpression(node.argument);
+      result = this.inferenceExpression(node.argument);
+    break;
+    default:
+      // Tuple
+      if (node instanceof Array) {
+        result = Token.Tuple;
+      }
     break;
   };
+
+  this.last = node;
+
+  return (result);
 
 }
 
@@ -117,7 +129,7 @@ export function inferenceCallExpression(node) {
   let type = null;
 
   // Resolve function type
-  if (func = this.scope.get(node.callee.raw)) {
+  if (func = this.scope.getLocal(node.callee.raw)) {
     if (func.type.kind === Type.TypeAnnotation) {
       type = func.type.type;
     }
@@ -179,20 +191,7 @@ export function inferenceLiteral(node) {
     return (TT.BOOLEAN);
   }
 
-  let resolved = this.scope.get(node.value);
-
-  if (resolved) {
-    if (resolved.kind === Type.VariableDeclaration) {
-      // Tuple
-      if (
-        resolved.declarations.length <= 1 &&
-        resolved.init.length > resolved.declarations.length
-      ) {
-        node.isTupleReference = true;
-        return (Token.Tuple);
-      }
-    }
-  }
+  let resolved = this.scope.getLocal(node.value);
 
   if (node.isPointer) {
     if (resolved && resolved.kind === Type.VariableDeclaration) {

@@ -110,6 +110,30 @@ export function isBoolean(node) {
 }
 
 /**
+ * @param {Node}
+ * @return {Boolean}
+ */
+export function isLiteral(name) {
+  switch (name) {
+    case TT.NULL:
+    case TT.LPAREN:
+    case TT.SELF:
+    case TT.BIT_AND:
+    case TT.UL:
+    case TT.TRUE:
+    case TT.FALSE:
+    case Token.Identifier:
+    case Token.NullLiteral:
+    case Token.StringLiteral:
+    case Token.NumericLiteral:
+    case Token.BooleanLiteral:
+      return (true);
+    break;
+  };
+  return (false);
+}
+
+/**
  * @param {String} value
  * @return {Boolean}
  */

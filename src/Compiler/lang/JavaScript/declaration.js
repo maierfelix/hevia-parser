@@ -39,33 +39,20 @@ export function emitVariableDeclaration(node) {
   for (let key of node.declarations) {
     let init = node.init ? node.init[index] : node.init;
     let symbol = getNameByLabel(node.symbol).toLowerCase() + " ";
+    let name = key.value || key.init.value;
+    if (key.resolvedType === Token.Tuple) {
+      this.write(symbol);
+      this.write(name);
+      this.write("=");
+      this.emitTuple(init instanceof Array ? init : node.init);
+      index++;
+      continue;
+    }
     if (key.kind === Type.ParameterExpression) {
       this.emitMultipleVariable(key, init, symbol);
     } else {
-      if (init) {
-        this.write(symbol);
-      } else {
-        this.write("let ");
-      }
-      if (key.kind === Type.Parameter) {
-        this.emitStatement(key);
-        if (init) {
-          this.write("=");
-          this.emitStatement(init);
-        }
-        this.write(";");
-      } else {
-        if (
-          node.declarations.length <= 1 &&
-          node.init.length > node.declarations.length
-        ) {
-          this.write(key.name || key.value);
-          this.write("=");
-          this.emitTuple(node.init);
-          break;
-        }
-        this.emitVariable(key, init);
-      }
+      this.write(symbol);
+      this.emitVariable(key, init);
     }
     index++;
   };
@@ -77,7 +64,11 @@ export function emitVariableDeclaration(node) {
  */
 export function emitVariable(node, init) {
 
-  this.write(node.name || node.value);
+  if (node.kind === Type.Parameter) {
+    this.write(node.init.value);
+  } else {
+    this.write(node.name || node.value);
+  }
   this.write("=");
 
   this.emitStatement(init);
@@ -141,12 +132,12 @@ export function emitTuple(args) {
   let ii = 0;
   let length = args.length;
 
-  this.write("({\n");
+  this.write("{");
   for (;ii < length; ++ii) {
-    this.write(`\t${ii}:`);
+    this.write(`${ii}:`);
     this.emitStatement(args[ii]);
-    if (ii + 1 < length) this.write(",\n");
+    if (ii + 1 < length) this.write(",");
   };
-  this.write("\n})");
+  this.write("}\n");
 
 }

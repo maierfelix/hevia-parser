@@ -8,6 +8,7 @@ import {
 import Node from "../../nodes";
 
 import {
+  isLiteral,
   getNameByLabel
 } from "../../utils";
 
@@ -15,6 +16,8 @@ import {
  * @return {Node}
  */
 export function parseLiteral() {
+
+  let node = new Node.Literal();
 
   // Enum access
   if (this.eat(TT.PERIOD)) {
@@ -25,12 +28,16 @@ export function parseLiteral() {
 
   // Unary pex expression
   if (this.isPrefixOperator(this.current)) {
-    return this.parseUnaryExpression(void 0);
+    return this.parseUnaryExpression(null);
   }
 
   // Call expression
   if (this.eat(TT.LPAREN)) {
-    let tmp = this.parseExpressionStatement();
+    // Empty
+    if (this.eat(TT.RPAREN)) {
+      return (null);
+    }
+    let tmp = this.parseStatement();
     // Seems like a standalone operator
     if (tmp === null) {
       tmp = this.parseLiteral();
@@ -46,7 +53,6 @@ export function parseLiteral() {
     return (tmp);
   }
 
-  let node = new Node.Literal();
   let isExplicit = this.eat(TT.UL);
 
   // Literal passed as pointer
@@ -57,10 +63,17 @@ export function parseLiteral() {
   if (isExplicit && this.peek(TT.COLON)) {
     // Explicit only parameter
   } else {
-    node.type = this.current.name;
-    node.value = this.current.value;
-    node.raw = this.current.value;
-    this.next();
+    // Parse literal
+    if (isLiteral(this.current.name)) {
+      node.type = this.current.name;
+      node.value = this.current.value;
+      node.raw = this.current.value;
+      this.next();
+    }
+    // No literal to parse
+    else {
+      node = this.parseStatement();
+    }
   }
 
   // Dont parse colon as argument, if in ternary expression
@@ -88,6 +101,13 @@ export function parseLiteral() {
     }
   }
 
+  if (this.peek(TT.CONDITIONAL)) {
+    if (!this.current.isTernary) {
+      node.isOptional = true;
+      this.next();
+    }
+  }
+
   return (node);
 
 }
@@ -105,7 +125,7 @@ export function parseLiteralHead() {
   // Custom operator
   if (str) {
     this.next();
-    return str;
+    return (str);
   }
 
   // Default literal

@@ -85,13 +85,6 @@ export function parseInitializer() {
 
   this.expect(TT.INIT);
 
-  if (this.eat(TT.CONDITIONAL)) {
-    node.isOptional = true;
-  }
-  else if (this.eat(TT.NOT)) {
-    node.isUnwrap = true;
-  }
-
   node.arguments = this.parseArguments();
 
   if (this.eat(TT.LBRACE)) {

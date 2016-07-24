@@ -15,13 +15,13 @@ import {
  */
 export function parseAccessControl() {
 
-  let access = this.current;
+  let name = this.current.name;
 
   this.next();
 
   let node = this.parseStatement();
 
-  switch (access.name) {
+  switch (name) {
     case TT.PUBLIC:
       node.isPublic = true;
     break;

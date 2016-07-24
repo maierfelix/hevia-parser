@@ -35,15 +35,26 @@ export default class Node {
     );
   }
 
+  static get FunctionExpression() {
+    return (
+      class FunctionExpression {
+        constructor() {
+          this.kind = Type.FunctionExpression;
+          this.arguments = [];
+          this.type = null;
+        }
+      }
+    );
+  }
+
   static get ClosureExpression() {
     return (
       class ClosureExpression {
         constructor() {
           this.kind = Type.ClosureExpression;
           this.body = [];
-          this.arguments = [];
+          this.signature = [];
           this.type = null;
-          this.callee = null;
         }
       }
     );
@@ -311,9 +322,6 @@ export default class Node {
           this.type = null;
           this.arguments = [];
           this.body = [];
-          this.isStatic = false;
-          this.isOverride = false;
-          this.isClassed = false;
         }
       }
     );
@@ -378,10 +386,6 @@ export default class Node {
         constructor() {
           this.kind = Type.TypeAnnotation;
           this.type = null;
-          this.isExplicit = false;
-          this.isOptional = false;
-          this.isReference = false;
-          this.isUnwrap = false;
         }
       }
     );
@@ -406,9 +410,6 @@ export default class Node {
           this.symbol = null;
           this.declarations = [];
           this.init = null;
-          this.isStatic = false;
-          this.isOverride = false;
-          this.isClassed = false;
         }
       }
     );

@@ -559,11 +559,18 @@ function scanPunctuator() {
     case '[':
     case ']':
     case ':':
-    case '?':
     case '~':
       ++index;
-      break;
-
+    break;
+    case '?':
+      var before = source.charCodeAt(index - 1);
+      var after = source.charCodeAt(index + 1);
+      // Swift detects ternary ? by whitespace, on both sides
+      if (isWhiteSpace(before) && isWhiteSpace(after)) {
+        token.isTernary = true;
+      }
+      index++;
+    break;
     default:
       var buf = "";
       var cp = source.charCodeAt(index);
@@ -993,6 +1000,9 @@ function collectToken() {
         range: [token.start, token.end],
         loc: loc
       };
+    }
+    if (token.isTernary) {
+      entry.isTernary = true;
     }
     if (extra.tokenValues) {
       extra.tokenValues.push((entry.type === 'Punctuator' || entry.type === 'Keyword') ? entry.value : null);
