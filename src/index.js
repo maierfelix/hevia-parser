@@ -7,7 +7,7 @@ import "./build";
 import { greet } from "./utils";
 import { VERSION } from "./const";
 
-let global = require("./Environment/global.swift");
+let global = require("./Environment/global_js.swift");
 
 let compiler = new Compiler();
 

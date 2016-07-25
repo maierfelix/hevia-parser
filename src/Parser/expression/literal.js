@@ -79,7 +79,7 @@ export function parseLiteral() {
   // Dont parse colon as argument, if in ternary expression
   if (!this.inTernary) {
     if (this.peek(TT.COLON)) {
-      node = this.parseStrictType(node);
+      node = this.parseType(node);
       if (
         node.argument &&
         node.argument.kind === Type.TypeAnnotation
@@ -94,17 +94,10 @@ export function parseLiteral() {
     node.value !== void 0 &&
     node.value !== null
   ) {
-    if (node.value[0] === "$") {
+    if (node.value.charAt(0) === "$") {
       node.isShorthand = true;
       // Delete $ sign
       node.value = node.value.slice(1);
-    }
-  }
-
-  if (this.peek(TT.CONDITIONAL)) {
-    if (!this.current.isTernary) {
-      node.isOptional = true;
-      this.next();
     }
   }
 

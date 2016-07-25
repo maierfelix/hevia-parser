@@ -18,9 +18,6 @@ registerOperator("~", -1, "none", "BIT_NOT", PREFIX);
 registerOperator("+", -1, "none", "UNARY_ADD", PREFIX);
 registerOperator("-", -1, "none", "UNARY_SUB", PREFIX);
 
-registerOperator("++", -1, "none", "PRE_ADD", PREFIX); // removed in swift 3
-registerOperator("--", -1, "none", "PRE_SUB", PREFIX); // removed in swift 3
-
 /** INFIX */
 registerOperator("*", 150, "left", "MUL", INFIX);
 registerOperator("/", 150, "left", "DIV", INFIX);

@@ -20,21 +20,16 @@ export function parseClosureExpression() {
 
   this.expect(TT.LBRACE);
 
-  node.signature = this.parseMaybeArguments();
-
-  if (this.eat(TT.COMMA)) {
-    let args = this.parseCommaSeperatedValues();
-    args.unshift(node.signature.shift());
-    node.signature = args;
-  }
-
-  if (this.peek(TT.ARROW)) {
-    node.type = this.parseStrictType();
-  }
+  node.signature = this.parseExpressionStatement();
 
   this.eat(TT.IN);
 
   node.body = this.parseBlock();
+
+  // if no body found, turn body into signature
+  if (!node.body.body.length && node.signature.length === 1) {
+    node.body.body.push(node.signature.shift());
+  }
 
   this.expect(TT.RBRACE);
 

@@ -25,7 +25,7 @@ export function parseFunction() {
   node.arguments = this.parseArguments();
 
   if (this.peek(TT.ARROW)) {
-    node.type = this.parseStrictType();
+    node.type = this.parseType().type;
   }
 
   if (this.eat(TT.LBRACE)) {

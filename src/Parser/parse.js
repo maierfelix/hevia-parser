@@ -178,7 +178,7 @@ export function parse(tokens) {
  * @return {Boolean}
  */
 export function acceptPrecedence(state) {
-  if (state !== void 0 && this.current) {
+  if (state !== void 0 && this.current !== void 0) {
     // Custom infix operator
     if (getNameByLabel(this.current.name) === "Identifier") {
       return (TT[state.op] === TT[this.current.value]);

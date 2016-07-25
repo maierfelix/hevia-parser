@@ -35,6 +35,17 @@ export default class Node {
     );
   }
 
+  static get TypeExpression() {
+    return (
+      class TypeExpression {
+        constructor() {
+          this.kind = Type.TypeExpression;
+          this.type = null;
+        }
+      }
+    );
+  }
+
   static get FunctionExpression() {
     return (
       class FunctionExpression {
@@ -42,6 +53,18 @@ export default class Node {
           this.kind = Type.FunctionExpression;
           this.arguments = [];
           this.type = null;
+        }
+      }
+    );
+  }
+
+  static get TrailingClosureExpression() {
+    return (
+      class TrailingClosureExpression {
+        constructor() {
+          this.kind = Type.TrailingClosureExpression;
+          this.body = [];
+          this.callee = null;
         }
       }
     );

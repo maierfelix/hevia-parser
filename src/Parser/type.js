@@ -13,60 +13,62 @@ import {
 /*
  * @return {Node}
  */
-export function parseStrictType(base) {
+export function parseType(base) {
 
-  let node = new Node.Parameter();
+  let node = new Node.TypeExpression();
 
-  let isInout = false;
+  node.name = base;
 
   if (this.eat(TT.COLON)) {
-    isInout = this.eat(TT.INOUT);
-    node.init = base;
-    node.argument = this.parseType();
+    node.isReference = this.eat(TT.INOUT);
   }
-  else if (this.eat(TT.ARROW)) {
-    // func () -> (Tuple)
-    if (this.peek(TT.LPAREN)) {
-      node = this.parseStatement();
-    // func () -> Type
-    } else {
-      node = this.parseType();
+
+  node.type = this.parseTypeExpression();
+
+  return (node);
+
+}
+
+/*
+ * @return {Node}
+ */
+export function parseTypeExpression() {
+
+  let node = null;
+
+  // Array
+  if (this.eat(TT.LBRACK)) {
+    node = this.parseTypeExpression();
+    if (this.eat(TT.COLON)) {
+      console.log(node, this.parseTypeExpression());
     }
   }
-
-  // Catched a wild function parameter
-  // TODO: Support deepness
-  if (this.eat(TT.ARROW)) {
-    let tmp = new Node.FunctionExpression();
-    tmp.arguments = node.argument;
-    tmp.type = this.parseType();
-    node.argument = tmp;
+  // Tuple
+  else if (this.peek(TT.LPAREN)) {
+    node = this.parseTupleType();
   }
-
-  if (isInout && node.kind === Type.Parameter) {
-    node.isReference = true;
+  // Identifier
+  else if (this.peek(Token.Identifier)) {
+    node = this.parseLiteral();
+  }
+  // Arrow
+  else if (this.eat(TT.ARROW)) {
+    node = this.parseLiteral();
+  }
+  else {
+    node = this.parseExpressionStatement();
   }
 
   return (node);
 
 }
 
-/**
- * @return {Node}
+/*
+ * @return {Array}
  */
-export function parseType() {
+export function parseTupleType() {
 
-  let node = null;
-
-  if (this.peek(TT.LBRACK)) {
-    node = this.parseArrayExpression();
-  }
-  else if (this.peek(TT.LPAREN)) {
-    node = this.parseArguments();
-  }
-  else {
-    node = this.parseLiteral();
-  }
+  let node = this.parseMaybeArguments();
 
   return (node);
 

@@ -80,9 +80,11 @@ export function parseWhile() {
 
   this.expect(TT.WHILE);
 
+  this.inCondition = true;
   this.eat(TT.LPAREN);
   node.test = this.parseExpressionStatement();
   this.eat(TT.RPAREN);
+  this.inCondition = false;
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
@@ -107,9 +109,11 @@ export function parseRepeat() {
 
   this.expect(TT.WHILE);
 
+  this.inCondition = true;
   this.eat(TT.LPAREN);
   node.test = this.parseExpressionStatement();
   this.eat(TT.RPAREN);
+  this.inCondition = false;
 
   return (node);
 

@@ -38,6 +38,14 @@ export function parseAtom(base) {
     }
   };
 
+  if (this.eat(TT.NOT)) {
+    base.isUnwrapped = true;
+  }
+  else if (this.peek(TT.CONDITIONAL) && !this.inTernary) {
+    this.next();
+    base.isOptional = true;
+  }
+
   return (base);
 
 }
@@ -82,11 +90,6 @@ export function parseCallExpression(base) {
 
   node.callee = base;
   node.arguments = this.parseArguments();
-
-  // Trailing closure
-  if (this.peek(TT.LBRACE) && !this.inIfCondition) {
-    node.arguments.push(this.parseStatement());
-  }
 
   return (node);
 

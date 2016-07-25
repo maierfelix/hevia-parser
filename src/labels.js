@@ -27,6 +27,7 @@ let ii = 0;
   Label[Label["CallExpression"] = ++ii] = "CallExpression";
   Label[Label["ParameterExpression"] = ++ii] = "ParameterExpression";
   Label[Label["ClosureExpression"] = ++ii] = "ClosureExpression";
+  Label[Label["TrailingClosureExpression"] = ++ii] = "TrailingClosureExpression";
 
   Label[Label["BlockStatement"] = ++ii] = "BlockStatement";
   Label[Label["ReturnStatement"] = ++ii] = "ReturnStatement";
@@ -37,6 +38,7 @@ let ii = 0;
   Label[Label["RepeatStatement"] = ++ii] = "RepeatStatement";
   Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
   Label[Label["ArrayExpression"] = ++ii] = "ArrayExpression";
+  Label[Label["TypeExpression"] = ++ii] = "TypeExpression";
 
   Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
   Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
