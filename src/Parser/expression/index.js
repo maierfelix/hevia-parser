@@ -19,15 +19,13 @@ export function parseExpressionStatement() {
   let node = null;
 
   switch (this.current.name) {
-    /** Operator things */
-    case TT.ASSOCIATIVITY:
-      node = this.parseAssociativityExpression();
-    break;
-    case TT.PRECEDENCE:
-      node = this.parsePrecedenceExpression();
-    break;
+    /** Array */
     case TT.LBRACK:
       node = this.parseAtom(this.parseArrayExpression());
+    break;
+    /** Closure */
+    case TT.LBRACE:
+      node = this.parseBinaryExpression(0);
     break;
     default:
       if (
@@ -45,7 +43,7 @@ export function parseExpressionStatement() {
     if (!(tmp.type instanceof Array)) {
       tmp.type = [tmp.type];
     }
-    // validate non-array nodes
+    // validate non-array argument
     tmp.arguments = node instanceof Array ? node : [node];
     node = tmp;
   }

@@ -77,15 +77,10 @@ export function parseLiteral() {
   }
 
   // Dont parse colon as argument, if in ternary expression
-  if (!this.inTernary) {
-    if (this.peek(TT.COLON)) {
-      node = this.parseType(node);
-      if (
-        node.argument &&
-        node.argument.kind === Type.TypeAnnotation
-      ) {
-        node.argument.isExplicit = isExplicit;
-      }
+  if (!this.inTernary && this.peek(TT.COLON)) {
+    node = this.parseType(node);
+    if (isExplicit) {
+      node.isExplicit = true;
     }
   }
 
@@ -123,5 +118,21 @@ export function parseLiteralHead() {
 
   // Default literal
   return this.extract(Token.Identifier).value;
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseLiteralExpression() {
+
+  // Closure
+  if (this.peek(TT.LBRACE)) {
+    return this.parseAtom(this.parseClosureExpression());
+  }
+
+  return (
+    this.parseAtom(this.parseLiteral())
+  );
 
 }

@@ -29,14 +29,14 @@ export function parseBinaryExpression(index) {
 
   let state = Infix[index];
 
-  left = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseAtom(this.parseLiteral());
+  left = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseLiteralExpression();
 
   while (this.acceptPrecedence(state)) {
     node = new Node.BinaryExpression();
     node.operator = TT[state.op];
     this.next();
     node.left = left;
-    tmp = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
+    tmp = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseLiteralExpression();
     node.right = tmp;
     node.isParenthised = this.peek(TT.RPAREN);
     left = node;

@@ -89,9 +89,12 @@ export function parseStatement() {
     case TT.OVERRIDE:
       node = this.parseOverride();
     break;
-    /** Closure */
-    case TT.LBRACE:
-      node = this.parseAtom(this.parseClosureExpression());
+    /** Operator things */
+    case TT.ASSOCIATIVITY:
+      node = this.parseAssociativityExpression();
+    break;
+    case TT.PRECEDENCE:
+      node = this.parsePrecedenceExpression();
     break;
     /** Expression statement */
     default:

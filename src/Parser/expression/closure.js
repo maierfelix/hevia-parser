@@ -26,11 +26,6 @@ export function parseClosureExpression() {
 
   node.body = this.parseBlock();
 
-  // if no body found, turn body into signature
-  if (!node.body.body.length && node.signature.length === 1) {
-    node.body.body.push(node.signature.shift());
-  }
-
   this.expect(TT.RBRACE);
 
   return (node);

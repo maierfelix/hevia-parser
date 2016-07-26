@@ -42,6 +42,7 @@ export function parseFor() {
 
   this.expect(TT.FOR);
 
+  this.inCondition = true;
   this.eat(TT.LPAREN);
 
   if (!this.eat(TT.SEMICOLON)) {
@@ -62,6 +63,7 @@ export function parseFor() {
   node.init = init;
 
   this.eat(TT.RPAREN);
+  this.inCondition = false;
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
