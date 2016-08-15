@@ -197,3 +197,26 @@ export function isOperator(name) {
     getNameByLabel(name) in OP
   );
 }
+
+/**
+ * @param {String} value
+ * @return {Node}
+ */
+export function parseFakeLiteral(value) {
+
+  let tmp = this.current;
+
+  this.current = {
+    name: Token.Identifier,
+    value: value
+  };
+
+  let node = this.parseLiteral();
+
+  this.back();
+
+  this.current = tmp;
+
+  return (node);
+
+}

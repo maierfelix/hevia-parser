@@ -29,16 +29,15 @@ export function parseBinaryExpression(index) {
 
   let state = Infix[index];
 
-  left = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseLiteralExpression();
+  left = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseExpression();
 
   while (this.acceptPrecedence(state)) {
     node = new Node.BinaryExpression();
     node.operator = TT[state.op];
     this.next();
     node.left = left;
-    tmp = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseLiteralExpression();
+    tmp = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseExpression();
     node.right = tmp;
-    node.isParenthised = this.peek(TT.RPAREN);
     left = node;
   };
 
@@ -50,6 +49,43 @@ export function parseBinaryExpression(index) {
   }
 
   return (left);
+
+}
+
+/**
+ * @return {Node}
+ */
+export function parseExpression() {
+
+  let node = null;
+  let isParenthised = this.peek(TT.LPAREN);
+
+  // Standalone parenthised operator
+  if (this.isOperator(this.current.name)) {
+    this.next();
+    if (this.peek(TT.RPAREN)) {
+      this.back();
+      node = this.parseSpecialLiteral();
+      return (node);
+    }
+    else {
+      this.back();
+    }
+  }
+
+  // Closure
+  if (this.peek(TT.LBRACE)) {
+    node = this.parseAtom(this.parseClosureExpression());
+  }
+  else {
+    node = this.parseAtom(this.parseLiteral());
+  }
+
+  if (node !== null && node.kind === Type.BinaryExpression) {
+    node.isParenthised = isParenthised;
+  }
+
+  return (node);
 
 }
 

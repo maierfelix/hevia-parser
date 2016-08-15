@@ -60,7 +60,7 @@ export function parseLiteral() {
     node.isPointer = true;
   }
 
-  if (isExplicit && this.peek(TT.COLON)) {
+  if (isExplicit && this.peek(TT.COLON) && !this.inTernary) {
     // Explicit only parameter
   } else {
     // Parse literal
@@ -72,7 +72,14 @@ export function parseLiteral() {
     }
     // No literal to parse
     else {
-      node = this.parseStatement();
+      // Assignment to underscore
+      if (isExplicit && this.isOperator(this.current.name)) {
+        this.back();
+        node = this.parseSpecialLiteral();
+      }
+      else {
+        node = this.parseStatement();
+      }
     }
   }
 
@@ -86,6 +93,7 @@ export function parseLiteral() {
 
   // Shorthand
   if (
+    node !== null &&
     node.value !== void 0 &&
     node.value !== null
   ) {
@@ -95,6 +103,8 @@ export function parseLiteral() {
       node.value = node.value.slice(1);
     }
   }
+
+  this.parseChaining(node);
 
   return (node);
 
@@ -122,17 +132,19 @@ export function parseLiteralHead() {
 }
 
 /**
+ * Parse as literal, don't
+ * care what it really is
  * @return {Node}
  */
-export function parseLiteralExpression() {
+export function parseSpecialLiteral() {
 
-  // Closure
-  if (this.peek(TT.LBRACE)) {
-    return this.parseAtom(this.parseClosureExpression());
-  }
+  let node = new Node.Literal();
 
-  return (
-    this.parseAtom(this.parseLiteral())
-  );
+  node.type = this.current.name;
+  node.value = this.current.value;
+  node.raw = this.current.value;
+  this.next();
+
+  return (node);
 
 }

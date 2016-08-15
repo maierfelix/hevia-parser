@@ -40,8 +40,10 @@ sources.map((src) => {
   var error = null;
   var name = src.name.replace(dir, "").slice(1, src.name.length);
   try {
-    //hevia.evaluate(hevia.compile(src.src))
-    hevia.parse(hevia.tokenize(src.src));
+    tokens = hevia.tokenize(src.src);
+    ast = hevia.parse(tokens);
+    //code = hevia.generate(ast, "JS");
+    //hevia.evaluate(code);
     success = true;
   } catch(e) {
     error  = e;

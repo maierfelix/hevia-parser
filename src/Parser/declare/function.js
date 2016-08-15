@@ -10,6 +10,10 @@ import {
   getNameByLabel
 } from "../../utils";
 
+import {
+  FUNC_DEFAULT_TYPE
+} from "../../const";
+
 /**
  * @return {Node}
  */
@@ -26,6 +30,9 @@ export function parseFunction() {
 
   if (this.peek(TT.ARROW)) {
     node.type = this.parseType().type;
+  }
+  else {
+    node.type = this.parseFakeLiteral(FUNC_DEFAULT_TYPE);
   }
 
   if (this.eat(TT.LBRACE)) {

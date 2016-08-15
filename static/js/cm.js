@@ -7,7 +7,8 @@ var editor_swift = CodeMirror.fromTextArea(document.getElementById("swift"), {
   autofocus: true
 });
 editor_swift.on("change", function() {
-  compile();
+  editor_js.setValue("");
+  parse();
 });
 
 /** JS */

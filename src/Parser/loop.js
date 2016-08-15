@@ -42,7 +42,6 @@ export function parseFor() {
 
   this.expect(TT.FOR);
 
-  this.inCondition = true;
   this.eat(TT.LPAREN);
 
   if (!this.eat(TT.SEMICOLON)) {
@@ -52,18 +51,15 @@ export function parseFor() {
   // for (expr) in (expr)
   if (this.eat(TT.IN)) {
     node = new Node.ForInStatement();
-    node.expression = this.parseExpressionStatement();
+    node.expression = this.parseCondition();
   // for (expr);(expr);(expr)
   } else {
     node.test = this.parseExpressionStatement();
     this.expect(TT.SEMICOLON);
-    node.update = this.parseExpressionStatement();
+    node.update = this.parseCondition();
   }
 
   node.init = init;
-
-  this.eat(TT.RPAREN);
-  this.inCondition = false;
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
@@ -82,11 +78,7 @@ export function parseWhile() {
 
   this.expect(TT.WHILE);
 
-  this.inCondition = true;
-  this.eat(TT.LPAREN);
-  node.test = this.parseExpressionStatement();
-  this.eat(TT.RPAREN);
-  this.inCondition = false;
+  node.test = this.parseCondition();
 
   this.expect(TT.LBRACE);
   node.body = this.parseBlock();
@@ -111,11 +103,7 @@ export function parseRepeat() {
 
   this.expect(TT.WHILE);
 
-  this.inCondition = true;
-  this.eat(TT.LPAREN);
-  node.test = this.parseExpressionStatement();
-  this.eat(TT.RPAREN);
-  this.inCondition = false;
+  node.test = this.parseCondition();
 
   return (node);
 

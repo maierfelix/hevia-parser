@@ -1,51 +1,60 @@
 version.innerHTML = "v" + hevia.VERSION;
 var src = 
 `
-for ;true; {
-  print(a)
+var closure3a : () -> () -> (Int,Int) = {{ (4, 2) }}
+_ = f1(x: 1, y: 2);
+
+class C {
+  func map(_ x: (Int) -> Int) -> C { return self }
+  func filter(_ x: (Int) -> Bool) -> C { return self }
 }
 
-for var a:Int = 5; a < 10; {
-  print(a)
+var a = C().map {$0 + 1}.filter {$0 % 3 == 0}
+
+var b = C().map {$0 + 1}.filter {$0 % 3 == 0}
+
+var c = C().map {
+  $0 + 1
 }
-
-for (var a:Int = 5; a < 10; a += 1) {
-  print(a)
-}
-
-while 10 < 20 {
-  print(1337)
-}
-
-repeat {
-  print(1337)
-  print(1338)
-} while 10 < 20
-
 `;
 
 swift.innerHTML = src;
 
-function execute() {
-  hevia.evaluate(out.value);
-}
+var ast = null;
 
 function build(value) {
-  let tokens = hevia.tokenize(value);
-  let ast = hevia.parse(tokens);
+  var tokens = hevia.tokenize(value);
+  ast = hevia.parse(tokens);
   console.log(ast);
-  return (hevia.generate(ast, "JS"));
-  //return (JSON.stringify(ast));
+  ast = JSON.stringify(ast, null, "  ");
+  return (ast);
 }
 
-function compile() {
-  editor_js.setValue(build(editor_swift.getValue()));
+function parse() {
+  var code = build(editor_swift.getValue());
+  editor_js.setValue(ast);
 }
 
-run.addEventListener('click', execute, false);
 com.addEventListener('click', function() {
-  compile();
+  parse();
 }, false);
 
+download.addEventListener('click', function() {
+  createDownloadLink(ast, "ast.json");
+});
+
 out.innerHTML = build(swift.value);
-execute();
+
+function createDownloadLink(str, name) {
+  if (window.navigator.msSaveOrOpenBlob) {
+    var data = [str];
+    var blob = new Blob(data);
+    download.onclick = function() {
+      window.navigator.msSaveOrOpenBlob(blob, name);
+    };
+  } else {
+    var url = "data:text/plain;charset=utf-8," + encodeURIComponent(str);
+    download.setAttribute("download", name);
+    download.setAttribute("href", url);
+  }
+}

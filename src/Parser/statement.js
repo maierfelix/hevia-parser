@@ -122,3 +122,20 @@ export function parseReturnStatement() {
   return (node);
 
 }
+
+/**
+ * @return {Node}
+ */
+export function parseCondition() {
+
+  let node = null;
+
+  this.inCondition = true;
+  this.eat(TT.LPAREN);
+  node = this.parseStatement();
+  this.eat(TT.RPAREN);
+  this.inCondition = false;
+
+  return (node);
+
+}

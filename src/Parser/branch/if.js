@@ -14,11 +14,7 @@ export function parseIfStatement() {
   let node = new Node.IfStatement();
 
   if (this.eat(TT.IF)) {
-    this.inCondition = true;
-    this.eat(TT.LPAREN);
-    node.condition = this.parseStatement();
-    this.eat(TT.RPAREN);
-    this.inCondition = false;
+    node.test = this.parseCondition();
   }
 
   // Consequent

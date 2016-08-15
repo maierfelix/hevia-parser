@@ -36,15 +36,8 @@ export function parseTypeExpression() {
 
   let node = null;
 
-  // Array
-  if (this.eat(TT.LBRACK)) {
-    node = this.parseTypeExpression();
-    if (this.eat(TT.COLON)) {
-      console.log(node, this.parseTypeExpression());
-    }
-  }
   // Tuple
-  else if (this.peek(TT.LPAREN)) {
+  if (this.peek(TT.LPAREN)) {
     node = this.parseTupleType();
   }
   // Identifier

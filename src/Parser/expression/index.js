@@ -23,12 +23,12 @@ export function parseExpressionStatement() {
     case TT.LBRACK:
       node = this.parseAtom(this.parseArrayExpression());
     break;
-    /** Closure */
-    case TT.LBRACE:
-      node = this.parseBinaryExpression(0);
-    break;
     default:
-      if (
+      /** Closure */
+      if (!this.inCondition && this.peek(TT.LBRACE)) {
+        node = this.parseBinaryExpression(0);
+      }
+      else if (
         this.isOperator(this.current.name) ||
         isLiteral(this.current.name)
       ) {
@@ -38,14 +38,7 @@ export function parseExpressionStatement() {
   };
 
   if (this.eat(TT.ARROW)) {
-    let tmp = new Node.FunctionExpression();
-    tmp.type = this.parseTypeExpression();
-    if (!(tmp.type instanceof Array)) {
-      tmp.type = [tmp.type];
-    }
-    // validate non-array argument
-    tmp.arguments = node instanceof Array ? node : [node];
-    node = tmp;
+    node = this.parseFunctionExpression(node);
   }
 
   /**
@@ -54,7 +47,7 @@ export function parseExpressionStatement() {
    * undparenthised condition
    */
   else if (!this.inCondition && this.peek(TT.LBRACE)) {
-    // Only parse as trailing, if lbrace is inside same code line
+    // Only parse as trailing, if brace opens in same code line
     if (this.current.loc.start.line === this.previous.loc.start.line) {
       let tmp = this.parseClosureExpression();
       tmp.callee = node;
@@ -62,11 +55,8 @@ export function parseExpressionStatement() {
     }
   }
 
-  /** Ternary or optional */
-  else if (this.peek(TT.CONDITIONAL)) {
-    if (this.current.isTernary) {
-      node = this.parseTernaryExpression(node);
-    }
+  if (this.peek(TT.CONDITIONAL) && this.current.isTernary) {
+    node = this.parseTernaryExpression(node);
   }
 
   return (node);

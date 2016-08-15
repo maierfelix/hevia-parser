@@ -1,3 +1,7 @@
+/**
+ * The code below is based on the compiled version of esprima (http://esprima.org/)
+ * Small modifications were made, to support swift scanning
+ */
 import { Character } from './char';
 import {
   Token,

@@ -26,14 +26,7 @@ export function parseParenthese(left, right) {
   this.expect(left);
   if (this.eat(right)) return (null);
 
-  base = this.parseStatement();
-
-  if (this.eat(TT.COMMA)) {
-    node = this.parseCommaSeperatedValues();
-    node.unshift(base);
-  } else {
-    node = base;
-  }
+  node = this.parseCommaSeperatedValues();
 
   this.expect(right);
 

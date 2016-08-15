@@ -11,15 +11,10 @@ import {
 } from "../../utils";
 
 /**
-  [x] ?:
-  [x] .
-  [x] []
-  [x] AS|IS
-  [x] ()
-  @param {Node} base
-  @return {Node}
+ * @param {Node} node
+ * @return {Node}
  */
-export function parseAtom(base) {
+export function parseAtom(node) {
 
   while (true) {
     /** Un/computed member expression */
@@ -27,26 +22,37 @@ export function parseAtom(base) {
       this.peek(TT.LBRACK) ||
       this.peek(TT.PERIOD)
     ) {
-      base = this.parseMemberExpression(base);
+      node = this.parseMemberExpression(node);
     }
     /** Call expression */
     else if (this.peek(TT.LPAREN)) {
-      base = this.parseCallExpression(base);
+      node = this.parseCallExpression(node);
     }
     else {
       break;
     }
   };
 
-  if (this.eat(TT.NOT)) {
-    base.isUnwrapped = true;
-  }
-  else if (this.peek(TT.CONDITIONAL) && !this.inTernary) {
-    this.next();
-    base.isOptional = true;
-  }
+  this.parseChaining(node);
 
-  return (base);
+  return (node);
+
+}
+
+/**
+ * @param {Node}
+ */
+export function parseChaining(node) {
+
+  if (this.eat(TT.NOT)) {
+    node.isUnwrapped = true;
+  }
+  else if (this.peek(TT.CONDITIONAL)) {
+    if (!this.current.isTernary) {
+      this.next();
+      node.isOptional = true;
+    }
+  }
 
 }
 
@@ -77,6 +83,8 @@ export function parseMemberExpression(base) {
     this.expect(TT.RBRACK);
   }
 
+  this.parseChaining(node);
+
   return (node);
 
 }
@@ -102,7 +110,7 @@ export function parseTernaryExpression(base) {
 
   let node  = new Node.TernaryExpression();
 
-  node.condition = base;
+  node.test = base;
 
   this.inTernary = true;
 

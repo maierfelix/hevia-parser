@@ -23,3 +23,9 @@ if (result == 1337) {
 }
 
 expect(result == 1338);
+
+if let a = 1337 {
+  print(1)
+} else {
+  print(2)
+}

@@ -77,7 +77,6 @@ export default class Node {
           this.kind = Type.ClosureExpression;
           this.body = [];
           this.signature = [];
-          this.type = null;
         }
       }
     );
@@ -293,7 +292,7 @@ export default class Node {
       class IfStatement {
         constructor() {
           this.kind = Type.IfStatement;
-          this.condition = null;
+          this.test = null;
           this.consequent = null;
           this.alternate = null;
         }
@@ -370,7 +369,7 @@ export default class Node {
       class TernaryExpression {
         constructor() {
           this.kind = Type.TernaryExpression;
-          this.condition = null;
+          this.test = null;
           this.consequent = null;
           this.alternate = null;
         }
