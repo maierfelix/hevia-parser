@@ -17,6 +17,10 @@ export function parseExtension() {
 
   node.argument = this.parseLiteral();
 
+  if (this.eat(TT.COLON)) {
+    node.extend = this.parseTypeInheritance();
+  }
+
   if (this.eat(TT.LBRACE)) {
     node.body = this.parseBlock();
     this.expect(TT.RBRACE);

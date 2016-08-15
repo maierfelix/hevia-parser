@@ -19,8 +19,8 @@ export function parseProtocol() {
     node.name = this.extract(Token.Identifier).value;
   }
 
-  if (this.eat(TT.COLON)) {
-    node.extend = this.parseCommaSeperatedValues() || [];
+  if (this.peek(TT.COLON)) {
+    node.extend = this.parseTypeInheritance();
   }
 
   if (this.eat(TT.LBRACE)) {

@@ -43,6 +43,9 @@ export function parseTypeExpression() {
   // Identifier
   else if (this.peek(Token.Identifier)) {
     node = this.parseLiteral();
+    if (this.peek(TT.LT)) {
+      node.generic = this.parseGeneric();
+    }
   }
   // Arrow
   else if (this.eat(TT.ARROW)) {
@@ -64,5 +67,45 @@ export function parseTupleType() {
   let node = this.parseMaybeArguments();
 
   return (node);
+
+}
+
+export function parseGeneric() {
+
+  let node = new Node.GenericClause();
+
+  this.expect(TT.LT);
+
+  let args = [];
+  let id = null;
+
+  while (true) {
+    id = this.parseTypeExpression();
+    args.push(id);
+    if (!this.eat(TT.COMMA)) break;
+  };
+
+  this.expect(TT.GT);
+
+  node.arguments = args;
+
+  return (node);
+
+}
+
+export function parseTypeInheritance() {
+
+  this.expect(TT.COLON);
+
+  let args = [];
+  let id = null;
+
+  while (true) {
+    id = this.parseLiteral();
+    args.push(id);
+    if (!this.eat(TT.COMMA)) break;
+  };
+
+  return (args);
 
 }

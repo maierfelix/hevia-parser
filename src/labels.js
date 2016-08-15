@@ -63,6 +63,8 @@ let ii = 0;
   Label[Label["Identifier"] = ++ii] = "Identifier";
   Label[Label["Literal"] = ++ii] = "Literal";
 
+  Label[Label["GenericClause"] = ++ii] = "GenericClause";
+
   Label[Label["Comment"] = ++ii] = "Comment";
 
 })(Types);

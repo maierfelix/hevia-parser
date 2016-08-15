@@ -35,6 +35,17 @@ export default class Node {
     );
   }
 
+  static get GenericClause() {
+    return (
+      class GenericClause {
+        constructor() {
+          this.kind = Type.GenericClause;
+          this.arguments = [];
+        }
+      }
+    );
+  }
+
   static get TypeExpression() {
     return (
       class TypeExpression {
@@ -206,6 +217,7 @@ export default class Node {
         constructor() {
           this.kind = Type.ExtensionDeclaration;
           this.argument = null;
+          this.extend = [];
           this.body = [];
         }
       }

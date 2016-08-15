@@ -26,6 +26,10 @@ export function parseFunction() {
 
   node.name = this.parseLiteralHead();
 
+  if (this.peek(TT.LT)) {
+    node.generic = this.parseGeneric();
+  }
+
   node.arguments = this.parseArguments();
 
   if (this.peek(TT.ARROW)) {
