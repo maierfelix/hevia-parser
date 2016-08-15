@@ -17,7 +17,8 @@
     var max = 2;
 
     for (; ii >= 0; --ii) {
-      var size = (Math.floor(Math.random() * max) + min);
+      var tmp = Math.random() <= .175 ? max + 1 : max;
+      var size = (Math.floor(Math.random() * tmp) + min);
       var left = Math.floor(Math.random() * (window.innerWidth - size));
       var top = (Math.floor(Math.random() * (window.innerHeight - size)));
       var star = document.createElement("div");

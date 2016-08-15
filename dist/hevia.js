@@ -1,9 +1,9 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.HEVIA = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 module.exports={
   "name": "Hevia",
-  "version": "0.0.5",
-  "description": "Hevia Compiler",
-  "license": "BSD",
+  "version": "0.0.7",
+  "description": "Hevia Parser",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/maierfelix/hevia.git"
@@ -13,12 +13,6 @@ module.exports={
     "HeviaJS",
     "Hevia.js",
     "Swift",
-    "Compiler",
-    "Transpiler",
-    "Transcompiler",
-    "Swift2JavaScript",
-    "Swift2JS",
-    "Swift2ES6",
     "ast",
     "ecmascript",
     "javascript",
@@ -42,9 +36,6 @@ module.exports={
   "engines": {
     "node": ">= 5.x"
   },
-  "dependencies": {
-    "babel-runtime": "^6.9.1"
-  },
   "devDependencies": {
     "babel-core": "^6.0.20",
     "babel-cli": "^6.1.2",
@@ -53,11 +44,21 @@ module.exports={
     "babelify": "^7.2.0",
     "uglify-js": "^2.6.1",
     "babel-loader": "^6.0.1",
+    "babel-runtime": "^6.9.1",
     "babel-plugin-transform-runtime": "^6.4.3",
     "babel-preset-stage-0": "^6.3.13",
     "babel-preset-es2015": "^6.9.0",
     "node-libs-browser": "^0.5.3",
     "budo": "^8.3.0"
+  },
+  "browserify": {
+    "extension": [ 
+      "cjsx", 
+      "coffee", 
+      "js", 
+      "json",
+      "swift"
+    ]
   }
 }
 },{}],2:[function(require,module,exports){
@@ -66,456 +67,10 @@ module.exports={
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.compileDeclaration = compileDeclaration;
-exports.compileVariableDeclaration = compileVariableDeclaration;
-
-var _labels = require("../../labels");
-
-var _nodes = require("../../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("../../utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @param {Node} node
- */
-function compileDeclaration(node) {
-
-  switch (node.kind) {
-    case _labels.Types.VariableDeclaration:
-      this.compileVariableDeclaration(node);
-      break;
-  };
-}
-
-/**
- * @param {Node} node
- */
-function compileVariableDeclaration(node) {
-
-  var index = 0;
-
-  var init = null;
-  var label = null;
-
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = node.declarations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var key = _step.value;
-
-      label = key.kind === _labels.Types.Parameter ? key.init : key;
-      init = node.init[index];
-      this.scope.register(label);
-      index++;
-      if (key.kind !== _labels.Types.Parameter) {
-        label.resolvedType = this.inferenceExpression(init);
-      } else {
-        label.resolvedType = key.argument.type;
-      }
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  ;
-}
-
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],3:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.compileExpression = compileExpression;
-exports.compileCallExpression = compileCallExpression;
-
-var _labels = require("../../labels");
-
-var _nodes = require("../../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("../../utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @param {Node} node
- */
-function compileExpression(node) {
-
-  switch (node.kind) {
-    case _labels.Types.CallExpression:
-      this.compileCallExpression(node);
-      break;
-  };
-}
-
-/**
- * @param {Node} node
- */
-function compileCallExpression(node) {}
-
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],4:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.compileProgram = compileProgram;
-exports.compileBlock = compileBlock;
-exports.compileStatement = compileStatement;
-
-var _labels = require("../../labels");
-
-var _nodes = require("../../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("../../utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @param {Node} node
- */
-function compileProgram(node) {
-  this.pushScope(node);
-  this.compileBlock(node);
-}
-
-/**
- * @param {Node} node
- */
-function compileBlock(node) {
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-
-    for (var _iterator = node.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var key = _step.value;
-
-      this.compileStatement(key);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  ;
-}
-
-/**
- * @param {Node} node
- */
-function compileStatement(node) {
-
-  switch (node.kind) {
-    /** Loop statement */
-    case _labels.Types.ForStatement:
-    case _labels.Types.WhileStatement:
-    case _labels.Types.RepeatStatement:
-      //console.log(node);
-      break;
-    /** Branch statement */
-    case _labels.Types.IfStatement:
-    case _labels.Types.GuardStatement:
-    case _labels.Types.SwitchStatement:
-    case _labels.Types.PseudoProperty:
-      //console.log(node);
-      break;
-    /** Defer statement */
-    case _labels.Types.DeferStatement:
-      //console.log(node);
-      break;
-    /** Return statement */
-    case _labels.Types.ReturnStatement:
-      //console.log(node);
-      break;
-    /** Do statement */
-    case _labels.Types.DoStatement:
-      //console.log(node);
-      break;
-    /** Declaration statement */
-    case _labels.Types.ImportStatement:
-    case _labels.Types.VariableDeclaration:
-    case _labels.Types.FunctionDeclaration:
-    case _labels.Types.EnumDeclaration:
-    case _labels.Types.StructDeclaration:
-    case _labels.Types.ClassDeclaration:
-    case _labels.Types.ProtocolDeclaration:
-    case _labels.Types.ExtensionDeclaration:
-    case _labels.Types.OperatorDeclaration:
-      this.compileDeclaration(node);
-      break;
-    case _labels.Types.CallExpression:
-      this.compileExpression(node);
-      break;
-    /** Expression statement */
-    default:
-      //console.log(node);
-      break;
-  };
-}
-
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],5:[function(require,module,exports){
-"use strict";
-
-var _labels = require("../../labels");
-
-var _nodes = require("../../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("../../utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _utils = require("../utils");
-
-var _scope = require("../scope");
-
-var _scope2 = _interopRequireDefault(_scope);
-
-var _lang = require("./lang");
-
-var pack = _interopRequireWildcard(_lang);
-
-var _inference = require("./inference");
-
-var inference = _interopRequireWildcard(_inference);
-
-var _global = require("../Environment/global");
-
-var globals = _interopRequireWildcard(_global);
-
-var _compile = require("./compile");
-
-var compile = _interopRequireWildcard(_compile);
-
-var _statement = require("./compile/statement");
-
-var statement = _interopRequireWildcard(_statement);
-
-var _expression = require("./compile/expression");
-
-var expression = _interopRequireWildcard(_expression);
-
-var _declaration = require("./compile/declaration");
-
-var declaration = _interopRequireWildcard(_declaration);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @class Compiler
- * @export
- */
-
-var Compiler = function () {
-
-  /** @constructor */
-
-  function Compiler() {
-    _classCallCheck(this, Compiler);
-
-    /**
-     * Scope
-     * @type {Scope}
-     */
-    this.scope = null;
-
-    /**
-     * Extensions
-     * @type {Object}
-     */
-    this.extensions = {};
-
-    /**
-     * Operators
-     * @type {Object}
-     */
-    this.operators = {};
-
-    /**
-     * Global objects
-     * @type {Object}
-     */
-    this.global = globals;
-
-    /**
-     * Compiled output
-     * @type {String}
-     */
-    this.output = "";
-  }
-
-  _createClass(Compiler, [{
-    key: "reset",
-    value: function reset() {
-      this.scope = void 0;
-      this.output = "";
-      this.operators = {};
-      this.extensions = {};
-    }
-
-    /** 
-     * Write
-     * @param {String} str
-     */
-
-  }, {
-    key: "write",
-    value: function write(str) {
-      this.output += str;
-    }
-
-    /**
-     * Enter scope
-     * @param {Node} node
-     */
-
-  }, {
-    key: "pushScope",
-    value: function pushScope(node) {
-      node.context = new _scope2.default(node, this.scope);
-      this.scope = node.context;
-    }
-
-    /** Leave scope */
-
-  }, {
-    key: "popScope",
-    value: function popScope() {
-      this.scope = this.scope.parent;
-    }
-
-    /**
-     * Literal contains type only
-     * @param  {Node}  ast
-     * @return {Boolean}
-     */
-
-  }, {
-    key: "isPureType",
-    value: function isPureType(node) {
-      return node.value === void 0 && node.raw === void 0 && node.type >= 0 || node.type <= 0;
-    }
-
-    /**
-     * @param {Node} ast
-     * @param {String} lang
-     * @return {String}
-     */
-
-  }, {
-    key: "compile",
-    value: function compile(ast, lang) {
-      this.reset();
-      this.scope = void 0;
-      this.pushScope(ast.body);
-      this.compileProgram(ast.body);
-      this.initLanguage(lang);
-      this.emitProgram(ast.body);
-      return this.output;
-    }
-
-    /**
-     * @param {String} lang
-     */
-
-  }, {
-    key: "initLanguage",
-    value: function initLanguage(lang) {
-
-      switch (lang) {
-        case "JS":
-          lang = "JavaScript";
-          (0, _utils.inherit)(Compiler, pack.JavaScript);
-          break;
-        case "JAVA":
-          lang = "Java";
-          (0, _utils.inherit)(Compiler, pack.Java);
-          break;
-        default:
-          console.error("Unknown target language.");
-          break;
-      }
-
-      //console.log(`Compiling to ${lang}`);
-    }
-  }]);
-
-  return Compiler;
-}();
-
-exports.default = Compiler;
-
-
-(0, _utils.inherit)(Compiler, inference);
-
-(0, _utils.inherit)(Compiler, compile);
-(0, _utils.inherit)(Compiler, statement);
-(0, _utils.inherit)(Compiler, expression);
-(0, _utils.inherit)(Compiler, declaration);
-
-},{"../Environment/global":11,"../scope":46,"../utils":47,"./compile":4,"./compile/declaration":2,"./compile/expression":3,"./compile/statement":5,"./inference":7,"./lang":10}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.inferenceBlock = inferenceBlock;
-exports.inferenceExpression = inferenceExpression;
-exports.inferenceTernaryExpression = inferenceTernaryExpression;
-exports.inferenceParameterExpression = inferenceParameterExpression;
-exports.inferenceMemberExpression = inferenceMemberExpression;
-exports.inferenceCallExpression = inferenceCallExpression;
-exports.inferenceBinaryExpression = inferenceBinaryExpression;
-exports.inferenceLiteral = inferenceLiteral;
-exports.globalCheck = globalCheck;
+exports.parseAccessControl = parseAccessControl;
+exports.parseFinal = parseFinal;
+exports.parseOverride = parseOverride;
+exports.parseStatic = parseStatic;
 
 var _labels = require("../labels");
 
@@ -528,804 +83,74 @@ var _utils = require("../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * @param {Node} node
- * @return {Number}
+ * @return {Node}
  */
-function inferenceBlock(node) {
+function parseAccessControl() {
 
-  var type = null;
+  var name = this.current.name;
 
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
+  this.next();
 
-  try {
-    for (var _iterator = node.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var key = _step.value;
+  var node = this.parseStatement();
 
-      type = this.inferenceExpression(key);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  ;
-
-  return type;
-}
-
-/**
- * @param {Node} node
- * @return {Number}
- */
-function inferenceExpression(node) {
-
-  switch (node.kind) {
-    case _labels.Types.Literal:
-      return this.inferenceLiteral(node);
+  switch (name) {
+    case _labels.TokenList.PUBLIC:
+      node.isPublic = true;
       break;
-    case _labels.Types.BinaryExpression:
-      return this.inferenceBinaryExpression(node);
+    case _labels.TokenList.PRIVATE:
+      node.isPrivate = true;
       break;
-    case _labels.Types.CallExpression:
-      return this.inferenceCallExpression(node);
-      break;
-    case _labels.Types.MemberExpression:
-      return this.inferenceMemberExpression(node);
-      break;
-    case _labels.Types.ParameterExpression:
-      return this.inferenceParameterExpression(node);
-      break;
-    case _labels.Types.TernaryExpression:
-      return this.inferenceTernaryExpression(node);
-      break;
-    case _labels.Types.Parameter:
-      return this.inferenceExpression(node.init);
-      break;
-    case _labels.Types.ReturnStatement:
-      return this.inferenceExpression(node.argument);
+    case _labels.TokenList.INTERNAL:
+      node.isInternal = true;
       break;
   };
+
+  return node;
 }
 
 /**
- * @param {Node} node
- * @return {Number}
+ * @return {Node}
  */
-function inferenceTernaryExpression(node) {
+function parseFinal() {
 
-  var consequent = this.inferenceExpression(node.consequent);
-  var alternate = this.inferenceExpression(node.alternate);
+  this.expect(_labels.TokenList.FINAL);
 
-  if (consequent !== alternate) {
-    var a = (0, _utils.getNameByLabel)(consequent);
-    var b = (0, _utils.getNameByLabel)(alternate);
-    throw new Error("Ternary expression has mismatching types " + a + " and " + b);
-  }
+  var node = this.parseStatement();
 
-  return consequent || alternate;
+  node.isFinal = true;
+
+  return node;
 }
 
 /**
- * @param {Node} node
+ * @return {Node}
  */
-function inferenceParameterExpression(node) {
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+function parseOverride() {
 
-  try {
+  this.expect(_labels.TokenList.OVERRIDE);
 
-    for (var _iterator2 = node.arguments[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var key = _step2.value;
+  var node = this.parseStatement();
 
-      this.inferenceExpression(key);
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
+  node.isOverride = true;
 
-  ;
+  return node;
 }
 
 /**
- * @param {Node} node
- * @return {Number}
+ * @return {Node}
  */
-function inferenceMemberExpression(node) {
+function parseStatic() {
 
-  var left = this.inferenceExpression(node.object);
-  var right = this.inferenceExpression(node.property);
+  this.expect(_labels.TokenList.STATIC);
 
-  return left || right;
+  var node = this.parseStatement();
+
+  node.isStatic = true;
+
+  return node;
 }
 
-/**
- * @param {Node} node
- * @return {Number}
- */
-function inferenceCallExpression(node) {
-
-  var type = this.inferenceExpression(node.callee);
-
-  this.inferenceExpression(node.arguments);
-
-  return type;
-}
-
-/**
- * @param {Node} node
- * @return {Number}
- */
-function inferenceBinaryExpression(node) {
-
-  if (node.left && node.right) {
-    var left = this.inferenceExpression(node.left);
-    var right = this.inferenceExpression(node.right);
-    return left || right;
-  } else {
-    if (node.kind === _labels.Types.Literal) {
-      if (node.type === _labels.Token.NumericLiteral) {
-        return _labels.TokenList[(0, _utils.getNumericType)(Number(node.raw))];
-      }
-      if (node.type === _labels.Token.Identifier) {
-        return this.inferenceExpression(node);
-      }
-    }
-    return node;
-  }
-}
-
-/**
- * @param {Node} node
- * @return {Number}
- */
-function inferenceLiteral(node) {
-
-  if ((0, _utils.isBoolean)(node)) {
-    return _labels.TokenList.BOOLEAN;
-  }
-
-  var resolved = this.scope.get(node.value);
-
-  if (node.isPointer) {
-    if (resolved && resolved.kind === _labels.Types.VariableDeclarement) {
-      resolved.isLaterPointer = true;
-    } else {
-      throw new Error("Can't resolve " + node.value + " declarement!");
-    }
-  }
-
-  if (resolved && resolved.type) {
-    return resolved.type;
-  } else {
-    this.globalCheck(node);
-    return _labels.TokenList[(0, _utils.getNumericType)(Number(node.raw))];
-  }
-}
-
-function globalCheck(node) {
-
-  if (node.kind === _labels.Types.MemberExpression) {
-    if (this.global.hasOwnProperty(node.object.value)) {
-      node.object.isGlobal = true;
-    }
-  } else if (node.kind === _labels.Types.Literal) {
-    if (this.global.hasOwnProperty(node.value)) {
-      node.isGlobal = true;
-    }
-  }
-}
-
-},{"../labels":43,"../nodes":44,"../utils":47}],8:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.emitProgram = emitProgram;
-exports.emitStartHeader = emitStartHeader;
-exports.emitEndHeader = emitEndHeader;
-exports.emitOperatorDefinitions = emitOperatorDefinitions;
-exports.emitBlock = emitBlock;
-exports.emitStatement = emitStatement;
-exports.emitIf = emitIf;
-exports.emitTernary = emitTernary;
-exports.emitParameter = emitParameter;
-exports.emitMember = emitMember;
-exports.emitCall = emitCall;
-exports.emitArguments = emitArguments;
-exports.emitDeclaration = emitDeclaration;
-exports.emitExtension = emitExtension;
-exports.emitVariableDeclaration = emitVariableDeclaration;
-exports.emitVariable = emitVariable;
-exports.emitMultipleVariable = emitMultipleVariable;
-exports.emitBinary = emitBinary;
-exports.emitCustomOperator = emitCustomOperator;
-exports.emitLiteral = emitLiteral;
-exports.emitFunction = emitFunction;
-exports.emitReturn = emitReturn;
-
-var _labels = require("../../../labels");
-
-var _nodes = require("../../../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("../../../utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function emitProgram(ast) {
-  this.write("\"use strict\";\n");
-  this.emitOperatorDefinitions();
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = ast.body[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var node = _step.value;
-
-      this.emitStatement(node);
-      this.write("\n");
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  ;
-  this.write("\n");
-}
-
-function emitStartHeader() {
-  this.write("(function(__global) {\n");
-}
-
-function emitEndHeader() {
-  this.write("})(hevia.global)\n");
-}
-
-function emitOperatorDefinitions() {
-
-  if (!Object.keys(this.operators).length) return void 0;
-
-  this.write("var __OP = {\n");
-
-  for (var key in this.operators) {
-    this.write("\"" + key + "\"");
-    this.write(":");
-    this.emitFunction(this.operators[key].func, true);
-  };
-
-  this.write("\n}");
-}
-
-function emitBlock(ast) {
-  this.write(" {");
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = ast.body[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var node = _step2.value;
-
-      this.write("\n");
-      this.emitStatement(node);
-      this.write(";");
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
-
-  ;
-  this.write("\n}\n");
-}
-
-function emitStatement(ast) {
-
-  switch (ast.kind) {
-    /** Loop statement */
-    case _labels.Types.ForStatement:
-    case _labels.Types.WhileStatement:
-    case _labels.Types.RepeatStatement:
-      //console.log(ast);
-      break;
-    /** Branch statement */
-    case _labels.Types.GuardStatement:
-    case _labels.Types.SwitchStatement:
-    case _labels.Types.PseudoProperty:
-      //console.log(ast);
-      break;
-    /** Defer statement */
-    case _labels.Types.DeferStatement:
-      //console.log(ast);
-      break;
-    /** Return statement */
-    case _labels.Types.ReturnStatement:
-      this.emitReturn(ast);
-      break;
-    /** Do statement */
-    case _labels.Types.DoStatement:
-      //console.log(ast);
-      break;
-    /** Declaration statement */
-    case _labels.Types.ImportStatement:
-    case _labels.Types.VariableDeclaration:
-    case _labels.Types.FunctionDeclaration:
-    case _labels.Types.EnumDeclaration:
-    case _labels.Types.StructDeclaration:
-    case _labels.Types.ClassDeclaration:
-    case _labels.Types.ProtocolDeclaration:
-    case _labels.Types.ExtensionDeclaration:
-    case _labels.Types.OperatorDeclaration:
-      this.emitDeclaration(ast);
-      break;
-    case _labels.Types.CallExpression:
-      this.emitCall(ast);
-      break;
-    case _labels.Types.BinaryExpression:
-      this.emitBinary(ast);
-      break;
-    case _labels.Types.MemberExpression:
-      this.emitMember(ast);
-      break;
-    case _labels.Types.Parameter:
-      this.emitParameter(ast);
-      break;
-    case _labels.Types.ParameterExpression:
-      this.write("(");
-      this.emitArguments(ast);
-      this.write(")");
-      break;
-    case _labels.Types.TernaryExpression:
-      this.emitTernary(ast);
-      break;
-    case _labels.Types.IfStatement:
-      this.emitIf(ast);
-      break;
-    default:
-      this.emitBinary(ast);
-      break;
-  };
-}
-
-function emitIf(ast) {
-
-  if (ast.condition) {
-    this.write("if (");
-    this.emitStatement(ast.condition);
-    this.write(")");
-  }
-  this.emitBlock(ast.consequent);
-  if (ast.alternate && ast.alternate.kind === _labels.Types.IfStatement) {
-    this.write(" else ");
-    this.emitStatement(ast.alternate);
-  }
-}
-
-function emitTernary(ast) {
-
-  this.emitStatement(ast.condition);
-  this.write("?");
-  this.emitStatement(ast.consequent);
-  this.write(":");
-  this.emitStatement(ast.alternate);
-}
-
-function emitParameter(ast) {
-  /** Labeled call parameter */
-  if (ast.init.init !== void 0) {
-    this.emitStatement(ast.init.init);
-  } else {
-    this.emitStatement(ast.init);
-  }
-}
-
-function emitMember(ast) {
-
-  if (ast.object.kind === _labels.Types.Literal) {
-    this.emitLiteral(ast.object);
-  } else {
-    this.emitStatement(ast.object);
-  }
-
-  if (ast.isComputed) {
-    this.write("[");
-  } else {
-    this.write(".");
-  }
-
-  if (ast.property.kind === _labels.Types.Literal) {
-    this.emitLiteral(ast.property);
-  } else {
-    this.emitStatement(ast.property);
-  }
-
-  if (ast.isComputed) {
-    this.write("]");
-  }
-}
-
-function emitCall(ast) {
-
-  this.emitStatement(ast.callee);
-
-  this.write("(");
-  this.emitArguments(ast.arguments);
-  this.write(")");
-}
-
-function emitArguments(ast) {
-
-  var param = ast.arguments;
-
-  var ii = 0;
-  var length = param.length;
-
-  for (; ii < length; ++ii) {
-    this.emitStatement(param[ii]);
-    if (ii + 1 < length) this.write(", ");
-  };
-}
-
-function emitDeclaration(ast) {
-
-  switch (ast.kind) {
-    case _labels.Types.FunctionDeclaration:
-      this.emitFunction(ast, false);
-      break;
-    case _labels.Types.ExtensionDeclaration:
-      this.emitExtension(ast);
-      break;
-    case _labels.Types.VariableDeclaration:
-      this.emitVariableDeclaration(ast);
-      break;
-  }
-}
-
-function emitExtension(ast) {
-
-  this.write("class ");
-
-  this.write("__");
-
-  this.emitLiteral(ast.argument);
-
-  this.write(" {\n");
-
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
-
-  try {
-    for (var _iterator3 = ast.body.body[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var node = _step3.value;
-
-      if (node.kind === _labels.Types.FunctionDeclaration) {
-        node.isStatic = true;
-        this.emitFunction(node, false, true);
-      }
-    }
-  } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3.return) {
-        _iterator3.return();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
-  }
-
-  ;
-
-  this.write("}");
-}
-
-function emitVariableDeclaration(ast) {
-
-  var index = 0;
-  var _iteratorNormalCompletion4 = true;
-  var _didIteratorError4 = false;
-  var _iteratorError4 = undefined;
-
-  try {
-    for (var _iterator4 = ast.declarations[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-      var node = _step4.value;
-
-      var init = ast.init[index] || ast.init;
-      var symbol = (0, _utils.getNameByLabel)(ast.symbol).toLowerCase() + " ";
-      if (node.kind === _labels.Types.ParameterExpression) {
-        this.emitMultipleVariable(node, init, symbol);
-      } else {
-        this.write(symbol);
-        this.emitVariable(node, init);
-      }
-      index++;
-    }
-  } catch (err) {
-    _didIteratorError4 = true;
-    _iteratorError4 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion4 && _iterator4.return) {
-        _iterator4.return();
-      }
-    } finally {
-      if (_didIteratorError4) {
-        throw _iteratorError4;
-      }
-    }
-  }
-
-  ;
-}
-
-function emitVariable(ast, init) {
-
-  this.write(ast.name || ast.value);
-  this.write(" = ");
-
-  if (ast.isLaterPointer) this.write("{\nvalue: ");
-
-  this.emitStatement(init);
-
-  if (ast.isLaterPointer) this.write("\n}");
-
-  this.write(";\n");
-}
-
-function emitMultipleVariable(ast, init, symbol) {
-
-  var index = 0;
-  var _iteratorNormalCompletion5 = true;
-  var _didIteratorError5 = false;
-  var _iteratorError5 = undefined;
-
-  try {
-    for (var _iterator5 = ast.arguments[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-      var node = _step5.value;
-
-      this.write(symbol);
-      this.emitVariable(node.init, init.arguments[index]);
-      index++;
-    }
-  } catch (err) {
-    _didIteratorError5 = true;
-    _iteratorError5 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion5 && _iterator5.return) {
-        _iterator5.return();
-      }
-    } finally {
-      if (_didIteratorError5) {
-        throw _iteratorError5;
-      }
-    }
-  }
-
-  ;
-}
-
-function emitBinary(ast) {
-
-  if (ast.kind === _labels.Types.BinaryExpression) {
-    var op = (0, _utils.getLabelByNumber)(ast.operator);
-    /** Custom operator call */
-    if (op in this.operators) {
-      this.emitCustomOperator(ast, op);
-      /** Default binary expr */
-    } else {
-      if (ast.isParenthised) this.write("(");
-      this.emitStatement(ast.left);
-      op = op === "==" ? "===" : op === "!=" ? "!==" : op;
-      this.write(" " + op + " ");
-      this.emitStatement(ast.right);
-      if (ast.isParenthised) this.write(")");
-    }
-  } else if (ast.kind === _labels.Types.Literal) {
-    this.emitLiteral(ast);
-  }
-}
-
-function emitCustomOperator(ast, op) {
-
-  this.write("__OP[\"" + op + "\"]");
-  this.write("(");
-  this.emitStatement(ast.left);
-  this.write(", ");
-  this.emitStatement(ast.right);
-  this.write(")");
-}
-
-function emitLiteral(ast) {
-
-  if (ast.init) ast = ast.init;
-
-  if (ast.isGlobal) {
-    this.write("__global.");
-  }
-
-  var name = this.isPureType(ast) ? (0, _utils.getNameByLabel)(ast.type) : ast.value || ast.name;
-
-  var resolve = this.scope.get(ast.value);
-
-  if (this.isPureType(ast)) {
-    if (ast.type === _labels.TokenList.SELF) {
-      this.write("this");
-    } else {
-      this.write((0, _utils.getLabelByNumber)(_labels.TokenList[name]));
-    }
-  } else {
-    this.write(ast.value || ast.name);
-  }
-
-  if (resolve && resolve.isLaterPointer) {
-    if (ast.isPointer === void 0) {
-      this.write(".value");
-    }
-  } else {
-    resolve = this.scope.get(ast.value);
-    if (!ast.isReference && resolve && resolve.isReference) {
-      this.write(".value");
-    }
-  }
-}
-
-function emitFunction(ast, allowOP, noKeyword) {
-
-  if (!allowOP && ast.name in this.operators) {
-    return void 0;
-  }
-
-  this.scope = ast.context;
-
-  if (!noKeyword) {
-    this.write("function ");
-  }
-
-  if (ast.isStatic) {
-    this.write("static ");
-  }
-
-  if (!allowOP) {
-    this.write(ast.name);
-  }
-
-  this.write("(");
-  this.emitArguments(ast.arguments);
-  this.write(")");
-
-  this.emitBlock(ast.body);
-
-  this.popScope();
-}
-
-function emitReturn(ast) {
-
-  this.write("return ");
-
-  this.emitStatement(ast.argument);
-}
-
-},{"../../../labels":43,"../../../nodes":44,"../../../utils":47}],9:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.emitProgram = emitProgram;
-
-var _labels = require("../../../labels");
-
-var _nodes = require("../../../nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("../../../utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function emitProgram(ast) {
-  //this.emitBlock(ast);
-}
-
-},{"../../../labels":43,"../../../nodes":44,"../../../utils":47}],10:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.JavaScript = exports.Java = undefined;
-
-var _Java2 = require("./Java");
-
-var _Java = _interopRequireWildcard(_Java2);
-
-var _JavaScript2 = require("./JavaScript");
-
-var _JavaScript = _interopRequireWildcard(_JavaScript2);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.Java = _Java;
-exports.JavaScript = _JavaScript;
-
-},{"./Java":9,"./JavaScript":8}],11:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.print = print;
-exports.pow = pow;
-exports.expect = expect;
-function print() {
-  console.log.apply(console, arguments);
-}
-
-function pow(rx, pow) {
-  return Math.pow(rx, pow);
-}
-
-function expect(truth) {
-  if (!truth) {
-    throw new Error("Expection error!");
-  }
-}
-
-},{}],12:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1348,7 +173,7 @@ function parseGuardStatement() {
   return null;
 }
 
-},{"../../labels":43,"../../nodes":44}],13:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1372,9 +197,7 @@ function parseIfStatement() {
   var node = new _nodes2.default.IfStatement();
 
   if (this.eat(_labels.TokenList.IF)) {
-    this.eat(_labels.TokenList.LPAREN);
-    node.condition = this.parseExpressionStatement();
-    this.eat(_labels.TokenList.RPAREN);
+    node.test = this.parseCondition();
   }
 
   // Consequent
@@ -1390,7 +213,7 @@ function parseIfStatement() {
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44}],14:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1435,7 +258,7 @@ function parseBranchStatement() {
   return null;
 }
 
-},{"../../labels":43,"../../nodes":44}],15:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1469,14 +292,16 @@ function parsePseudoProperty() {
     node.arguments = this.parseArguments();
   }
 
-  this.expect(_labels.TokenList.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(_labels.TokenList.RBRACE);
+  // Pseudos dont explicit need a body
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
 
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44}],16:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1499,7 +324,91 @@ function parseSwitch() {
   return null;
 }
 
-},{"../../labels":43,"../../nodes":44}],17:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parseComment = parseComment;
+exports.parseBlockComment = parseBlockComment;
+
+var _labels = require("../labels");
+
+var _nodes = require("../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../utils");
+
+var _scanner = require("../Tokenizer/scanner");
+
+var scan = _interopRequireWildcard(_scanner);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @return {Node}
+ */
+function parseComment() {
+
+  var node = new _nodes2.default.Comment();
+  var type = this.current.type;
+
+  node.arguments = this.parseBlockComment(this.current.value);
+
+  this.next();
+
+  return node;
+}
+
+/**
+ * @return {Array}
+ */
+function parseBlockComment(str) {
+
+  var args = [];
+
+  var ch = null;
+  var cp = -1;
+  var record = false;
+
+  var index = 0;
+  var length = str.length;
+
+  var out = "";
+
+  while (index < length) {
+    ch = str[index];
+    cp = ch.charCodeAt(0);
+    if (record) {
+      if (!scan.isWhiteSpace(cp) && !scan.isLineTerminator(cp)) {
+        // Dont allow commas
+        if (cp !== 44) {
+          out += ch;
+        }
+        if (index + 1 >= length) {
+          args.push(out);
+          record = false;
+        }
+      } else {
+        args.push(out);
+        record = false;
+      }
+    }
+    if (ch === "#") {
+      out = "";
+      record = true;
+    }
+    index++;
+  };
+
+  return args;
+}
+
+},{"../Tokenizer/scanner":34,"../labels":38,"../nodes":39,"../utils":41}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1536,13 +445,18 @@ function parseClass() {
     }
   }
 
-  if (this.eat(_labels.TokenList.COLON)) {
-    node.extend = this.parseCommaSeperatedValues() || [];
+  if (this.peek(_labels.TokenList.LT)) {
+    node.generic = this.parseGeneric();
   }
 
-  this.expect(_labels.TokenList.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(_labels.TokenList.RBRACE);
+  if (this.peek(_labels.TokenList.COLON)) {
+    node.extend = this.parseTypeInheritance();
+  }
+
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
 
   return node;
 }
@@ -1560,7 +474,7 @@ function parseSpecialClass(base) {
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],18:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1587,14 +501,19 @@ function parseExtension() {
 
   node.argument = this.parseLiteral();
 
-  this.expect(_labels.TokenList.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(_labels.TokenList.RBRACE);
+  if (this.eat(_labels.TokenList.COLON)) {
+    node.extend = this.parseTypeInheritance();
+  }
+
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
 
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44}],19:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1610,6 +529,8 @@ var _nodes2 = _interopRequireDefault(_nodes);
 
 var _utils = require("../../utils");
 
+var _const = require("../../const");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -1624,20 +545,27 @@ function parseFunction() {
 
   node.name = this.parseLiteralHead();
 
+  if (this.peek(_labels.TokenList.LT)) {
+    node.generic = this.parseGeneric();
+  }
+
   node.arguments = this.parseArguments();
 
   if (this.peek(_labels.TokenList.ARROW)) {
-    node.type = this.parseStrictType();
+    node.type = this.parseType().type;
+  } else {
+    node.type = this.parseFakeLiteral(_const.FUNC_DEFAULT_TYPE);
   }
 
-  this.expect(_labels.TokenList.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(_labels.TokenList.RBRACE);
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
 
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],20:[function(require,module,exports){
+},{"../../const":36,"../../labels":38,"../../nodes":39,"../../utils":41}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1657,17 +585,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @return {Node}
  */
 function parseImport() {
-  return null;
+
+  var node = new _nodes2.default.ImportDeclaration();
+
+  this.expect(_labels.TokenList.IMPORT);
+
+  node.specifiers = this.parseCommaSeperatedValues();
+
+  return node;
 }
 
-},{"../../labels":43,"../../nodes":44}],21:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseDeclarationStatement = parseDeclarationStatement;
-exports.parseInitializerDeclaration = parseInitializerDeclaration;
+exports.parseInitializer = parseInitializer;
 
 var _labels = require("../../labels");
 
@@ -1709,7 +644,7 @@ function parseDeclarationStatement() {
       node = this.parseVariableDeclaration();
       break;
     case _labels.TokenList.TYPEALIAS:
-      //
+      node = this.parseTypeAlias();
       break;
     case _labels.TokenList.FUNCTION:
       node = this.parseFunction();
@@ -1735,7 +670,7 @@ function parseDeclarationStatement() {
       node = this.parseOperator();
       break;
     case _labels.TokenList.INIT:
-      node = this.parseInitializerDeclaration();
+      node = this.parseInitializer();
       break;
   };
 
@@ -1747,7 +682,7 @@ function parseDeclarationStatement() {
 /*
  * @return {Node}
  */
-function parseInitializerDeclaration() {
+function parseInitializer() {
 
   var node = new _nodes2.default.InitializerDeclaration();
 
@@ -1755,14 +690,15 @@ function parseInitializerDeclaration() {
 
   node.arguments = this.parseArguments();
 
-  this.expect(_labels.TokenList.LBRACE);
-  node.body = this.parseBlock();
-  this.expect(_labels.TokenList.RBRACE);
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
 
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],22:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1947,7 +883,7 @@ function getOperatorPrecedence(body) {
   return -1;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../precedence":45,"../../utils":47}],23:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":41}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1967,10 +903,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @return {Node}
  */
 function parseProtocol() {
-  return null;
+
+  var node = new _nodes2.default.ProtocolDeclaration();
+
+  this.expect(_labels.TokenList.PROTOCOL);
+
+  if (this.peek(_labels.Token.Identifier)) {
+    node.name = this.extract(_labels.Token.Identifier).value;
+  }
+
+  if (this.peek(_labels.TokenList.COLON)) {
+    node.extend = this.parseTypeInheritance();
+  }
+
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
+
+  return node;
 }
 
-},{"../../labels":43,"../../nodes":44}],24:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1990,10 +944,66 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @return {Node}
  */
 function parseStruct() {
-  return null;
+
+  var node = new _nodes2.default.StructureDeclaration();
+
+  this.expect(_labels.TokenList.STRUCT);
+
+  if (this.peek(_labels.Token.Identifier)) {
+    node.name = this.extract(_labels.Token.Identifier).value;
+  }
+
+  if (this.peek(_labels.TokenList.COLON)) {
+    node.extend = this.parseTypeInheritance();
+  }
+
+  if (this.eat(_labels.TokenList.LBRACE)) {
+    node.body = this.parseBlock();
+    this.expect(_labels.TokenList.RBRACE);
+  }
+
+  return node;
 }
 
-},{"../../labels":43,"../../nodes":44}],25:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],17:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parseTypeAlias = parseTypeAlias;
+
+var _labels = require("../../labels");
+
+var _nodes = require("../../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @return {Node}
+ */
+function parseTypeAlias() {
+
+  var node = new _nodes2.default.TypeAliasDeclaration();
+
+  this.expect(_labels.TokenList.TYPEALIAS);
+
+  if (this.peek(_labels.Token.Identifier)) {
+    node.name = this.parseLiteral().value;
+  }
+
+  this.expect(_labels.TokenList.ASSIGN);
+
+  node.argument = this.parseStatement();
+
+  return node;
+}
+
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2014,14 +1024,7 @@ var _utils = require("../../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
-  [x] name
-  [x] pattern
-  [x] block
-  [x] getter-setter
-  [x] willset-didset
-  [x] expression
-  [x] type annotation (opt)
-  @return {Node}
+ * @return {Node}
  */
 function parseVariableDeclaration() {
 
@@ -2050,16 +1053,11 @@ function parseVariable(node) {
     node.init = this.parseBlock();
     this.expect(_labels.TokenList.RBRACE);
     // Expression
-  } else {
-    if (this.eat(_labels.TokenList.ASSIGN)) {
-      if (this.peek(_labels.TokenList.LPAREN) && node.declarations.length > 1) {
-        node.init = this.parseArguments();
-      } else {
-        node.init = this.parseStatement();
-      }
-    }
+  } else if (this.eat(_labels.TokenList.ASSIGN)) {
+    node.init = this.parseStatement();
   }
 
+  // Unify, if variable is block expr
   if (node.init && !node.init.length) {
     node.init = [node.init];
   }
@@ -2069,7 +1067,10 @@ function parseVariable(node) {
       var tmp = this.parseVariableDeclaration();
       tmp.symbol = node.symbol;
       node.declarations = node.declarations.concat(tmp.declarations);
-      node.init = node.init.concat(tmp.init);
+      // Dont join if no assignment found
+      if (node.init !== null && tmp.init !== null) {
+        node.init = node.init.concat(tmp.init);
+      }
       if (!this.peek(_labels.TokenList.COMMA)) break;
     };
   }
@@ -2091,7 +1092,7 @@ function parseVariableDeclarement() {
   return args;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],26:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2100,6 +1101,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.parseParenthese = parseParenthese;
 exports.parseCommaSeperatedValues = parseCommaSeperatedValues;
 exports.parseArguments = parseArguments;
+exports.parseMaybeArguments = parseMaybeArguments;
 
 var _labels = require("../../labels");
 
@@ -2127,14 +1129,7 @@ function parseParenthese(left, right) {
   this.expect(left);
   if (this.eat(right)) return null;
 
-  base = this.parseStatement();
-
-  if (this.eat(_labels.TokenList.COMMA)) {
-    node = this.parseCommaSeperatedValues();
-    node.unshift(base);
-  } else {
-    node = base;
-  }
+  node = this.parseCommaSeperatedValues();
 
   this.expect(right);
 
@@ -2147,9 +1142,19 @@ function parseParenthese(left, right) {
 function parseCommaSeperatedValues() {
 
   var args = [];
+  var stmt = null;
 
   while (true) {
-    args.push(this.parseStatement());
+    stmt = this.parseStatement();
+    // Labeled literal
+    if (this.peek(_labels.Token.Identifier)) {
+      if (!this.isOperator(_labels.TokenList[this.current.value])) {
+        var tmp = this.parseLiteral();
+        tmp.label = stmt;
+        stmt = tmp;
+      }
+    }
+    args.push(stmt);
     if (!this.eat(_labels.TokenList.COMMA)) break;
   };
 
@@ -2173,13 +1178,76 @@ function parseArguments(args) {
   return argz;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],27:[function(require,module,exports){
+/**
+ * @return {Array}
+ */
+function parseMaybeArguments() {
+
+  var args = this.parseExpressionStatement();
+
+  // Turn non-parenthised args into array
+  if (!(args instanceof Array)) {
+    if (args !== null) {
+      args = [args];
+    } else {
+      args = [];
+    }
+  }
+
+  return args;
+}
+
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],20:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parseArrayExpression = parseArrayExpression;
+
+var _labels = require("../../labels");
+
+var _nodes = require("../../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @return {Node}
+ */
+function parseArrayExpression() {
+
+  var node = new _nodes2.default.ArrayExpression();
+
+  var args = [];
+
+  this.expect(_labels.TokenList.LBRACK);
+
+  while (true) {
+    if (!this.peek(_labels.TokenList.RBRACK)) {
+      args.push(this.parseBinaryExpression(0));
+    }
+    if (!this.eat(_labels.TokenList.COMMA)) break;
+  };
+
+  this.expect(_labels.TokenList.RBRACK);
+
+  node.argument = args;
+
+  return node;
+}
+
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseAtom = parseAtom;
+exports.parseChaining = parseChaining;
 exports.parseMemberExpression = parseMemberExpression;
 exports.parseCallExpression = parseCallExpression;
 exports.parseTernaryExpression = parseTernaryExpression;
@@ -2195,30 +1263,42 @@ var _utils = require("../../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
-  [x] ?:
-  [x] .
-  [x] []
-  [x] AS|IS
-  [x] ()
-  @param {Node} base
-  @return {Node}
+ * @param {Node} node
+ * @return {Node}
  */
-function parseAtom(base) {
+function parseAtom(node) {
 
   while (true) {
     /** Un/computed member expression */
     if (this.peek(_labels.TokenList.LBRACK) || this.peek(_labels.TokenList.PERIOD)) {
-      base = this.parseMemberExpression(base);
+      node = this.parseMemberExpression(node);
     }
     /** Call expression */
     else if (this.peek(_labels.TokenList.LPAREN)) {
-        base = this.parseCallExpression(base);
+        node = this.parseCallExpression(node);
       } else {
         break;
       }
   };
 
-  return base;
+  this.parseChaining(node);
+
+  return node;
+}
+
+/**
+ * @param {Node}
+ */
+function parseChaining(node) {
+
+  if (this.eat(_labels.TokenList.NOT)) {
+    node.isUnwrapped = true;
+  } else if (this.peek(_labels.TokenList.CONDITIONAL)) {
+    if (!this.current.isTernary) {
+      this.next();
+      node.isOptional = true;
+    }
+  }
 }
 
 /**
@@ -2233,11 +1313,22 @@ function parseMemberExpression(base) {
   this.next();
 
   node.object = base;
-  node.property = this.parseLiteral();
+  node.property = node.isComputed ? this.parseExpressionStatement() : this.parseLiteral();
+
+  // Be careful with []
+  if (node.isComputed && this.eat(_labels.TokenList.COMMA)) {
+    var args = this.parseCommaSeperatedValues();
+    args.unshift(node.property);
+    var tmp = new _nodes2.default.ArrayExpression();
+    tmp.argument = args;
+    node.property = tmp;
+  }
 
   if (node.isComputed) {
     this.expect(_labels.TokenList.RBRACK);
   }
+
+  this.parseChaining(node);
 
   return node;
 }
@@ -2262,9 +1353,9 @@ function parseTernaryExpression(base) {
 
   var node = new _nodes2.default.TernaryExpression();
 
-  this.inTernary = true;
+  node.test = base;
 
-  node.condition = base;
+  this.inTernary = true;
 
   this.expect(_labels.TokenList.CONDITIONAL);
   node.consequent = this.parseExpressionStatement();
@@ -2276,13 +1367,14 @@ function parseTernaryExpression(base) {
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],28:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseBinaryExpression = parseBinaryExpression;
+exports.parseExpression = parseExpression;
 exports.isPrefixOperator = isPrefixOperator;
 exports.isPostfixOperator = isPostfixOperator;
 exports.getUnifiedOperator = getUnifiedOperator;
@@ -2312,16 +1404,15 @@ function parseBinaryExpression(index) {
 
   var state = _precedence.IFX_PRECEDENCE[index];
 
-  left = state ? this.parseBinaryExpression(index + 1) : this.parseAtom(this.parseLiteral());
+  left = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseExpression();
 
   while (this.acceptPrecedence(state)) {
     node = new _nodes2.default.BinaryExpression();
     node.operator = _labels.TokenList[state.op];
     this.next();
     node.left = left;
-    tmp = state ? this.parseBinaryExpression(index + 1) : this.parseLiteral();
+    tmp = state !== void 0 ? this.parseBinaryExpression(index + 1) : this.parseExpression();
     node.right = tmp;
-    node.isParenthised = this.peek(_labels.TokenList.RPAREN);
     left = node;
   };
 
@@ -2333,6 +1424,40 @@ function parseBinaryExpression(index) {
   }
 
   return left;
+}
+
+/**
+ * @return {Node}
+ */
+function parseExpression() {
+
+  var node = null;
+  var isParenthised = this.peek(_labels.TokenList.LPAREN);
+
+  // Standalone parenthised operator
+  if (this.isOperator(this.current.name)) {
+    this.next();
+    if (this.peek(_labels.TokenList.RPAREN)) {
+      this.back();
+      node = this.parseSpecialLiteral();
+      return node;
+    } else {
+      this.back();
+    }
+  }
+
+  // Closure
+  if (this.peek(_labels.TokenList.LBRACE)) {
+    node = this.parseAtom(this.parseClosureExpression());
+  } else {
+    node = this.parseAtom(this.parseLiteral());
+  }
+
+  if (node !== null && node.kind === _labels.Types.BinaryExpression) {
+    node.isParenthised = isParenthised;
+  }
+
+  return node;
 }
 
 /**
@@ -2405,7 +1530,72 @@ function opInArray(array, op) {
   return false;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../precedence":45,"../../utils":47}],29:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":41}],23:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parseClosureExpression = parseClosureExpression;
+exports.parseFunctionExpression = parseFunctionExpression;
+
+var _labels = require("../../labels");
+
+var _nodes = require("../../nodes");
+
+var _nodes2 = _interopRequireDefault(_nodes);
+
+var _utils = require("../../utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @return {Node}
+ */
+function parseClosureExpression() {
+
+  var node = new _nodes2.default.ClosureExpression();
+
+  this.expect(_labels.TokenList.LBRACE);
+
+  node.signature = this.parseExpressionStatement();
+
+  // unparenthised comma seperated signature arguments
+  if (this.eat(_labels.TokenList.COMMA)) {
+    var tmp = this.parseCommaSeperatedValues();
+    tmp.unshift(node);
+    node = tmp;
+  }
+
+  this.eat(_labels.TokenList.IN);
+
+  node.body = this.parseBlock();
+
+  this.expect(_labels.TokenList.RBRACE);
+
+  return node;
+}
+
+/**
+ * @param {Node}
+ * @return {Node}
+ */
+function parseFunctionExpression(node) {
+
+  var tmp = new _nodes2.default.FunctionExpression();
+  tmp.type = this.parseTypeExpression();
+
+  if (!(tmp.type instanceof Array)) {
+    tmp.type = [tmp.type];
+  }
+
+  // validate non-array argument
+  tmp.arguments = node instanceof Array ? node : node === null ? [] : [node];
+
+  return tmp;
+}
+
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2431,44 +1621,46 @@ function parseExpressionStatement() {
   var node = null;
 
   switch (this.current.name) {
-    case _labels.TokenList.LPAREN:
+    /** Array */
     case _labels.TokenList.LBRACK:
-    case _labels.TokenList.SELF:
-    case _labels.TokenList.BIT_AND:
-    case _labels.TokenList.UL:
-    case _labels.TokenList.TRUE:
-    case _labels.TokenList.FALSE:
-    case _labels.Token.Identifier:
-    case _labels.Token.NullLiteral:
-    case _labels.Token.StringLiteral:
-    case _labels.Token.NumericLiteral:
-    case _labels.Token.BooleanLiteral:
-      node = this.parseBinaryExpression(0);
-      break;
-    /** Operator things */
-    case _labels.TokenList.ASSOCIATIVITY:
-      node = this.parseAssociativityExpression();
-      break;
-    case _labels.TokenList.PRECEDENCE:
-      node = this.parsePrecedenceExpression();
+      node = this.parseAtom(this.parseArrayExpression());
       break;
     default:
-      // Ups, expression starts with prefix operator
-      // FIXME
-      if (this.isOperator(this.current.name)) {
+      /** Closure */
+      if (!this.inCondition && this.peek(_labels.TokenList.LBRACE)) {
+        node = this.parseBinaryExpression(0);
+      } else if (this.isOperator(this.current.name) || (0, _utils.isLiteral)(this.current.name)) {
         node = this.parseBinaryExpression(0);
       }
       break;
   };
 
-  if (this.peek(_labels.TokenList.CONDITIONAL)) {
+  if (this.eat(_labels.TokenList.ARROW)) {
+    node = this.parseFunctionExpression(node);
+  }
+
+  /**
+   * Trailing closure
+   * Don't trail if inside
+   * undparenthised condition
+   */
+  else if (!this.inCondition && this.peek(_labels.TokenList.LBRACE)) {
+      // Only parse as trailing, if brace opens in same code line
+      if (this.current.loc.start.line === this.previous.loc.start.line) {
+        var tmp = this.parseClosureExpression();
+        tmp.callee = node;
+        node = tmp;
+      }
+    }
+
+  if (this.peek(_labels.TokenList.CONDITIONAL) && this.current.isTernary) {
     node = this.parseTernaryExpression(node);
   }
 
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],30:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2476,7 +1668,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseLiteral = parseLiteral;
 exports.parseLiteralHead = parseLiteralHead;
-exports.parseArrayDeclaration = parseArrayDeclaration;
+exports.parseSpecialLiteral = parseSpecialLiteral;
 
 var _labels = require("../../labels");
 
@@ -2493,14 +1685,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function parseLiteral() {
 
-  // Unary pex expression
-  if (this.isPrefixOperator(this.current)) {
-    return this.parseUnaryExpression(void 0);
+  var node = new _nodes2.default.Literal();
+
+  // Enum access
+  if (this.eat(_labels.TokenList.PERIOD)) {
+    node = this.parseLiteral();
+    node.isEnumLink = true;
+    return node;
   }
 
-  if (this.peek(_labels.TokenList.LPAREN)) {
-    this.expect(_labels.TokenList.LPAREN);
-    var tmp = this.parseExpressionStatement();
+  // Unary pex expression
+  if (this.isPrefixOperator(this.current)) {
+    return this.parseUnaryExpression(null);
+  }
+
+  // Call expression
+  if (this.eat(_labels.TokenList.LPAREN)) {
+    // Empty
+    if (this.eat(_labels.TokenList.RPAREN)) {
+      return null;
+    }
+    var tmp = this.parseStatement();
     // Seems like a standalone operator
     if (tmp === null) {
       tmp = this.parseLiteral();
@@ -2516,7 +1721,6 @@ function parseLiteral() {
     return tmp;
   }
 
-  var node = new _nodes2.default.Literal();
   var isExplicit = this.eat(_labels.TokenList.UL);
 
   // Literal passed as pointer
@@ -2524,33 +1728,46 @@ function parseLiteral() {
     node.isPointer = true;
   }
 
-  if (isExplicit && this.peek(_labels.TokenList.COLON)) {
+  if (isExplicit && this.peek(_labels.TokenList.COLON) && !this.inTernary) {
     // Explicit only parameter
   } else {
-    node.type = this.current.name;
-    node.value = this.current.value;
-    node.raw = this.current.value;
-    this.next();
-  }
-
-  // Labeled literal
-  if (this.peek(_labels.Token.Identifier)) {
-    if (!this.isOperator(_labels.TokenList[this.current.value])) {
-      var _tmp = this.parseLiteral();
-      _tmp.label = node;
-      node = _tmp;
+    // Parse literal
+    if ((0, _utils.isLiteral)(this.current.name)) {
+      node.type = this.current.name;
+      node.value = this.current.value;
+      node.raw = this.current.value;
+      this.next();
     }
+    // No literal to parse
+    else {
+        // Assignment to underscore
+        if (isExplicit && this.isOperator(this.current.name)) {
+          this.back();
+          node = this.parseSpecialLiteral();
+        } else {
+          node = this.parseStatement();
+        }
+      }
   }
 
   // Dont parse colon as argument, if in ternary expression
-  if (!this.inTernary) {
-    if (this.peek(_labels.TokenList.COLON)) {
-      node = this.parseStrictType(node);
-      if (node.argument && node.argument.kind === _labels.Types.TypeAnnotation) {
-        node.argument.isExplicit = isExplicit;
-      }
+  if (!this.inTernary && this.peek(_labels.TokenList.COLON)) {
+    node = this.parseType(node);
+    if (isExplicit) {
+      node.isExplicit = true;
     }
   }
+
+  // Shorthand
+  if (node !== null && node.value !== void 0 && node.value !== null) {
+    if (node.value.charAt(0) === "$") {
+      node.isShorthand = true;
+      // Delete $ sign
+      node.value = node.value.slice(1);
+    }
+  }
+
+  this.parseChaining(node);
 
   return node;
 }
@@ -2576,20 +1793,23 @@ function parseLiteralHead() {
 }
 
 /**
+ * Parse as literal, don't
+ * care what it really is
  * @return {Node}
  */
-function parseArrayDeclaration() {
+function parseSpecialLiteral() {
 
-  var node = new _nodes2.default.ArrayDeclaration();
+  var node = new _nodes2.default.Literal();
 
-  var args = this.parseParenthese(_labels.TokenList.LBRACK, _labels.TokenList.RBRACK);
-
-  node.argument = this.parseArguments(args);
+  node.type = this.current.name;
+  node.value = this.current.value;
+  node.raw = this.current.value;
+  this.next();
 
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],31:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2608,6 +1828,7 @@ var _utils = require("../../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
+ * @param  {Node} base
  * @return {Node}
  */
 function parseUnaryExpression(base) {
@@ -2621,7 +1842,7 @@ function parseUnaryExpression(base) {
   return node;
 }
 
-},{"../../labels":43,"../../nodes":44,"../../utils":47}],32:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2642,6 +1863,10 @@ var _atom = require("./expression/atom");
 
 var atoms = _interopRequireWildcard(_atom);
 
+var _array = require("./expression/array");
+
+var arrays = _interopRequireWildcard(_array);
+
 var _unary = require("./expression/unary");
 
 var unaries = _interopRequireWildcard(_unary);
@@ -2653,6 +1878,10 @@ var binaries = _interopRequireWildcard(_binary);
 var _literal = require("./expression/literal");
 
 var literals = _interopRequireWildcard(_literal);
+
+var _closure = require("./expression/closure");
+
+var closures = _interopRequireWildcard(_closure);
 
 var _expression = require("./expression");
 
@@ -2685,6 +1914,14 @@ var loops = _interopRequireWildcard(_loop);
 var _type = require("./type");
 
 var types = _interopRequireWildcard(_type);
+
+var _access = require("./access");
+
+var accesses = _interopRequireWildcard(_access);
+
+var _comment = require("./comment");
+
+var comments = _interopRequireWildcard(_comment);
 
 var _statement = require("./statement");
 
@@ -2721,6 +1958,10 @@ var operators = _interopRequireWildcard(_operator);
 var _extension = require("./declare/extension");
 
 var extensions = _interopRequireWildcard(_extension);
+
+var _typealias = require("./declare/typealias");
+
+var typealiases = _interopRequireWildcard(_typealias);
 
 var _declare = require("./declare");
 
@@ -2785,6 +2026,12 @@ function Parser() {
    * @type {Boolean}
    */
   this.inTernary = false;
+
+  /**
+   * Inside condition
+   * @type {Boolean}
+   */
+  this.inCondition = false;
 };
 
 exports.default = Parser;
@@ -2794,9 +2041,11 @@ exports.default = Parser;
 
 (0, _utils.inherit)(Parser, args);
 (0, _utils.inherit)(Parser, atoms);
+(0, _utils.inherit)(Parser, arrays);
 (0, _utils.inherit)(Parser, unaries);
 (0, _utils.inherit)(Parser, binaries);
 (0, _utils.inherit)(Parser, literals);
+(0, _utils.inherit)(Parser, closures);
 (0, _utils.inherit)(Parser, expressions);
 
 (0, _utils.inherit)(Parser, guards);
@@ -2808,6 +2057,8 @@ exports.default = Parser;
 (0, _utils.inherit)(Parser, loops);
 (0, _utils.inherit)(Parser, types);
 (0, _utils.inherit)(Parser, branches);
+(0, _utils.inherit)(Parser, comments);
+(0, _utils.inherit)(Parser, accesses);
 (0, _utils.inherit)(Parser, statements);
 
 (0, _utils.inherit)(Parser, imports);
@@ -2818,9 +2069,10 @@ exports.default = Parser;
 (0, _utils.inherit)(Parser, variables);
 (0, _utils.inherit)(Parser, operators);
 (0, _utils.inherit)(Parser, extensions);
+(0, _utils.inherit)(Parser, typealiases);
 (0, _utils.inherit)(Parser, declarations);
 
-},{"../utils":47,"./branch":14,"./branch/guard":12,"./branch/if":13,"./branch/pseudo":15,"./branch/switch":16,"./declare":21,"./declare/class":17,"./declare/extension":18,"./declare/function":19,"./declare/import":20,"./declare/operator":22,"./declare/protocol":23,"./declare/struct":24,"./declare/variable":25,"./expression":29,"./expression/args":26,"./expression/atom":27,"./expression/binary":28,"./expression/literal":30,"./expression/unary":31,"./loop":33,"./parse":34,"./statement":35,"./type":36}],33:[function(require,module,exports){
+},{"../utils":41,"./access":2,"./branch":5,"./branch/guard":3,"./branch/if":4,"./branch/pseudo":6,"./branch/switch":7,"./comment":8,"./declare":13,"./declare/class":9,"./declare/extension":10,"./declare/function":11,"./declare/import":12,"./declare/operator":14,"./declare/protocol":15,"./declare/struct":16,"./declare/typealias":17,"./declare/variable":18,"./expression":24,"./expression/args":19,"./expression/array":20,"./expression/atom":21,"./expression/binary":22,"./expression/closure":23,"./expression/literal":25,"./expression/unary":26,"./loop":28,"./parse":29,"./statement":30,"./type":31}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2828,8 +2080,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseLoopStatement = parseLoopStatement;
 exports.parseFor = parseFor;
-exports.parseForInLoop = parseForInLoop;
-exports.parseDefaultForLoop = parseDefaultForLoop;
 exports.parseWhile = parseWhile;
 exports.parseRepeat = parseRepeat;
 
@@ -2844,11 +2094,8 @@ var _utils = require("../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
-  [ ] for
-  [ ] while
-  [ ] repeat
-  @return {Node}
-*/
+ * @return {Node}
+ */
 function parseLoopStatement() {
 
   switch (this.current.name) {
@@ -2886,33 +2133,21 @@ function parseFor() {
   // for (expr) in (expr)
   if (this.eat(_labels.TokenList.IN)) {
     node = new _nodes2.default.ForInStatement();
-    this.parseForInLoop(node);
+    node.expression = this.parseCondition();
     // for (expr);(expr);(expr)
   } else {
-    this.parseDefaultForLoop(node);
+    node.test = this.parseExpressionStatement();
+    this.expect(_labels.TokenList.SEMICOLON);
+    node.update = this.parseCondition();
   }
 
   node.init = init;
-
-  this.eat(_labels.TokenList.RPAREN);
 
   this.expect(_labels.TokenList.LBRACE);
   node.body = this.parseBlock();
   this.expect(_labels.TokenList.RBRACE);
 
   return node;
-}
-
-function parseForInLoop(node) {
-
-  node.expression = this.parseExpressionStatement();
-}
-
-function parseDefaultForLoop(node) {
-
-  node.test = this.parseExpressionStatement();
-  this.expect(_labels.TokenList.SEMICOLON);
-  node.update = this.parseExpressionStatement();
 }
 
 /**
@@ -2924,9 +2159,7 @@ function parseWhile() {
 
   this.expect(_labels.TokenList.WHILE);
 
-  this.eat(_labels.TokenList.LPAREN);
-  node.test = this.parseExpressionStatement();
-  this.eat(_labels.TokenList.RPAREN);
+  node.test = this.parseCondition();
 
   this.expect(_labels.TokenList.LBRACE);
   node.body = this.parseBlock();
@@ -2950,14 +2183,12 @@ function parseRepeat() {
 
   this.expect(_labels.TokenList.WHILE);
 
-  this.eat(_labels.TokenList.LPAREN);
-  node.test = this.parseExpressionStatement();
-  this.eat(_labels.TokenList.RPAREN);
+  node.test = this.parseCondition();
 
   return node;
 }
 
-},{"../labels":43,"../nodes":44,"../utils":47}],34:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2975,6 +2206,7 @@ exports.parseBlock = parseBlock;
 exports.parse = parse;
 exports.acceptPrecedence = acceptPrecedence;
 exports.isOperator = isOperator;
+exports.parseFakeLiteral = parseFakeLiteral;
 
 var _labels = require("../labels");
 
@@ -3061,6 +2293,8 @@ function expect(kind) {
     if (this.current !== void 0) {
       var loc = this.current.loc;
       throw new Error("Expected " + (0, _utils.getNameByLabel)(kind) + " but got " + (0, _utils.getNameByLabel)(this.current.name) + " in " + loc.start.line + ":" + loc.end.column);
+    } else {
+      throw new Error("Reached end!");
     }
     return false;
   }
@@ -3089,6 +2323,20 @@ function parseProgram() {
 
   node.body = this.parseBlock();
 
+  /**
+   * If very first comment
+   * doesn't contain compiler
+   * instructions -> delete it
+   */
+  if (node.body.body.length) {
+    var tmp = node.body.body[0];
+    if (tmp.kind === _labels.Types.Comment) {
+      if (!tmp.arguments.length) {
+        node.body.body.shift();
+      }
+    }
+  }
+
   return node;
 }
 
@@ -3098,10 +2346,13 @@ function parseProgram() {
 function parseBlock() {
 
   var node = new _nodes2.default.BlockStatement();
+
+  var index = 0;
   var statement = null;
 
-  while ((statement = this.parseStatement()) !== null) {
-    node.body.push(statement);
+  for (; (statement = this.parseStatement()) !== null; ++index) {
+    // Only allow parsing very first comment
+    if (statement.kind !== _labels.Types.Comment || statement.kind === _labels.Types.Comment && index <= 0) node.body.push(statement);
     if (this.current === void 0) break;
   };
 
@@ -3149,7 +2400,7 @@ function parse(tokens) {
  * @return {Boolean}
  */
 function acceptPrecedence(state) {
-  if (state !== void 0 && this.current) {
+  if (state !== void 0 && this.current !== void 0) {
     // Custom infix operator
     if ((0, _utils.getNameByLabel)(this.current.name) === "Identifier") {
       return _labels.TokenList[state.op] === _labels.TokenList[this.current.value];
@@ -3167,18 +2418,37 @@ function isOperator(name) {
   return (0, _utils.getNameByLabel)(name) in _labels.Operators;
 }
 
-},{"../labels":43,"../nodes":44,"../utils":47}],35:[function(require,module,exports){
+/**
+ * @param {String} value
+ * @return {Node}
+ */
+function parseFakeLiteral(value) {
+
+  var tmp = this.current;
+
+  this.current = {
+    name: _labels.Token.Identifier,
+    value: value
+  };
+
+  var node = this.parseLiteral();
+
+  this.back();
+
+  this.current = tmp;
+
+  return node;
+}
+
+},{"../labels":38,"../nodes":39,"../utils":41}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parseStatement = parseStatement;
-exports.parseFinal = parseFinal;
-exports.parseOverride = parseOverride;
-exports.parseStatic = parseStatic;
-exports.parseAccessControl = parseAccessControl;
 exports.parseReturnStatement = parseReturnStatement;
+exports.parseCondition = parseCondition;
 
 var _labels = require("../labels");
 
@@ -3198,6 +2468,11 @@ function parseStatement() {
   var node = null;
 
   switch (this.current.name) {
+    /** Comment */
+    case _labels.Token.BlockComment:
+    case _labels.Token.LineComment:
+      node = this.parseComment();
+      break;
     /** Loop statement */
     case _labels.TokenList.FOR:
     case _labels.TokenList.WHILE:
@@ -3253,10 +2528,6 @@ function parseStatement() {
     case _labels.TokenList.INTERNAL:
       node = this.parseAccessControl();
       break;
-    /** Override */
-    case _labels.TokenList.OVERRIDE:
-      node = this.parseOverride();
-      break;
     /** Final */
     case _labels.TokenList.FINAL:
       node = this.parseFinal();
@@ -3264,97 +2535,24 @@ function parseStatement() {
     case _labels.TokenList.STATIC:
       node = this.parseStatic();
       break;
+    /** Override */
+    case _labels.TokenList.OVERRIDE:
+      node = this.parseOverride();
+      break;
+    /** Operator things */
+    case _labels.TokenList.ASSOCIATIVITY:
+      node = this.parseAssociativityExpression();
+      break;
+    case _labels.TokenList.PRECEDENCE:
+      node = this.parsePrecedenceExpression();
+      break;
     /** Expression statement */
     default:
-      node = this.parseExpressionStatement();
+      node = this.parseAtom(this.parseExpressionStatement());
       break;
   };
 
   this.eat(_labels.TokenList.SEMICOLON);
-
-  return node;
-}
-
-/**
- * @return {Node}
- */
-function parseFinal() {
-
-  this.expect(_labels.TokenList.FINAL);
-
-  var node = this.parseStatement();
-
-  if (!node.hasOwnProperty("isFinal")) {
-    throw new Error("Can't attach final property to node!");
-  }
-
-  node.isFinal = true;
-
-  return node;
-}
-
-/**
- * @return {Node}
- */
-function parseOverride() {
-
-  this.expect(_labels.TokenList.OVERRIDE);
-
-  var node = this.parseStatement();
-
-  if (!node.hasOwnProperty("isOverride")) {
-    throw new Error("Can't attach override property to node!");
-  }
-
-  node.isOverride = true;
-
-  return node;
-}
-
-/**
- * @return {Node}
- */
-function parseStatic() {
-
-  this.expect(_labels.TokenList.STATIC);
-
-  var node = this.parseStatement();
-
-  if (!node.hasOwnProperty("isStatic")) {
-    throw new Error("Can't attach static property to node!");
-  }
-
-  node.isStatic = true;
-
-  return node;
-}
-
-/**
- * @return {Node}
- */
-function parseAccessControl() {
-
-  var access = this.current;
-
-  this.next();
-
-  var node = this.parseStatement();
-
-  if (!node.hasOwnProperty("isPublic") && !node.hasOwnProperty("isPrivate") && !node.hasOwnProperty("isInternal")) {
-    throw new Error("Can't attach access control to node!");
-  }
-
-  switch (access.name) {
-    case _labels.TokenList.PUBLIC:
-      node.isPublic = true;
-      break;
-    case _labels.TokenList.PRIVATE:
-      node.isPrivate = true;
-      break;
-    case _labels.TokenList.INTERNAL:
-      node.isInternal = true;
-      break;
-  };
 
   return node;
 }
@@ -3373,15 +2571,33 @@ function parseReturnStatement() {
   return node;
 }
 
-},{"../labels":43,"../nodes":44,"../utils":47}],36:[function(require,module,exports){
+/**
+ * @return {Node}
+ */
+function parseCondition() {
+
+  var node = null;
+
+  this.inCondition = true;
+  this.eat(_labels.TokenList.LPAREN);
+  node = this.parseStatement();
+  this.eat(_labels.TokenList.RPAREN);
+  this.inCondition = false;
+
+  return node;
+}
+
+},{"../labels":38,"../nodes":39,"../utils":41}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parseStrictType = parseStrictType;
 exports.parseType = parseType;
-exports.isNativeType = isNativeType;
+exports.parseTypeExpression = parseTypeExpression;
+exports.parseTupleType = parseTupleType;
+exports.parseGeneric = parseGeneric;
+exports.parseTypeInheritance = parseTypeInheritance;
 
 var _labels = require("../labels");
 
@@ -3394,85 +2610,100 @@ var _utils = require("../utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
-  [x] tuple
-  [x] type
-*/
-function parseStrictType(base) {
+ * @return {Node}
+ */
+function parseType(base) {
 
-  var node = new _nodes2.default.Parameter();
+  var node = new _nodes2.default.TypeExpression();
 
-  var isInout = false;
+  node.name = base;
 
   if (this.eat(_labels.TokenList.COLON)) {
-    isInout = this.eat(_labels.TokenList.INOUT);
-    node.init = base;
-    if (this.isNativeType(this.current.name)) {
-      node.argument = this.parseType();
-    } else {
-      node.argument = this.parseExpressionStatement();
-    }
-  } else if (this.eat(_labels.TokenList.ARROW)) {
-    // func () -> ()
-    if (this.peek(_labels.TokenList.LPAREN)) {
-      node = this.parseExpressionStatement();
-      // func () -> Type
-    } else {
-      node = this.parseType();
-    }
+    node.isReference = this.eat(_labels.TokenList.INOUT);
   }
 
-  if (node.argument && node.argument.kind === _labels.Types.TypeAnnotation) {
-    node.argument.isReference = isInout;
-  }
+  node.type = this.parseTypeExpression();
 
   return node;
 }
 
-function parseType() {
-
-  var node = new _nodes2.default.TypeAnnotation();
-
-  node.type = this.current.name;
-
-  this.next();
-
-  if (this.eat(_labels.TokenList.CONDITIONAL)) {
-    node.isOptional = true;
-  } else if (this.current.value === "!") {
-    node.isUnwrap = true;
-    this.next();
-  }
-
-  return node;
-}
-
-/**
- * @param  {Number}  type
- * @return {Boolean}
+/*
+ * @return {Node}
  */
-function isNativeType(type) {
-  switch (type) {
-    case _labels.TokenList.VOID:
-    case _labels.TokenList.INT:
-    case _labels.TokenList.INT8:
-    case _labels.TokenList.UINT8:
-    case _labels.TokenList.INT32:
-    case _labels.TokenList.INT64:
-    case _labels.TokenList.UINT64:
-    case _labels.TokenList.DOUBLE:
-    case _labels.TokenList.FLOAT:
-    case _labels.TokenList.BOOLEAN:
-    case _labels.TokenList.STRING:
-    case _labels.TokenList.CHARACTER:
-      return true;
-      break;
-    default:
-      return false;
-      break;
-  };
+function parseTypeExpression() {
+
+  var node = null;
+
+  // Tuple
+  if (this.peek(_labels.TokenList.LPAREN)) {
+    node = this.parseTupleType();
+  }
+  // Identifier
+  else if (this.peek(_labels.Token.Identifier)) {
+      node = this.parseLiteral();
+      if (this.peek(_labels.TokenList.LT)) {
+        node.generic = this.parseGeneric();
+      }
+    }
+    // Arrow
+    else if (this.eat(_labels.TokenList.ARROW)) {
+        node = this.parseLiteral();
+      } else {
+        node = this.parseExpressionStatement();
+      }
+
+  return node;
 }
 
-},{"../labels":43,"../nodes":44,"../utils":47}],37:[function(require,module,exports){
+/*
+ * @return {Array}
+ */
+function parseTupleType() {
+
+  var node = this.parseMaybeArguments();
+
+  return node;
+}
+
+function parseGeneric() {
+
+  var node = new _nodes2.default.GenericClause();
+
+  this.expect(_labels.TokenList.LT);
+
+  var args = [];
+  var id = null;
+
+  while (true) {
+    id = this.parseTypeExpression();
+    args.push(id);
+    if (!this.eat(_labels.TokenList.COMMA)) break;
+  };
+
+  this.expect(_labels.TokenList.GT);
+
+  node.arguments = args;
+
+  return node;
+}
+
+function parseTypeInheritance() {
+
+  this.expect(_labels.TokenList.COLON);
+
+  var args = [];
+  var id = null;
+
+  while (true) {
+    id = this.parseLiteral();
+    args.push(id);
+    if (!this.eat(_labels.TokenList.COMMA)) break;
+  };
+
+  return args;
+}
+
+},{"../labels":38,"../nodes":39,"../utils":41}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3514,7 +2745,7 @@ var Character = exports.Character = {
   }
 };
 
-},{}],38:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3547,17 +2778,25 @@ var Tokenizer = function () {
 
 exports.default = Tokenizer;
 
-},{"./scanner":39}],39:[function(require,module,exports){
+},{"./scanner":34}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.tokenize = undefined;
+exports.isWhiteSpace = isWhiteSpace;
+exports.isLineTerminator = isLineTerminator;
 
 var _char = require('./char');
 
 var _labels = require('../labels');
+
+/**
+ * The code below is based on the compiled version of esprima (http://esprima.org/)
+ * Small modifications were made, to support swift scanning
+ */
+
 
 var PlaceHolders, Messages, Regex, source, strict, index, lineNumber, lineStart, hasLineTerminator, lastIndex, lastLineNumber, lastLineStart, startIndex, startLineNumber, startLineStart, scanning, length, lookahead, state, extra, isBindingElement, isAssignmentTarget, firstCoverInitializedNameError;
 
@@ -4082,11 +3321,18 @@ function scanPunctuator() {
     case '[':
     case ']':
     case ':':
-    case '?':
     case '~':
       ++index;
       break;
-
+    case '?':
+      var before = source.charCodeAt(index - 1);
+      var after = source.charCodeAt(index + 1);
+      // Swift detects ternary ? by whitespace, on both sides
+      if (isWhiteSpace(before) && isWhiteSpace(after)) {
+        token.isTernary = true;
+      }
+      index++;
+      break;
     default:
       var buf = "";
       var cp = source.charCodeAt(index);
@@ -4438,6 +3684,12 @@ function advance() {
 
   if (isIdentifierStart(cp)) {
     token = scanIdentifier();
+    // Tuple period subscript
+    /*if (source.charCodeAt(index) === 0x2E) {
+      if (isDecimalDigit(source.charCodeAt(index + 1))) {
+        console.log(token);
+      }
+    }*/
     return token;
   }
 
@@ -4455,6 +3707,10 @@ function advance() {
   // to check the next character.
   if (cp === 0x2E) {
     if (isDecimalDigit(source.charCodeAt(index + 1))) {
+      // Example: a.1
+      if (extra.tokens[extra.tokens.length - 1].name === _labels.Token.Identifier) {
+        return scanPunctuator();
+      }
       return scanNumericLiteral();
     }
     return scanPunctuator();
@@ -4507,6 +3763,9 @@ function collectToken() {
         range: [token.start, token.end],
         loc: loc
       };
+    }
+    if (token.isTernary) {
+      entry.isTernary = true;
     }
     if (extra.tokenValues) {
       extra.tokenValues.push(entry.type === 'Punctuator' || entry.type === 'Keyword' ? entry.value : null);
@@ -4588,6 +3847,8 @@ function tokenize(code, options, delegate) {
   extra.tokenize = true;
   extra.delegate = delegate;
 
+  options.comment = true;
+
   // The following two fields are necessary to compute the Regex tokens.
   extra.openParenToken = -1;
   extra.openCurlyToken = -1;
@@ -4655,7 +3916,7 @@ function peek() {
 
 exports.tokenize = tokenize;
 
-},{"../labels":43,"./char":37}],40:[function(require,module,exports){
+},{"../labels":38,"./char":32}],35:[function(require,module,exports){
 "use strict";
 
 var _labels = require("./labels");
@@ -4671,9 +3932,6 @@ var POSTFIX = _labels.TokenList.POSTFIX;
 (0, _precedence.registerOperator)("~", -1, "none", "BIT_NOT", PREFIX);
 (0, _precedence.registerOperator)("+", -1, "none", "UNARY_ADD", PREFIX);
 (0, _precedence.registerOperator)("-", -1, "none", "UNARY_SUB", PREFIX);
-
-(0, _precedence.registerOperator)("++", -1, "none", "PRE_ADD", PREFIX); // removed in swift 3
-(0, _precedence.registerOperator)("--", -1, "none", "PRE_SUB", PREFIX); // removed in swift 3
 
 /** INFIX */
 (0, _precedence.registerOperator)("*", 150, "left", "MUL", INFIX);
@@ -4724,45 +3982,46 @@ var POSTFIX = _labels.TokenList.POSTFIX;
 (0, _precedence.registerOperator)("--", -1, "none", "POST_SUB", POSTFIX); // removed in swift 3
 (0, _precedence.registerOperator)("++", -1, "none", "POST_ADD", POSTFIX); // removed in swift 3
 
-},{"./labels":43,"./precedence":45}],41:[function(require,module,exports){
+},{"./labels":38,"./precedence":40}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+/**
+ * Version
+ * @type {String}
+ */
 var VERSION = exports.VERSION = require("../package.json").version;
 
-},{"../package.json":1}],42:[function(require,module,exports){
+/**
+ * Default type, if a function
+ * has no type assigned
+ * @type {String}
+ */
+var FUNC_DEFAULT_TYPE = exports.FUNC_DEFAULT_TYPE = "Void";
+
+},{"../package.json":1}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.VERSION = exports.global = exports.compile = exports.evaluate = exports.generate = exports.tokenize = exports.parse = undefined;
+exports.VERSION = exports.tokenize = exports.parse = undefined;
 
 var _Parser = require("./Parser");
 
 var _Parser2 = _interopRequireDefault(_Parser);
 
-var _Compiler = require("./Compiler");
-
-var _Compiler2 = _interopRequireDefault(_Compiler);
-
 var _Tokenizer = require("./Tokenizer");
 
 var _Tokenizer2 = _interopRequireDefault(_Tokenizer);
-
-var _global = require("./Environment/global");
-
-var globals = _interopRequireWildcard(_global);
 
 require("./build");
 
 var _utils = require("./utils");
 
 var _const = require("./const");
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4776,43 +4035,10 @@ var tokenize = function tokenize(code, opts) {
   return tokenizer.scan(code, opts);
 };
 
-var generate = function generate(ast, opts) {
-  var compiler = new _Compiler2.default();
-  return compiler.compile(ast, opts);
-};
-
-var global = {};
-for (var key in globals) {
-  if (globals.hasOwnProperty(key)) {
-    global[key] = globals[key];
-  }
-}
-
-var compile = function compile(src) {
-
-  var tokens = null;
-  var ast = null;
-  var code = null;
-
-  tokens = tokenize(src);
-  ast = parse(tokens);
-  code = generate(ast, "JS");
-
-  return code;
-};
-
-var evaluate = function evaluate(code) {
-  new Function("__global", code)(global);
-};
-
 (0, _utils.greet)();
 
 exports.parse = parse;
 exports.tokenize = tokenize;
-exports.generate = generate;
-exports.evaluate = evaluate;
-exports.compile = compile;
-exports.global = global;
 exports.VERSION = _const.VERSION;
 
 
@@ -4820,15 +4046,11 @@ if (typeof window !== "undefined") {
   window.hevia = {
     parse: parse,
     tokenize: tokenize,
-    generate: generate,
-    global: global,
-    evaluate: evaluate,
-    compile: compile,
     VERSION: _const.VERSION
   };
 }
 
-},{"./Compiler":6,"./Environment/global":11,"./Parser":32,"./Tokenizer":38,"./build":40,"./const":41,"./utils":47}],43:[function(require,module,exports){
+},{"./Parser":27,"./Tokenizer":33,"./build":35,"./const":36,"./utils":41}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4862,6 +4084,8 @@ var ii = 0;
   Label[Label["UnaryExpression"] = ++ii] = "UnaryExpression";
   Label[Label["CallExpression"] = ++ii] = "CallExpression";
   Label[Label["ParameterExpression"] = ++ii] = "ParameterExpression";
+  Label[Label["ClosureExpression"] = ++ii] = "ClosureExpression";
+  Label[Label["TrailingClosureExpression"] = ++ii] = "TrailingClosureExpression";
 
   Label[Label["BlockStatement"] = ++ii] = "BlockStatement";
   Label[Label["ReturnStatement"] = ++ii] = "ReturnStatement";
@@ -4871,14 +4095,24 @@ var ii = 0;
   Label[Label["WhileStatement"] = ++ii] = "WhileStatement";
   Label[Label["RepeatStatement"] = ++ii] = "RepeatStatement";
   Label[Label["ExpressionStatement"] = ++ii] = "ExpressionStatement";
+  Label[Label["ArrayExpression"] = ++ii] = "ArrayExpression";
+  Label[Label["TypeExpression"] = ++ii] = "TypeExpression";
+
+  Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
+  Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
+
+  Label[Label["FunctionExpression"] = ++ii] = "FunctionExpression";
 
   Label[Label["ExtensionDeclaration"] = ++ii] = "ExtensionDeclaration";
   Label[Label["ClassDeclaration"] = ++ii] = "ClassDeclaration";
+  Label[Label["StructureDeclaration"] = ++ii] = "StructureDeclaration";
+  Label[Label["ProtocolDeclaration"] = ++ii] = "ProtocolDeclaration";
   Label[Label["FunctionDeclaration"] = ++ii] = "FunctionDeclaration";
   Label[Label["VariableDeclaration"] = ++ii] = "VariableDeclaration";
   Label[Label["OperatorDeclaration"] = ++ii] = "OperatorDeclaration";
   Label[Label["InitializerDeclaration"] = ++ii] = "InitializerDeclaration";
-  Label[Label["ArrayDeclaration"] = ++ii] = "ArrayDeclaration";
+  Label[Label["TypeAliasDeclaration"] = ++ii] = "TypeAliasDeclaration";
+  Label[Label["ImportDeclaration"] = ++ii] = "ImportDeclaration";
 
   Label[Label["PseudoProperty"] = ++ii] = "PseudoProperty";
   Label[Label["TypeAnnotation"] = ++ii] = "TypeAnnotation";
@@ -4887,8 +4121,9 @@ var ii = 0;
   Label[Label["Identifier"] = ++ii] = "Identifier";
   Label[Label["Literal"] = ++ii] = "Literal";
 
-  Label[Label["AssociativityExpression"] = ++ii] = "AssociativityExpression";
-  Label[Label["PrecedenceExpression"] = ++ii] = "PrecedenceExpression";
+  Label[Label["GenericClause"] = ++ii] = "GenericClause";
+
+  Label[Label["Comment"] = ++ii] = "Comment";
 })(Types);
 
 /** Data types */
@@ -4902,6 +4137,7 @@ var ii = 0;
   Label[Label["NullLiteral"] = ++ii] = "NullLiteral";
   Label[Label["StringLiteral"] = ++ii] = "StringLiteral";
   Label[Label["NumericLiteral"] = ++ii] = "NumericLiteral";
+  Label[Label["Tuple"] = ++ii] = "Tuple";
 })(Token);
 
 /** Tokens */
@@ -4984,19 +4220,6 @@ var ii = 0;
   Label[Label["associativity"] = ++ii] = "ASSOCIATIVITY";
   /** Precedence clause */
   Label[Label["precedence"] = ++ii] = "PRECEDENCE";
-  /** Types */
-  Label[Label["Void"] = ++ii] = "VOID";
-  Label[Label["Int"] = ++ii] = "INT";
-  Label[Label["Int8"] = ++ii] = "INT8";
-  Label[Label["UInt8"] = ++ii] = "UINT8";
-  Label[Label["Int32"] = ++ii] = "INT32";
-  Label[Label["Int64"] = ++ii] = "INT64";
-  Label[Label["UInt64"] = ++ii] = "UINT64";
-  Label[Label["Double"] = ++ii] = "DOUBLE";
-  Label[Label["Float"] = ++ii] = "FLOAT";
-  Label[Label["Bool"] = ++ii] = "BOOLEAN";
-  Label[Label["String"] = ++ii] = "STRING";
-  Label[Label["Character"] = ++ii] = "CHARACTER";
 })(TokenList);
 
 /** 
@@ -5025,7 +4248,7 @@ function registerTT(name, value) {
   TokenList[TokenList[ii]] = ii;
 }
 
-},{"./precedence":45}],44:[function(require,module,exports){
+},{"./precedence":40}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5035,10 +4258,6 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _labels = require("./labels");
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -5075,6 +4294,89 @@ var Node = function () {
 
         this.kind = _labels.Types.Program;
         this.body = [];
+      };
+    }
+  }, {
+    key: "GenericClause",
+    get: function get() {
+      return function GenericClause() {
+        _classCallCheck(this, GenericClause);
+
+        this.kind = _labels.Types.GenericClause;
+        this.arguments = [];
+      };
+    }
+  }, {
+    key: "TypeExpression",
+    get: function get() {
+      return function TypeExpression() {
+        _classCallCheck(this, TypeExpression);
+
+        this.kind = _labels.Types.TypeExpression;
+        this.type = null;
+      };
+    }
+  }, {
+    key: "FunctionExpression",
+    get: function get() {
+      return function FunctionExpression() {
+        _classCallCheck(this, FunctionExpression);
+
+        this.kind = _labels.Types.FunctionExpression;
+        this.arguments = [];
+        this.type = null;
+      };
+    }
+  }, {
+    key: "TrailingClosureExpression",
+    get: function get() {
+      return function TrailingClosureExpression() {
+        _classCallCheck(this, TrailingClosureExpression);
+
+        this.kind = _labels.Types.TrailingClosureExpression;
+        this.body = [];
+        this.callee = null;
+      };
+    }
+  }, {
+    key: "ClosureExpression",
+    get: function get() {
+      return function ClosureExpression() {
+        _classCallCheck(this, ClosureExpression);
+
+        this.kind = _labels.Types.ClosureExpression;
+        this.body = [];
+        this.signature = [];
+      };
+    }
+  }, {
+    key: "Comment",
+    get: function get() {
+      return function Comment() {
+        _classCallCheck(this, Comment);
+
+        this.kind = _labels.Types.Comment;
+        this.arguments = [];
+      };
+    }
+  }, {
+    key: "TypeAliasDeclaration",
+    get: function get() {
+      return function TypeAliasDeclaration() {
+        _classCallCheck(this, TypeAliasDeclaration);
+
+        this.kind = _labels.Types.TypeAliasDeclaration;
+        this.argument = null;
+      };
+    }
+  }, {
+    key: "ImportDeclaration",
+    get: function get() {
+      return function ImportDeclaration() {
+        _classCallCheck(this, ImportDeclaration);
+
+        this.kind = _labels.Types.ImportDeclaration;
+        this.specifiers = [];
       };
     }
   }, {
@@ -5122,23 +4424,38 @@ var Node = function () {
   }, {
     key: "ClassDeclaration",
     get: function get() {
-      return function (_AccessControl) {
-        _inherits(ClassDeclaration, _AccessControl);
+      return function ClassDeclaration() {
+        _classCallCheck(this, ClassDeclaration);
 
-        function ClassDeclaration() {
-          _classCallCheck(this, ClassDeclaration);
+        this.kind = _labels.Types.ClassDeclaration;
+        this.name = null;
+        this.extend = [];
+        this.body = [];
+      };
+    }
+  }, {
+    key: "StructureDeclaration",
+    get: function get() {
+      return function StructureDeclaration() {
+        _classCallCheck(this, StructureDeclaration);
 
-          var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ClassDeclaration).call(this, null));
+        this.kind = _labels.Types.StructureDeclaration;
+        this.name = null;
+        this.extend = [];
+        this.body = [];
+      };
+    }
+  }, {
+    key: "ProtocolDeclaration",
+    get: function get() {
+      return function ProtocolDeclaration() {
+        _classCallCheck(this, ProtocolDeclaration);
 
-          _this.kind = _labels.Types.ClassDeclaration;
-          _this.name = null;
-          _this.extend = [];
-          _this.body = [];
-          return _this;
-        }
-
-        return ClassDeclaration;
-      }(AccessControl);
+        this.kind = _labels.Types.ProtocolDeclaration;
+        this.name = null;
+        this.extend = [];
+        this.body = [];
+      };
     }
   }, {
     key: "ExtensionDeclaration",
@@ -5148,6 +4465,7 @@ var Node = function () {
 
         this.kind = _labels.Types.ExtensionDeclaration;
         this.argument = null;
+        this.extend = [];
         this.body = [];
       };
     }
@@ -5227,7 +4545,7 @@ var Node = function () {
         _classCallCheck(this, IfStatement);
 
         this.kind = _labels.Types.IfStatement;
-        this.condition = null;
+        this.test = null;
         this.consequent = null;
         this.alternate = null;
       };
@@ -5267,27 +4585,15 @@ var Node = function () {
   }, {
     key: "FunctionDeclaration",
     get: function get() {
-      return function (_AccessControl2) {
-        _inherits(FunctionDeclaration, _AccessControl2);
+      return function FunctionDeclaration() {
+        _classCallCheck(this, FunctionDeclaration);
 
-        function FunctionDeclaration() {
-          _classCallCheck(this, FunctionDeclaration);
-
-          var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(FunctionDeclaration).call(this, null));
-
-          _this2.kind = _labels.Types.FunctionDeclaration;
-          _this2.name = null;
-          _this2.type = null;
-          _this2.arguments = [];
-          _this2.body = [];
-          _this2.isStatic = false;
-          _this2.isOverride = false;
-          _this2.isClassed = false;
-          return _this2;
-        }
-
-        return FunctionDeclaration;
-      }(AccessControl);
+        this.kind = _labels.Types.FunctionDeclaration;
+        this.name = null;
+        this.type = null;
+        this.arguments = [];
+        this.body = [];
+      };
     }
   }, {
     key: "TypeCast",
@@ -5310,7 +4616,7 @@ var Node = function () {
         _classCallCheck(this, TernaryExpression);
 
         this.kind = _labels.Types.TernaryExpression;
-        this.condition = null;
+        this.test = null;
         this.consequent = null;
         this.alternate = null;
       };
@@ -5346,45 +4652,29 @@ var Node = function () {
 
         this.kind = _labels.Types.TypeAnnotation;
         this.type = null;
-        this.isExplicit = false;
-        this.isOptional = false;
-        this.isReference = false;
-        this.isUnwrap = false;
       };
     }
   }, {
-    key: "ArrayDeclaration",
+    key: "ArrayExpression",
     get: function get() {
-      return function ArrayDeclaration() {
-        _classCallCheck(this, ArrayDeclaration);
+      return function ArrayExpression() {
+        _classCallCheck(this, ArrayExpression);
 
-        this.kind = _labels.Types.ArrayDeclaration;
+        this.kind = _labels.Types.ArrayExpression;
         this.argument = [];
       };
     }
   }, {
     key: "VariableDeclaration",
     get: function get() {
-      return function (_AccessControl3) {
-        _inherits(VariableDeclaration, _AccessControl3);
+      return function VariableDeclaration() {
+        _classCallCheck(this, VariableDeclaration);
 
-        function VariableDeclaration() {
-          _classCallCheck(this, VariableDeclaration);
-
-          var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(VariableDeclaration).call(this, null));
-
-          _this3.kind = _labels.Types.VariableDeclaration;
-          _this3.symbol = null;
-          _this3.declarations = [];
-          _this3.init = null;
-          _this3.isStatic = false;
-          _this3.isOverride = false;
-          _this3.isClassed = false;
-          return _this3;
-        }
-
-        return VariableDeclaration;
-      }(AccessControl);
+        this.kind = _labels.Types.VariableDeclaration;
+        this.symbol = null;
+        this.declarations = [];
+        this.init = null;
+      };
     }
   }, {
     key: "AssignmentExpression",
@@ -5461,7 +4751,7 @@ var Node = function () {
 
 exports.default = Node;
 
-},{"./labels":43}],45:[function(require,module,exports){
+},{"./labels":38}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5519,135 +4809,7 @@ function registerOperator(op, lvl, assoc, name, type) {
   _labels.Operators[name] = obj;
 }
 
-},{"./labels":43}],46:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _labels = require("./labels");
-
-var _nodes = require("./nodes");
-
-var _nodes2 = _interopRequireDefault(_nodes);
-
-var _utils = require("./utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @class Scope
- * @export
- */
-
-var Scope = function () {
-
-  /**
-   * @param {Node} scope
-   * @param {Node} parent
-   * @constructor
-   */
-
-  function Scope(scope, parent) {
-    _classCallCheck(this, Scope);
-
-    /**
-     * Scope
-     * @type {Node}
-     */
-    this.scope = scope;
-
-    /**
-     * Parent
-     * @type {Node}
-     */
-    this.parent = parent;
-
-    /**
-     * Symbol table
-     * @type {Object}
-     */
-    this.table = {};
-  }
-
-  /**
-   * Get sth from table
-   * @param  {String} name
-   * @return {Node}
-   */
-
-
-  _createClass(Scope, [{
-    key: "get",
-    value: function get(name) {
-      if (this.table[name] !== void 0) {
-        return this.table[name];
-      } else {
-        if (this.parent !== void 0) {
-          return this.parent.get(name);
-        }
-      }
-    }
-
-    /**
-     * Get sth from scope by type
-     * @param  {Number} type
-     * @return {Node}
-     */
-
-  }, {
-    key: "getByType",
-    value: function getByType(type) {
-      if (this.scope && this.scope.kind === type) {
-        return this.scope;
-      } else {
-        if (this.parent !== void 0) {
-          return this.parent.getByType(type);
-        }
-      }
-    }
-
-    /**
-     * Get name of node
-     * @param {Node} node
-     * @return {String}
-     */
-
-  }, {
-    key: "getName",
-    value: function getName(node) {
-      return node.value || node.name || node.id || (node.init ? node.init.value : void 0);
-    }
-
-    /**
-     * Set sth into table
-     * @param {Node} node
-     */
-
-  }, {
-    key: "register",
-    value: function register(node) {
-      var name = this.getName(node);
-      if (name !== void 0 && name !== null) {
-        if (this.parent !== void 0) {
-          //console.log(`Registered ${name}->${this.getName(this.scope)}:${getNameByLabel(this.scope.kind)}`);
-        }
-        this.table[name] = node;
-      }
-    }
-  }]);
-
-  return Scope;
-}();
-
-exports.default = Scope;
-
-},{"./labels":43,"./nodes":44,"./utils":47}],47:[function(require,module,exports){
+},{"./labels":38}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5659,6 +4821,8 @@ exports.getNameByLabel = getNameByLabel;
 exports.getLabelByNumber = getLabelByNumber;
 exports.isNumericType = isNumericType;
 exports.isBoolean = isBoolean;
+exports.isLiteral = isLiteral;
+exports.isNativeType = isNativeType;
 exports.getNumericType = getNumericType;
 exports.greet = greet;
 
@@ -5752,6 +4916,56 @@ function isBoolean(node) {
 }
 
 /**
+ * @param {Node}
+ * @return {Boolean}
+ */
+function isLiteral(name) {
+  switch (name) {
+    case _labels.TokenList.NULL:
+    case _labels.TokenList.LPAREN:
+    case _labels.TokenList.SELF:
+    case _labels.TokenList.BIT_AND:
+    case _labels.TokenList.UL:
+    case _labels.TokenList.TRUE:
+    case _labels.TokenList.FALSE:
+    case _labels.Token.Identifier:
+    case _labels.Token.NullLiteral:
+    case _labels.Token.StringLiteral:
+    case _labels.Token.NumericLiteral:
+    case _labels.Token.BooleanLiteral:
+      return true;
+      break;
+  };
+  return false;
+}
+
+/**
+ * @param {String} value
+ * @return {Boolean}
+ */
+function isNativeType(value) {
+  switch (value) {
+    case "Void":
+    case "Int":
+    case "Int8":
+    case "Uint8":
+    case "Int32":
+    case "Int64":
+    case "Uint64":
+    case "Double":
+    case "Float":
+    case "Boolean":
+    case "String":
+    case "Character":
+      return true;
+      break;
+    default:
+      return false;
+      break;
+  };
+}
+
+/**
  * @param  {Number} n
  * @return {String}
  */
@@ -5798,5 +5012,5 @@ function greet() {
   }
 }
 
-},{"./const":41,"./labels":43,"./nodes":44}]},{},[42])(42)
+},{"./const":36,"./labels":38,"./nodes":39}]},{},[37])(37)
 });
