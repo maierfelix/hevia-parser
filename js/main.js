@@ -1,6 +1,16 @@
 version.innerHTML = "v" + hevia.VERSION;
 var src = 
-`class H {
+`infix operator ⚡⚡⚡ {
+  associativity left
+  precedence 160
+}
+func ⚡⚡⚡(left:Int,right:Int)->Int{
+  return (left * right);
+}
+
+print(2⚡⚡⚡7*7 == 98);
+
+class H {
   func f(_ x: Int) { }
 }
 
