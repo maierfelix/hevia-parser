@@ -18,7 +18,7 @@ const tokenize = (code, opts) => {
 
 greet();
 
-export {
+export default {
   parse,
   tokenize,
   VERSION
