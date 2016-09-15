@@ -1,8 +1,8 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.HEVIA = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.HEVIA = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 module.exports={
-  "name": "Hevia",
-  "version": "0.0.7",
-  "description": "Hevia Parser",
+  "name": "hevia",
+  "version": "0.0.9",
+  "description": "Hevia Swift Parser",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -27,41 +27,40 @@ module.exports={
   "scripts": {
     "live": "budo --dir static/ ./src/index.js:dist/hevia.js --live -- -t babelify",
     "dist": "npm run dist-release && npm run dist-uglify",
-    "dist-release": "browserify ./src/index.js -t babelify -s HEVIA -o dist/hevia.js",
+    "dist-release": "browserify -p browserify-derequire ./src/index.js -t babelify -s HEVIA -o dist/hevia.js",
     "dist-uglify": "uglifyjs dist/hevia.js --compress --mangle > dist/hevia.min.js",
     "dist-test": "npm run dist-release && npm run test",
     "test": "node ./tests/index.js",
     "travis": "npm dist-test"
   },
   "engines": {
-    "node": ">= 5.x"
+    "node": ">= 4.x"
   },
   "devDependencies": {
     "babel-core": "^6.0.20",
     "babel-cli": "^6.1.2",
-    "babel-preset-es2015": "^6.1.2",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.3.13",
     "browserify": "^12.0.1",
+    "browserify-derequire": "^0.9.4",
     "babelify": "^7.2.0",
     "uglify-js": "^2.6.1",
     "babel-loader": "^6.0.1",
     "babel-runtime": "^6.9.1",
     "babel-plugin-transform-runtime": "^6.4.3",
-    "babel-preset-stage-0": "^6.3.13",
-    "babel-preset-es2015": "^6.9.0",
     "node-libs-browser": "^0.5.3",
     "budo": "^8.3.0"
   },
+  "dependencies": {},
   "browserify": {
     "extension": [ 
-      "cjsx", 
-      "coffee", 
       "js", 
       "json",
       "swift"
     ]
   }
 }
-},{}],2:[function(require,module,exports){
+},{}],2:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -72,13 +71,13 @@ exports.parseFinal = parseFinal;
 exports.parseOverride = parseOverride;
 exports.parseStatic = parseStatic;
 
-var _labels = require("../labels");
+var _labels = _dereq_("../labels");
 
-var _nodes = require("../nodes");
+var _nodes = _dereq_("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -150,7 +149,7 @@ function parseStatic() {
   return node;
 }
 
-},{"../labels":38,"../nodes":39,"../utils":41}],3:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],3:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -158,9 +157,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseGuardStatement = parseGuardStatement;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -173,7 +172,7 @@ function parseGuardStatement() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],4:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],4:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -181,9 +180,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseIfStatement = parseIfStatement;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -213,7 +212,7 @@ function parseIfStatement() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],5:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],5:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -221,9 +220,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseBranchStatement = parseBranchStatement;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -258,7 +257,7 @@ function parseBranchStatement() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],6:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],6:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -266,9 +265,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parsePseudoProperty = parsePseudoProperty;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -301,7 +300,7 @@ function parsePseudoProperty() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],7:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],7:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -309,9 +308,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseSwitch = parseSwitch;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -324,7 +323,7 @@ function parseSwitch() {
   return null;
 }
 
-},{"../../labels":38,"../../nodes":39}],8:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],8:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -333,15 +332,15 @@ Object.defineProperty(exports, "__esModule", {
 exports.parseComment = parseComment;
 exports.parseBlockComment = parseBlockComment;
 
-var _labels = require("../labels");
+var _labels = _dereq_("../labels");
 
-var _nodes = require("../nodes");
+var _nodes = _dereq_("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
-var _scanner = require("../Tokenizer/scanner");
+var _scanner = _dereq_("../Tokenizer/scanner");
 
 var scan = _interopRequireWildcard(_scanner);
 
@@ -408,7 +407,7 @@ function parseBlockComment(str) {
   return args;
 }
 
-},{"../Tokenizer/scanner":34,"../labels":38,"../nodes":39,"../utils":41}],9:[function(require,module,exports){
+},{"../Tokenizer/scanner":34,"../labels":38,"../nodes":39,"../utils":41}],9:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -417,13 +416,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.parseClass = parseClass;
 exports.parseSpecialClass = parseSpecialClass;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -474,7 +473,7 @@ function parseSpecialClass(base) {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],10:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],10:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -482,9 +481,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseExtension = parseExtension;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -513,7 +512,7 @@ function parseExtension() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],11:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],11:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -521,15 +520,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseFunction = parseFunction;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
-var _const = require("../../const");
+var _const = _dereq_("../../const");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -565,7 +564,7 @@ function parseFunction() {
   return node;
 }
 
-},{"../../const":36,"../../labels":38,"../../nodes":39,"../../utils":41}],12:[function(require,module,exports){
+},{"../../const":36,"../../labels":38,"../../nodes":39,"../../utils":41}],12:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -573,9 +572,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseImport = parseImport;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -595,7 +594,7 @@ function parseImport() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],13:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],13:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -604,13 +603,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.parseDeclarationStatement = parseDeclarationStatement;
 exports.parseInitializer = parseInitializer;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -698,7 +697,7 @@ function parseInitializer() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],14:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],14:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -711,15 +710,15 @@ exports.parseAssociativityExpression = parseAssociativityExpression;
 exports.getOperatorAssociativity = getOperatorAssociativity;
 exports.getOperatorPrecedence = getOperatorPrecedence;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _precedence = require("../../precedence");
+var _precedence = _dereq_("../../precedence");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -883,7 +882,7 @@ function getOperatorPrecedence(body) {
   return -1;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":41}],15:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":41}],15:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -891,9 +890,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseProtocol = parseProtocol;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -924,7 +923,7 @@ function parseProtocol() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],16:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],16:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -932,9 +931,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseStruct = parseStruct;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
@@ -965,7 +964,7 @@ function parseStruct() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39}],17:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39}],17:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -973,13 +972,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseTypeAlias = parseTypeAlias;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1003,7 +1002,7 @@ function parseTypeAlias() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],18:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],18:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1013,13 +1012,13 @@ exports.parseVariableDeclaration = parseVariableDeclaration;
 exports.parseVariable = parseVariable;
 exports.parseVariableDeclarement = parseVariableDeclarement;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1092,7 +1091,7 @@ function parseVariableDeclarement() {
   return args;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],19:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],19:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1103,13 +1102,13 @@ exports.parseCommaSeperatedValues = parseCommaSeperatedValues;
 exports.parseArguments = parseArguments;
 exports.parseMaybeArguments = parseMaybeArguments;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1197,7 +1196,7 @@ function parseMaybeArguments() {
   return args;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],20:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],20:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1205,13 +1204,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseArrayExpression = parseArrayExpression;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1240,7 +1239,7 @@ function parseArrayExpression() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],21:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],21:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1252,13 +1251,13 @@ exports.parseMemberExpression = parseMemberExpression;
 exports.parseCallExpression = parseCallExpression;
 exports.parseTernaryExpression = parseTernaryExpression;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1367,7 +1366,7 @@ function parseTernaryExpression(base) {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],22:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],22:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1380,15 +1379,15 @@ exports.isPostfixOperator = isPostfixOperator;
 exports.getUnifiedOperator = getUnifiedOperator;
 exports.opInArray = opInArray;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _precedence = require("../../precedence");
+var _precedence = _dereq_("../../precedence");
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1530,7 +1529,7 @@ function opInArray(array, op) {
   return false;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":41}],23:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../precedence":40,"../../utils":41}],23:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1539,13 +1538,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.parseClosureExpression = parseClosureExpression;
 exports.parseFunctionExpression = parseFunctionExpression;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1595,7 +1594,7 @@ function parseFunctionExpression(node) {
   return tmp;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],24:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],24:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1603,13 +1602,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseExpressionStatement = parseExpressionStatement;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1660,7 +1659,7 @@ function parseExpressionStatement() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],25:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],25:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1670,13 +1669,13 @@ exports.parseLiteral = parseLiteral;
 exports.parseLiteralHead = parseLiteralHead;
 exports.parseSpecialLiteral = parseSpecialLiteral;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1809,7 +1808,7 @@ function parseSpecialLiteral() {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],26:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],26:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1817,13 +1816,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseUnaryExpression = parseUnaryExpression;
 
-var _labels = require("../../labels");
+var _labels = _dereq_("../../labels");
 
-var _nodes = require("../../nodes");
+var _nodes = _dereq_("../../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../../utils");
+var _utils = _dereq_("../../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1842,128 +1841,128 @@ function parseUnaryExpression(base) {
   return node;
 }
 
-},{"../../labels":38,"../../nodes":39,"../../utils":41}],27:[function(require,module,exports){
+},{"../../labels":38,"../../nodes":39,"../../utils":41}],27:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
-var _parse = require("./parse");
+var _parse = _dereq_("./parse");
 
 var parse = _interopRequireWildcard(_parse);
 
-var _args = require("./expression/args");
+var _args = _dereq_("./expression/args");
 
 var args = _interopRequireWildcard(_args);
 
-var _atom = require("./expression/atom");
+var _atom = _dereq_("./expression/atom");
 
 var atoms = _interopRequireWildcard(_atom);
 
-var _array = require("./expression/array");
+var _array = _dereq_("./expression/array");
 
 var arrays = _interopRequireWildcard(_array);
 
-var _unary = require("./expression/unary");
+var _unary = _dereq_("./expression/unary");
 
 var unaries = _interopRequireWildcard(_unary);
 
-var _binary = require("./expression/binary");
+var _binary = _dereq_("./expression/binary");
 
 var binaries = _interopRequireWildcard(_binary);
 
-var _literal = require("./expression/literal");
+var _literal = _dereq_("./expression/literal");
 
 var literals = _interopRequireWildcard(_literal);
 
-var _closure = require("./expression/closure");
+var _closure = _dereq_("./expression/closure");
 
 var closures = _interopRequireWildcard(_closure);
 
-var _expression = require("./expression");
+var _expression = _dereq_("./expression");
 
 var expressions = _interopRequireWildcard(_expression);
 
-var _branch = require("./branch");
+var _branch = _dereq_("./branch");
 
 var branches = _interopRequireWildcard(_branch);
 
-var _guard = require("./branch/guard");
+var _guard = _dereq_("./branch/guard");
 
 var guards = _interopRequireWildcard(_guard);
 
-var _if = require("./branch/if");
+var _if = _dereq_("./branch/if");
 
 var ifelse = _interopRequireWildcard(_if);
 
-var _pseudo = require("./branch/pseudo");
+var _pseudo = _dereq_("./branch/pseudo");
 
 var pseudos = _interopRequireWildcard(_pseudo);
 
-var _switch = require("./branch/switch");
+var _switch = _dereq_("./branch/switch");
 
 var switches = _interopRequireWildcard(_switch);
 
-var _loop = require("./loop");
+var _loop = _dereq_("./loop");
 
 var loops = _interopRequireWildcard(_loop);
 
-var _type = require("./type");
+var _type = _dereq_("./type");
 
 var types = _interopRequireWildcard(_type);
 
-var _access = require("./access");
+var _access = _dereq_("./access");
 
 var accesses = _interopRequireWildcard(_access);
 
-var _comment = require("./comment");
+var _comment = _dereq_("./comment");
 
 var comments = _interopRequireWildcard(_comment);
 
-var _statement = require("./statement");
+var _statement = _dereq_("./statement");
 
 var statements = _interopRequireWildcard(_statement);
 
-var _struct = require("./declare/struct");
+var _struct = _dereq_("./declare/struct");
 
 var structs = _interopRequireWildcard(_struct);
 
-var _class = require("./declare/class");
+var _class = _dereq_("./declare/class");
 
 var classes = _interopRequireWildcard(_class);
 
-var _import = require("./declare/import");
+var _import = _dereq_("./declare/import");
 
 var imports = _interopRequireWildcard(_import);
 
-var _function = require("./declare/function");
+var _function = _dereq_("./declare/function");
 
 var functions = _interopRequireWildcard(_function);
 
-var _protocol = require("./declare/protocol");
+var _protocol = _dereq_("./declare/protocol");
 
 var protocols = _interopRequireWildcard(_protocol);
 
-var _variable = require("./declare/variable");
+var _variable = _dereq_("./declare/variable");
 
 var variables = _interopRequireWildcard(_variable);
 
-var _operator = require("./declare/operator");
+var _operator = _dereq_("./declare/operator");
 
 var operators = _interopRequireWildcard(_operator);
 
-var _extension = require("./declare/extension");
+var _extension = _dereq_("./declare/extension");
 
 var extensions = _interopRequireWildcard(_extension);
 
-var _typealias = require("./declare/typealias");
+var _typealias = _dereq_("./declare/typealias");
 
 var typealiases = _interopRequireWildcard(_typealias);
 
-var _declare = require("./declare");
+var _declare = _dereq_("./declare");
 
 var declarations = _interopRequireWildcard(_declare);
 
@@ -2072,7 +2071,7 @@ exports.default = Parser;
 (0, _utils.inherit)(Parser, typealiases);
 (0, _utils.inherit)(Parser, declarations);
 
-},{"../utils":41,"./access":2,"./branch":5,"./branch/guard":3,"./branch/if":4,"./branch/pseudo":6,"./branch/switch":7,"./comment":8,"./declare":13,"./declare/class":9,"./declare/extension":10,"./declare/function":11,"./declare/import":12,"./declare/operator":14,"./declare/protocol":15,"./declare/struct":16,"./declare/typealias":17,"./declare/variable":18,"./expression":24,"./expression/args":19,"./expression/array":20,"./expression/atom":21,"./expression/binary":22,"./expression/closure":23,"./expression/literal":25,"./expression/unary":26,"./loop":28,"./parse":29,"./statement":30,"./type":31}],28:[function(require,module,exports){
+},{"../utils":41,"./access":2,"./branch":5,"./branch/guard":3,"./branch/if":4,"./branch/pseudo":6,"./branch/switch":7,"./comment":8,"./declare":13,"./declare/class":9,"./declare/extension":10,"./declare/function":11,"./declare/import":12,"./declare/operator":14,"./declare/protocol":15,"./declare/struct":16,"./declare/typealias":17,"./declare/variable":18,"./expression":24,"./expression/args":19,"./expression/array":20,"./expression/atom":21,"./expression/binary":22,"./expression/closure":23,"./expression/literal":25,"./expression/unary":26,"./loop":28,"./parse":29,"./statement":30,"./type":31}],28:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2083,13 +2082,13 @@ exports.parseFor = parseFor;
 exports.parseWhile = parseWhile;
 exports.parseRepeat = parseRepeat;
 
-var _labels = require("../labels");
+var _labels = _dereq_("../labels");
 
-var _nodes = require("../nodes");
+var _nodes = _dereq_("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2188,7 +2187,7 @@ function parseRepeat() {
   return node;
 }
 
-},{"../labels":38,"../nodes":39,"../utils":41}],29:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],29:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2208,13 +2207,13 @@ exports.acceptPrecedence = acceptPrecedence;
 exports.isOperator = isOperator;
 exports.parseFakeLiteral = parseFakeLiteral;
 
-var _labels = require("../labels");
+var _labels = _dereq_("../labels");
 
-var _nodes = require("../nodes");
+var _nodes = _dereq_("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2440,7 +2439,7 @@ function parseFakeLiteral(value) {
   return node;
 }
 
-},{"../labels":38,"../nodes":39,"../utils":41}],30:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],30:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2450,13 +2449,13 @@ exports.parseStatement = parseStatement;
 exports.parseReturnStatement = parseReturnStatement;
 exports.parseCondition = parseCondition;
 
-var _labels = require("../labels");
+var _labels = _dereq_("../labels");
 
-var _nodes = require("../nodes");
+var _nodes = _dereq_("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2587,7 +2586,7 @@ function parseCondition() {
   return node;
 }
 
-},{"../labels":38,"../nodes":39,"../utils":41}],31:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],31:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2599,13 +2598,13 @@ exports.parseTupleType = parseTupleType;
 exports.parseGeneric = parseGeneric;
 exports.parseTypeInheritance = parseTypeInheritance;
 
-var _labels = require("../labels");
+var _labels = _dereq_("../labels");
 
-var _nodes = require("../nodes");
+var _nodes = _dereq_("../nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _utils = require("../utils");
+var _utils = _dereq_("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2703,7 +2702,7 @@ function parseTypeInheritance() {
   return args;
 }
 
-},{"../labels":38,"../nodes":39,"../utils":41}],32:[function(require,module,exports){
+},{"../labels":38,"../nodes":39,"../utils":41}],32:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2745,7 +2744,7 @@ var Character = exports.Character = {
   }
 };
 
-},{}],33:[function(require,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2754,7 +2753,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _scanner = require("./scanner");
+var _scanner = _dereq_("./scanner");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2778,7 +2777,7 @@ var Tokenizer = function () {
 
 exports.default = Tokenizer;
 
-},{"./scanner":34}],34:[function(require,module,exports){
+},{"./scanner":34}],34:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2788,9 +2787,9 @@ exports.tokenize = undefined;
 exports.isWhiteSpace = isWhiteSpace;
 exports.isLineTerminator = isLineTerminator;
 
-var _char = require('./char');
+var _char = _dereq_('./char');
 
-var _labels = require('../labels');
+var _labels = _dereq_('../labels');
 
 /**
  * The code below is based on the compiled version of esprima (http://esprima.org/)
@@ -3916,12 +3915,12 @@ function peek() {
 
 exports.tokenize = tokenize;
 
-},{"../labels":38,"./char":32}],35:[function(require,module,exports){
+},{"../labels":38,"./char":32}],35:[function(_dereq_,module,exports){
 "use strict";
 
-var _labels = require("./labels");
+var _labels = _dereq_("./labels");
 
-var _precedence = require("./precedence");
+var _precedence = _dereq_("./precedence");
 
 var PREFIX = _labels.TokenList.PREFIX;
 var INFIX = _labels.TokenList.INFIX;
@@ -3982,7 +3981,7 @@ var POSTFIX = _labels.TokenList.POSTFIX;
 (0, _precedence.registerOperator)("--", -1, "none", "POST_SUB", POSTFIX); // removed in swift 3
 (0, _precedence.registerOperator)("++", -1, "none", "POST_ADD", POSTFIX); // removed in swift 3
 
-},{"./labels":38,"./precedence":40}],36:[function(require,module,exports){
+},{"./labels":38,"./precedence":40}],36:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3992,7 +3991,7 @@ Object.defineProperty(exports, "__esModule", {
  * Version
  * @type {String}
  */
-var VERSION = exports.VERSION = require("../package.json").version;
+var VERSION = exports.VERSION = _dereq_("../package.json").version;
 
 /**
  * Default type, if a function
@@ -4001,27 +4000,22 @@ var VERSION = exports.VERSION = require("../package.json").version;
  */
 var FUNC_DEFAULT_TYPE = exports.FUNC_DEFAULT_TYPE = "Void";
 
-},{"../package.json":1}],37:[function(require,module,exports){
+},{"../package.json":1}],37:[function(_dereq_,module,exports){
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.VERSION = exports.tokenize = exports.parse = undefined;
-
-var _Parser = require("./Parser");
+var _Parser = _dereq_("./Parser");
 
 var _Parser2 = _interopRequireDefault(_Parser);
 
-var _Tokenizer = require("./Tokenizer");
+var _Tokenizer = _dereq_("./Tokenizer");
 
 var _Tokenizer2 = _interopRequireDefault(_Tokenizer);
 
-require("./build");
+_dereq_("./build");
 
-var _utils = require("./utils");
+var _utils = _dereq_("./utils");
 
-var _const = require("./const");
+var _const = _dereq_("./const");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4037,20 +4031,17 @@ var tokenize = function tokenize(code, opts) {
 
 (0, _utils.greet)();
 
-exports.parse = parse;
-exports.tokenize = tokenize;
-exports.VERSION = _const.VERSION;
-
+module.exports = {
+  parse: parse,
+  tokenize: tokenize,
+  VERSION: _const.VERSION
+};
 
 if (typeof window !== "undefined") {
-  window.hevia = {
-    parse: parse,
-    tokenize: tokenize,
-    VERSION: _const.VERSION
-  };
+  window.hevia = module.exports;
 }
 
-},{"./Parser":27,"./Tokenizer":33,"./build":35,"./const":36,"./utils":41}],38:[function(require,module,exports){
+},{"./Parser":27,"./Tokenizer":33,"./build":35,"./const":36,"./utils":41}],38:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4059,7 +4050,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.Operators = exports.TokenList = exports.Token = exports.Types = undefined;
 exports.registerTT = registerTT;
 
-var _precedence = require("./precedence");
+var _precedence = _dereq_("./precedence");
 
 var Types = exports.Types = {}; /**
                                  * This file contains all shit, to
@@ -4248,7 +4239,7 @@ function registerTT(name, value) {
   TokenList[TokenList[ii]] = ii;
 }
 
-},{"./precedence":40}],39:[function(require,module,exports){
+},{"./precedence":40}],39:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4257,7 +4248,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _labels = require("./labels");
+var _labels = _dereq_("./labels");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -4751,7 +4742,7 @@ var Node = function () {
 
 exports.default = Node;
 
-},{"./labels":38}],40:[function(require,module,exports){
+},{"./labels":38}],40:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4760,7 +4751,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.POX_PRECEDENCE = exports.PEX_PRECEDENCE = exports.IFX_PRECEDENCE = undefined;
 exports.registerOperator = registerOperator;
 
-var _labels = require("./labels");
+var _labels = _dereq_("./labels");
 
 var IFX_PRECEDENCE = exports.IFX_PRECEDENCE = [];
 var PEX_PRECEDENCE = exports.PEX_PRECEDENCE = [];
@@ -4809,7 +4800,7 @@ function registerOperator(op, lvl, assoc, name, type) {
   _labels.Operators[name] = obj;
 }
 
-},{"./labels":38}],41:[function(require,module,exports){
+},{"./labels":38}],41:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4826,13 +4817,13 @@ exports.isNativeType = isNativeType;
 exports.getNumericType = getNumericType;
 exports.greet = greet;
 
-var _labels = require("./labels");
+var _labels = _dereq_("./labels");
 
-var _nodes = require("./nodes");
+var _nodes = _dereq_("./nodes");
 
 var _nodes2 = _interopRequireDefault(_nodes);
 
-var _const = require("./const");
+var _const = _dereq_("./const");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
