@@ -18,16 +18,12 @@ const tokenize = (code, opts) => {
 
 greet();
 
-export default {
+module.exports = {
   parse,
   tokenize,
   VERSION
 }
 
 if (typeof window !== "undefined") {
-  window.hevia = {
-    parse,
-    tokenize,
-    VERSION
-  };
+  window.hevia = module.exports;
 }

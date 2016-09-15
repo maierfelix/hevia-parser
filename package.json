@@ -1,7 +1,7 @@
 {
   "name": "hevia",
-  "version": "0.0.8",
-  "description": "Hevia Parser",
+  "version": "0.0.9",
+  "description": "Swift Parser",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -26,14 +26,14 @@
   "scripts": {
     "live": "budo --dir static/ ./src/index.js:dist/hevia.js --live -- -t babelify",
     "dist": "npm run dist-release && npm run dist-uglify",
-    "dist-release": "browserify ./src/index.js -t babelify -s HEVIA -o dist/hevia.js",
+    "dist-release": "browserify -p browserify-derequire ./src/index.js -t babelify -s HEVIA -o dist/hevia.js",
     "dist-uglify": "uglifyjs dist/hevia.js --compress --mangle > dist/hevia.min.js",
     "dist-test": "npm run dist-release && npm run test",
     "test": "node ./tests/index.js",
     "travis": "npm dist-test"
   },
   "engines": {
-    "node": ">= 5.x"
+    "node": ">= 4.x"
   },
   "devDependencies": {
     "babel-core": "^6.0.20",
@@ -41,6 +41,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.3.13",
     "browserify": "^12.0.1",
+    "browserify-derequire": "^0.9.4",
     "babelify": "^7.2.0",
     "uglify-js": "^2.6.1",
     "babel-loader": "^6.0.1",
