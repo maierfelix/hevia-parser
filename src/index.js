@@ -6,6 +6,8 @@ import "./build";
 import { greet } from "./utils";
 import { VERSION } from "./const";
 
+import * as labels from "./labels";
+
 const parse = (tokens) => {
   let parser = new Parser();
   return (parser.parse(tokens));
@@ -21,6 +23,7 @@ greet();
 module.exports = {
   parse,
   tokenize,
+  labels,
   VERSION
 }
 
